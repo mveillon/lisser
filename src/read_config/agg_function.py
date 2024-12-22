@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Any
 import pandas as pd
 
+from src.utilities.column import Column
+
 
 @dataclass
 class AggFunction:
@@ -11,11 +13,14 @@ class AggFunction:
     Attributes:
         func (str): which function to use for aggregation. Should be a method
             of pd.Series and should take no arguments
+        divide (bool): whether to divide the outcome into weekly, monthly, and yearly
+            chunks. Default is False.
         column (str): which column to aggregate. Default is None, which should only
             be used if `func` is "count"
     """
 
     func: str
+    divide: bool = False
     column: str = None
 
     def aggregate(self, df: pd.DataFrame) -> Any:
@@ -34,4 +39,18 @@ class AggFunction:
         if self.column is None:
             raise ValueError("Column must be provided.")
 
-        return df[self.column].__getattr__(self.func)()
+        res = df[self.column].__getattr__(self.func)().item()
+
+        num_days = (df[Column.DATE.value].max() - df[Column.DATE.value].min()).days
+        if self.divide:
+            divisors = {
+                "total": 1,
+                "yearly": num_days / 365,
+                "monthly": num_days / (365 / 12),
+                "weekly": num_days / 7,
+            }
+
+            return {k: res / v for k, v in divisors.items()}
+
+        else:
+            return res

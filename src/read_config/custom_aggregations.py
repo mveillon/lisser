@@ -1,9 +1,9 @@
 import yaml
 import pandas as pd
 from functools import reduce
-from operator import __and__
+from operator import __and__, __or__
 
-from typing import List, Callable, Any, Tuple
+from typing import Callable, Any, Dict
 
 from src.utilities.paths import config_path
 from src.read_config.filter import Filter
@@ -12,7 +12,7 @@ from src.read_config.agg_function import AggFunction
 type AggFunc = Callable[[pd.DataFrame], Any]
 
 
-def custom_aggregations(df: pd.DataFrame) -> Tuple[List[str], List[Any]]:
+def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
     """
     Performs all custom aggregations on df.
 
@@ -20,22 +20,19 @@ def custom_aggregations(df: pd.DataFrame) -> Tuple[List[str], List[Any]]:
         df (DataFrame): the Pandas DataFrame to aggregate
 
     Returns:
-        titles (List[str]): the list of snake_case titles of aggregations
-        agg_values (List[Any]): the list of aggregated value
+        aggs (Dict[str, Any]): a mapping of agg name to value
     """
     with open(config_path(), "r") as c:
         data = yaml.safe_load(c)
 
-    titles = list(data["aggregations"].keys())
-    res = []
-
+    res = {}
     for agg in data["aggregations"]:
-        filts = data["aggregations"][agg]["filters"]
+        agg_data = data["aggregations"][agg]
 
-        if len(filts) > 0:
+        if len(agg_data["filters"]) > 0:
             conjunction = reduce(
-                __and__,
-                map(lambda f: Filter(**f).filter_cond(df), filts),
+                __or__ if agg_data.get("disjunction", False) else __and__,
+                map(lambda f: Filter(**f).filter_cond(df), agg_data["filters"]),
             )
 
             filtered = df.loc[conjunction]
@@ -43,6 +40,6 @@ def custom_aggregations(df: pd.DataFrame) -> Tuple[List[str], List[Any]]:
         else:
             filtered = df
 
-        res.append(AggFunction(**data["aggregations"][agg]["agg"]).aggregate(filtered))
+        res[agg] = AggFunction(**agg_data["agg"]).aggregate(filtered)
 
-    return titles, res
+    return res
