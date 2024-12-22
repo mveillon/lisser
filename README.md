@@ -75,7 +75,11 @@ Additional plots and aggregations can be added to the `config.yml` file. There a
 
 This is a dictionary where each key maps to a single plot. Each plot will be a line plot with any number of lines.
 
-Each line will be the sum of the `Price` column over either each month (if `timeframe = monthly`) or each year (if `timeframe = yearly`), with any numbers of filters applied to the data over any of the columns. Each filter listed will be combined using `AND` operators, forming a conjunction.
+Each line will be the sum of the `Price` column over either each month (if `timeframe = monthly`) or each year (if `timeframe = yearly`), with any numbers of filters applied to the data over any of the columns.
+
+Each filter listed will be combined using `AND` operators, forming a conjunction. For both plots and aggregations, a `disjunction` key can be provided at the same level as the filters. If the value is `True`, the filters will be combined using the `OR` operator instead.
+
+There is currently no support for combining the `AND` and `OR` operators in a single plot/aggregation.
 
 If there are multiple lines in a plot, it is recommended to provide the optional `style` and `label` parameters to each line. If the label is not present on any of the lines, it will not be in the legend, which will only be present if at least one line has a label.
 

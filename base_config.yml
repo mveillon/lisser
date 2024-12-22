@@ -5,7 +5,7 @@ plots:
     lines:
       - filters:
         - column: Category
-          operator: "iequals"
+          operator: iequals
           value: Bills
         style: b
         label: bills
@@ -26,9 +26,13 @@ plots:
   groceries_over_time:
     timeframe: yearly
     title: "Money spent on groceries over time"
+    disjunction: False
     lines:
       - filters:
         - column: Category
+          operator: "="
+          value: Groceries
+        - column: Description
           operator: "="
           value: Groceries
         style: b
