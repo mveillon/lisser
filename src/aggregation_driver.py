@@ -5,14 +5,12 @@ import pandas as pd
 from importlib import import_module
 from inspect import getmembers, isfunction, getfile
 import yaml
+from typing import List, Callable, Union, Any
 
 from src.utilities.paths import aggregation_path, sheet_dir
 from src.utilities.helpers import format_currency
 from src.utilities.read_data import combined_df
 from src.read_config.custom_aggregations import custom_aggregations
-
-from typing import List, Callable, Union
-
 
 class AggregationDriver:
     """
@@ -90,14 +88,22 @@ class AggregationDriver:
         out = {}
 
         to_title = lambda s: s.replace("_", " ").title()
-        format_out = lambda v: format_currency(v) if isinstance(v, float) else v
+
+        def format_out(val: Any) -> Any:
+            if isinstance(val, dict):
+                return {k: format_out(v) for k, v in val.items()}
+            
+            if isinstance(val, float):
+                return format_currency(val)
+            
+            return val
 
         for path in self._get_agg_files():
             for func in self._get_agg_funcs(path):
                 out[to_title(func.__name__)] = format_out(func(spending))
 
-        for title, agg_val in zip(*custom_aggregations(spending)):
+        for title, agg_val in custom_aggregations(spending).items():
             out[to_title(title)] = format_out(agg_val)
 
         with open(aggregation_path(), "w") as f:
-            yaml.dump(out, f, default_flow_style=False)
+            yaml.dump(out, f, default_flow_style=False, sort_keys=False)

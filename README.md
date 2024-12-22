@@ -87,7 +87,7 @@ The structure is similar to the `plots` dictionary. Each aggregation will summar
 
 The allowed values for `func` are any of the methods of a [Pandas Series](https://pandas.pydata.org/docs/reference/api/pandas.Series.html), but only those that don't take an argument will work. Common values are `sum`, `any`, `all`, and `mean`. In addition `func` can equal `count`, at which point the `column` key is not needed and will not be used.
 
-This value of the `Column` parameter will be the column selected from the data for aggregation. 
+This value of the `column` parameter will be the column selected from the data for aggregation. If the `divide` key is provided and set to True, the resulting total will be grouped weekly, monthly, and yearly.
 
 The key for each aggregation in `config.yml` will be converted to a title and be a key in `data/{year}/aggregation.yml`.
 

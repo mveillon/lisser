@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Any
 import pandas as pd
+import math
+
+from src.utilities.column import Column
 
 
 @dataclass
@@ -16,6 +19,7 @@ class AggFunction:
     """
 
     func: str
+    divide: bool = False
     column: str = None
 
     def aggregate(self, df: pd.DataFrame) -> Any:
@@ -34,4 +38,18 @@ class AggFunction:
         if self.column is None:
             raise ValueError("Column must be provided.")
 
-        return df[self.column].__getattr__(self.func)()
+        res = df[self.column].__getattr__(self.func)().item()
+
+        num_days = (df[Column.DATE.value].max() - df[Column.DATE.value].min()).days
+        if self.divide:
+            divisors = {
+                "total": 1,
+                "yearly": num_days / 365,
+                "monthly": num_days / (365 / 12),
+                "weekly": num_days / 7,
+            }
+
+            return {k: res / v for k, v in divisors.items()}
+
+        else:
+            return res
