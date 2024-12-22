@@ -1,0 +1,61 @@
+plots:
+  bills_over_time:
+    timeframe: yearly
+    title: "Money spent on bills over time"
+    lines:
+      - filters:
+        - column: Category
+          operator: "="
+          value: Bills
+        style: b
+        label: bills
+      - filters: []
+        style: g
+        label: total
+
+  food_over_time:
+    timeframe: yearly
+    title: "Money spent on food over time"
+    lines:
+      - filters:
+        - column: "Is Food"
+          operator: "="
+          value: 1
+        style: b
+
+  groceries_over_time:
+    timeframe: yearly
+    title: "Money spent on groceries over time"
+    lines:
+      - filters:
+        - column: Category
+          operator: "="
+          value: Groceries
+        style: b
+
+aggregations:
+  coffees_bought:
+    filters:
+      - column: Description
+        operator: icontains
+        value: coffee
+    agg:
+      func: count
+
+  spent_on_coffee:
+    filters:
+      - column: Description
+        operator: icontains
+        value: coffee
+    agg:
+      func: sum
+      column: Price
+
+  spent_on_gas:
+    filters:
+      - column: Description
+        operator: "="
+        value: Gas
+    agg:
+      func: sum
+      column: Price
