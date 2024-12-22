@@ -31,7 +31,7 @@ def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
 
         if len(agg_data["filters"]) > 0:
             conjunction = reduce(
-                __or__ if data.get("disjunction", False) else __and__,
+                __or__ if agg_data.get("disjunction", False) else __and__,
                 map(lambda f: Filter(**f).filter_cond(df), agg_data["filters"]),
             )
 
