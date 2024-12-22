@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Any
 import pandas as pd
-import math
 
 from src.utilities.column import Column
 
@@ -14,6 +13,8 @@ class AggFunction:
     Attributes:
         func (str): which function to use for aggregation. Should be a method
             of pd.Series and should take no arguments
+        divide (bool): whether to divide the outcome into weekly, monthly, and yearly
+            chunks. Default is False.
         column (str): which column to aggregate. Default is None, which should only
             be used if `func` is "count"
     """

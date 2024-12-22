@@ -12,6 +12,7 @@ from src.utilities.helpers import format_currency
 from src.utilities.read_data import combined_df
 from src.read_config.custom_aggregations import custom_aggregations
 
+
 class AggregationDriver:
     """
     Class to perform all aggregations.
@@ -92,10 +93,10 @@ class AggregationDriver:
         def format_out(val: Any) -> Any:
             if isinstance(val, dict):
                 return {k: format_out(v) for k, v in val.items()}
-            
+
             if isinstance(val, float):
                 return format_currency(val)
-            
+
             return val
 
         for path in self._get_agg_files():

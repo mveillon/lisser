@@ -4,7 +4,7 @@ import pandas as pd
 from os.path import join
 
 from functools import reduce
-from operator import __and__
+from operator import __and__, __or__
 
 from src.read_config.line import Line
 from src.utilities.df_grouping import group_by_month, group_by_week
@@ -57,7 +57,8 @@ class Plot:
                 y_vals = []
                 for part in partitions:
                     conjunction = reduce(
-                        __and__, map(lambda f: f.filter_cond(part), line.filters)
+                        __or__ if line.disjunction else __and__,
+                        map(lambda f: f.filter_cond(part), line.filters),
                     )
                     y_vals.append(part.loc[conjunction][Column.PRICE.value].sum())
 

@@ -15,8 +15,11 @@ class Line:
         label (str): the label of the line in the legend. If empty, will not
             appear in the legend, which will only be there if at least one
             line has a label.
+        disjunction (bool): whether to combine the filters using OR instead
+            of AND. Default is False
     """
 
     filters: List[Filter]
     style: str = "b"
     label: str = ""
+    disjunction: bool = False
