@@ -10,7 +10,7 @@ First, clone the repository to your machine. `> git clone https://github.com/mve
 
 It is recommended to setup a virtual environment using something like Pyenv. Navigate to the `spending-tracking` directory and run the following command: `> python3 -m pip install -r requirements.txt && python3 initialize.py`.
 
-If you have `make` installed, you can also run `make init` instead of running `python3 initalize.py`.
+If you have `make` installed, you can also run `make init` instead.
 
 This will install all dependent libraries and create template files for you to populate. If you run this command more than once, it will prompt you before overwriting any files in case you've added any data. This can be disabled by adding the `-f` or `--force` flag to the python3 command.
 
@@ -24,7 +24,7 @@ Or if you have `make` installed, you can also run `> make run`.
 
 This will analyze one year of data. By default, this will be the year of the current local time, but this can be changed with the `-y {year}` or `--year={year}` option.
 
-*Note the `main.py` file also has a `-f` option because it uses the same function as the `installation.py` file, but this flag does nothing here.*
+*Note the `main.py` file also has a `-f` option because it uses the same function as the `initialize.py` file, but this flag does nothing here.*
 
 # Files
 
