@@ -9,7 +9,7 @@ from typing import List, Callable
 def get_funcs_from_module(path: str) -> List[Callable]:
     """
     Finds all public functions defined in the Python module
-    at `path`. Assumes `path` is domewhere in the cwd.
+    at `path`. Assumes `path` is somewhere in the cwd.
 
     Parameters:
         path (str): the path to the module
@@ -24,7 +24,7 @@ def get_funcs_from_module(path: str) -> List[Callable]:
     return [
         func
         for (name, func) in getmembers(import_module(mod_name), isfunction)
-        if not name.startswith("_") and (getfile(func)) == path_abs
+        if not name.startswith("_") and getfile(func) == path_abs
     ]
 
 
