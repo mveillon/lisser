@@ -3,6 +3,7 @@ from os import listdir, mkdir
 from os.path import join, exists, basename
 from shutil import rmtree
 from typing import List
+from pathlib import Path
 
 from src.utilities.paths import (
     sheet_dir,
@@ -15,15 +16,9 @@ from src.utilities.paths import (
 )
 from src.utilities.read_data import read_data, combined_df
 from src.utilities.helpers import find_big_bills
-
-from src.visualize.weekly.controllable_bars import controllable_bars
-from src.visualize.weekly.spent_by_category import spent_by_category
-from src.visualize.weekly.spent_by_week import spent_by_week
-
-from src.visualize.monthly.spent_by_month import spent_by_month
-from src.visualize.monthly.saved_over_time import saved_over_time
-from src.visualize.monthly.controllable_proportions_over_time import (
-    controllable_proportions_over_time,
+from src.utilities.get_funcs_from_module import (
+    get_funcs_from_module,
+    get_modules_from_folder,
 )
 
 from src.read_config.plotters_from_config import plotters_from_config, Plotter
@@ -50,6 +45,16 @@ class VisualizationDriver:
 
         self.monthlys, self.yearlys = plotters_from_config()
 
+        visualizers = Path(__file__).parent / "visualize"
+
+        for mod in get_modules_from_folder(str(visualizers / "monthly")):
+            for func in get_funcs_from_module(mod):
+                self.monthlys.append(func)
+
+        for mod in get_modules_from_folder(str(visualizers / "yearly")):
+            for func in get_funcs_from_module(mod):
+                self.yearlys.append(func)
+
     def _plot_df(self, df: pd.DataFrame, out_dir: str):
         """
         Makes a bunch of plots for the dataframe and puts them in the `out_dir`
@@ -66,9 +71,6 @@ class VisualizationDriver:
             out_dir += "/"
         if not exists(out_dir):
             mkdir(out_dir)
-        controllable_bars(df, out_dir)
-        spent_by_category(df, out_dir)
-        spent_by_week(df, out_dir)
 
         for m in self.monthlys:
             m(df, out_dir)
@@ -92,11 +94,8 @@ class VisualizationDriver:
         all_dfs = combined_df(sheet_dir())
         combined_path = join(plots_dir(), "Combined")
 
-        spent_by_month(all_dfs)
         plot_funcs = [
             self._plot_df,
-            saved_over_time,
-            controllable_proportions_over_time,
             *self.yearlys,
         ]
         for f in plot_funcs:

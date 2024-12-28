@@ -7,15 +7,15 @@ from os.path import join
 from src.calculations.monthly_spending import monthly_spending
 from src.utilities.helpers import monthly_income, format_currency
 from src.utilities.column import Column
-from src.utilities.paths import plots_dir
 
 
-def spent_by_month(df: pd.DataFrame):
+def spent_by_month(df: pd.DataFrame, out_dir: str):
     """
     Plots how much was spent each month using a line plot.
 
     Parameters:
         df (DataFrame): a Pandas DataFrame to plot
+        out_dir (str): the directory to put the plot in
 
     Returns:
         None
@@ -47,4 +47,4 @@ def spent_by_month(df: pd.DataFrame):
     for x_loc, y_loc in zip(inds, y):
         ax.annotate(format_currency(y_loc), (x_loc, y_loc))
 
-    plt.savefig(join(plots_dir(), "Combined", "per_month.png"))
+    plt.savefig(join(out_dir, "spent_per_month.png"))
