@@ -86,8 +86,8 @@ def add_spending_dir():
         shutil.copy("base_sheet.xlsx", untracked)
 
     current = date(parse_args().year, 1, 1)
-    today = date.today()
-    while current <= today:
+    end = min(date.today(), date(current.year, 12, 31))
+    while current <= end:
         this_month = join(dest, current.strftime("%B") + ".xlsx")
 
         if check_overwrite(this_month):
