@@ -24,7 +24,7 @@ def expenses_split(
         saved (float): how much was saved
     """
     control, not_control, income = controllable_proportions(
-        df, monthly_income=monthly_income
+        df, monthly_income=monthly_income,
     )
     to_perc = lambda f: round(100 * f, 2)
     if income == 0:
