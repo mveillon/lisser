@@ -32,19 +32,23 @@ The only files that the user will interact with are `config.yml` and all the fil
 
 ```bash
 ├── data
+├── ├── ...
 │   ├── 2024
 │       ├── plots
 │           ├── January             # plots for the month of January
 │           ├── February            # plots for the month of February
 │           ├── ...
+├──         ├── Combined            # plots for the whole year
 │       ├── spending
 │           ├── January.xlsx        # all spending for the month of January
 │           ├── February.xlsx       # all spending for the month of February
 │           ├── ...
+├──         ├── Untracked.xlsx      # large expenses to exclude from monthly calculations
 │       ├── aggregation.yml         # generated aggregations
 │       ├── income.txt              # how much money was earned this year
 │   ├── 2025
 │       ├── ...
+├── ├── ...
 ├── config.yml
 ```
 
@@ -56,7 +60,7 @@ First, `data/{year}/income.txt` should contain how much take-home money was made
 
 Secondly, each spreadsheet in `data/{year}/spending/{month}.xlsx` should have a row for every transaction in which the user spent money. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
 
-The `spending` folder also has an `untracked.xlsx` . This is meant for extremely large purchases and expenses; the kinds of transactions that you do once or twice a year and that would completely throw off the monthly graphs. Feel free to use this however much suits your lifestyle, or not at all.
+The `spending` folder also has an `Untracked.xlsx` . This is meant for extremely large purchases and expenses; the kinds of transactions that you do once or twice a year and that would completely throw off the monthly graphs. The transactions will be excluded from monthly calculations and certain yearly calculations. Feel free to use this however much suits your lifestyle, or not at all.
 
 ## Output
 
