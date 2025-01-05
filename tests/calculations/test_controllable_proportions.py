@@ -8,7 +8,9 @@ from tests.test_utils import sample_data
 def test_controllable_proportions():
     data = sample_data()
 
-    controllable, not_control, income = controllable_proportions(data)
+    controllable, not_control, income = controllable_proportions(
+        data, monthly_income=7750
+    )
 
     assert np.isclose(controllable, 255.36)
     assert np.isclose(not_control, 1265.53)

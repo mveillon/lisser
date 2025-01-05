@@ -31,8 +31,8 @@ def saved_per_month(df: pd.DataFrame, out_dir: str):
     fig = plt.figure()
     ax = fig.add_subplot()
 
-    plt.title("Savings By Month")
-    plt.ylabel("Total Saved")
+    plt.title("Saved By Month")
+    plt.ylabel("Saved that month")
 
     x = sorted(
         saved, key=lambda d: datetime.strptime(f"1 {d} {get_year()}", "%d %b %Y")

@@ -1,0 +1,24 @@
+name: Check Commit
+run-name: Checking ${{ github.sha }}
+on: [push]
+jobs:
+  check-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Setup Python
+        uses: actions/setup-python@main
+        with:
+          python-version: '3.12'
+      - name: Install Dependencies
+        run: python3 -m pip install -r requirements.txt
+      - name: Initialize
+        run: python3 initialize.py < /dev/null
+      - name: Check Formatting
+        run: python3 -m black --check src tests main.py initialize.py
+      - name: Linting
+        run: python3 -m flake8 src tests main.py initialize.py
+      - name: Tests
+        run: python3 -m pytest
