@@ -9,7 +9,7 @@ def expenses_split(
     df: pd.DataFrame, monthly_income: float = monthly_income()
 ) -> Tuple[float, float, float]:
     """
-    Returns what percentage of expenses were not controllable, controllable, blah blah blah
+    Returns what percentage of expenses were not controllable, controllable,
     and how much was put into savings. Should be about 50/30/20 because
     the economy is shit.
 
