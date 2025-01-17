@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from typing import Any
 import pandas as pd
 
-from src.utilities.column import Column
-
 
 @dataclass
 class AggFunction:
