@@ -8,7 +8,9 @@ This repository has only been tested with Python 3.12.7. Support for other versi
 
 First, clone the repository to your machine. `> git clone https://github.com/mveillon/spending-tracking.git`
 
-It is recommended to setup a virtual environment using something like Pyenv. Navigate to the `spending-tracking` directory and run the following command: `> python3 -m pip install -r requirements.txt && python3 initialize.py`.
+It is recommended, but not required, to setup a virtual environment using something like Pyenv. 
+
+To install the needed dependencies and setup the folder structure, navigate to the `spending-tracking` directory and run the following command: `> pip3 install -r requirements.txt && python3 initialize.py`.
 
 If you have `make` installed, you can also run `make init` instead.
 
@@ -32,27 +34,27 @@ The only files that the user will interact with are `config.yml` and all the fil
 
 ```bash
 ├── data
-├── ├── ...
+│   ├── ...
 │   ├── 2024
 │       ├── plots
 │           ├── January             # plots for the month of January
 │           ├── February            # plots for the month of February
 │           ├── ...
-├──         ├── Combined            # plots for the whole year
+│           ├── Combined            # plots for the whole year
 │       ├── spending
 │           ├── January.xlsx        # all spending for the month of January
 │           ├── February.xlsx       # all spending for the month of February
 │           ├── ...
-├──         ├── Untracked.xlsx      # large expenses to exclude from monthly calculations
+│           ├── Untracked.xlsx      # large expenses to exclude from monthly calculations
 │       ├── aggregation.yml         # generated aggregations
 │       ├── income.txt              # how much money was earned this year
 │   ├── 2025
 │       ├── ...
-├── ├── ...
+│   ├── ...
 ├── config.yml
 ```
 
-It is not neceesary to have a spreadsheet for every month of the year, but you shouldn't have any gaps in between months. You can start from April and/or end at October, but every month in between should have a spreadsheet.
+It is not necessary to have every month of the year, and there may be gaps in between months. Any gaps will be treated as if no money was spent that month.
 
 ## Input
 
@@ -105,6 +107,6 @@ The key for each aggregation in `config.yml` will be converted to a title and be
 
 One of the most useful features of this repo is normalizing spending using what I call "projection".
 
-Many subscriptions bill their users at the first of the month, and there are various other reasons why spending might consistently and predictably spike at certain points each month. Projected spending takes all rows where the Category is "Bills" and they're over a small threshold, and smooths out those expenses over the course of the entire month. This effectively lowers the total amount spent that week, and raises that of the other weeks.
+Many people have rent or other bills due on the first of the month, and there are various other reasons why spending might consistently and predictably spike at certain points each month. Projected spending takes all rows where the Category is "Bills" and they're over a small threshold, and smooths out those expenses over the course of the entire month. This effectively lowers the total amount spent that week, and raises that of the other weeks.
 
 It also prorates the total amount spent over seven days if the week is not complete.
