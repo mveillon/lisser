@@ -8,6 +8,7 @@ from typing import Callable, Any, Dict
 from src.utilities.paths import config_path
 from src.read_config.filter import Filter
 from src.read_config.agg_function import AggFunction
+from src.utilities.column import Column
 
 type AggFunc = Callable[[pd.DataFrame], Any]
 
@@ -25,6 +26,8 @@ def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
     with open(config_path(), "r") as c:
         data = yaml.safe_load(c)
 
+    num_days = max((df[Column.DATE.value].max() - df[Column.DATE.value].min()).days, 1)
+
     res = {}
     for agg in data["aggregations"]:
         agg_data = data["aggregations"][agg]
@@ -40,6 +43,6 @@ def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
         else:
             filtered = df
 
-        res[agg] = AggFunction(**agg_data["agg"]).aggregate(filtered)
+        res[agg] = AggFunction(**agg_data["agg"]).aggregate(filtered, num_days)
 
     return res
