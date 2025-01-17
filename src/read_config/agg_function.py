@@ -23,12 +23,13 @@ class AggFunction:
     divide: bool = False
     column: str = None
 
-    def aggregate(self, df: pd.DataFrame) -> Any:
+    def aggregate(self, df: pd.DataFrame, num_days: int) -> Any:
         """
         Aggregates the DataFrame based on the attributes.
 
         Parameters:
-            df (DataFrame): the Pandas DataFrame to aggregate
+            df (DataFrame): the filtered Pandas DataFrame to aggregate
+            num_days (int): over how many days the total span of data was
 
         Returns:
             agg_value (Any): the value of the aggregation
@@ -41,7 +42,6 @@ class AggFunction:
 
         res = df[self.column].__getattr__(self.func)().item()
 
-        num_days = (df[Column.DATE.value].max() - df[Column.DATE.value].min()).days
         if self.divide:
             divisors = {
                 "total": 1,
