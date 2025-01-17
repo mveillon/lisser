@@ -4,7 +4,6 @@ from os.path import join
 from sankeyflow import Sankey
 import matplotlib.pyplot as plt
 
-from src.aggregations.total_saved import total_saved
 from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
 
 from src.utilities.read_data import read_data
@@ -27,7 +26,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
     total_spent = df[Column.PRICE.value].sum()
 
     flow = {
-        "Saved": total_saved(df),
+        "Saved": estimated_income_after_tax(df) - total_spent,
         "Controllable": {"Other": 0},
         "Not Controllable": {"Food": {}, "Other": 0},
     }
