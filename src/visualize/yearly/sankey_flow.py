@@ -5,10 +5,14 @@ from sankeyflow import Sankey
 import matplotlib.pyplot as plt
 
 from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
-
 from src.utilities.read_data import read_data
 from src.utilities.paths import untracked_path, get_year
 from src.utilities.column import Column
+from src.utilities.dictionary_ops import (
+    NestedDict,
+    nodes_from_dict,
+    flow_array_from_dict,
+)
 
 
 def sankey_flow(df: pd.DataFrame, out_dir: str):
@@ -25,7 +29,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
     df = pd.concat([df, read_data(untracked_path())])
     total_spent = df[Column.PRICE.value].sum()
 
-    flow = {
+    flow: NestedDict = {
         "Saved": estimated_income_after_tax(df) - total_spent,
         "Controllable": {"Other": 0},
         "Not Controllable": {"Food": {}, "Other": 0},
@@ -37,6 +41,9 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
         this_cat = df.loc[df[Column.CATEGORY.value] == cat]
         cat_spent = this_cat[Column.PRICE.value].sum()
         is_other = cat_spent < total_spent * 0.05
+        control_key = (
+            "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
+        )
 
         cat_t = cat.title()
         if round(this_cat[Column.IS_FOOD.value].mean()) == 1:
@@ -44,68 +51,19 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
                 flow["Not Controllable"]["Food"].get(cat_t, 0) + cat_spent
             )
 
-        elif round(controllable_prop) == 1:
-            if is_other:
-                flow["Controllable"]["Other"] += cat_spent
-            else:
-                flow["Controllable"][cat_t] = (
-                    flow["Controllable"].get(cat_t, 0) + cat_spent
-                )
-
         else:
             if is_other:
-                flow["Not Controllable"]["Other"] += cat_spent
+                flow[control_key]["Other"] += cat_spent
             else:
-                flow["Not Controllable"][cat_t] = (
-                    flow["Not Controllable"].get(cat_t, 0) + cat_spent
-                )
+                flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
 
-    sub_dict_sum = lambda d: (
-        sum(map(sub_dict_sum, d.values())) if isinstance(d, dict) else d
-    )
-
-    dict_to_node_list = lambda d: [
-        (cat, sub_dict_sum(branch)) for cat, branch in d.items()
-    ]
-
-    not_other = lambda d: {k: v for k, v in d.items() if k != "Other"}
-
-    nodes = [
-        [("Income", estimated_income_after_tax(df))],
-        [
-            ("Saved", sub_dict_sum(flow["Saved"])),
-            ("Controllable", sub_dict_sum(flow["Controllable"])),
-            ("Not Controllable", sub_dict_sum(flow["Not Controllable"])),
-        ],
-        dict_to_node_list(not_other(flow["Controllable"]))
-        + [
-            (
-                "Other",
-                flow["Controllable"]["Other"] + flow["Not Controllable"]["Other"],
-            )
-        ]
-        + dict_to_node_list(not_other(flow["Not Controllable"])),
-        dict_to_node_list(flow["Not Controllable"]["Food"]),
-    ]
+    nodes = [[("Income", estimated_income_after_tax(df))], *nodes_from_dict(flow)]
 
     flows = [
         ("Income", "Saved", nodes[1][0][1], {"flow_color_mode": "source"}),
         ("Income", "Controllable", nodes[1][1][1], {"flow_color_mode": "source"}),
         ("Income", "Not Controllable", nodes[1][2][1], {"flow_color_mode": "source"}),
-        *[
-            ("Controllable", cat, sub_dict_sum(d))
-            for cat, d in not_other(flow["Controllable"]).items()
-        ],
-        ("Controllable", "Other", flow["Controllable"]["Other"]),
-        ("Not Controllable", "Other", flow["Not Controllable"]["Other"]),
-        *[
-            ("Not Controllable", cat, sub_dict_sum(d))
-            for cat, d in not_other(flow["Not Controllable"]).items()
-        ],
-        *[
-            ("Food", cat, sub_dict_sum(d))
-            for cat, d in flow["Not Controllable"]["Food"].items()
-        ],
+        *flow_array_from_dict(flow),
     ]
 
     plt.clf()
