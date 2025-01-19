@@ -47,6 +47,13 @@ def _not_other(d: Dict[str, NestedDict]) -> NestedDict:
     return {k: v for k, v in d.items() if k != "Other"}
 
 
+def _filter_zeros(lst: List[Tuple], cost_ind: int) -> List[Tuple]:
+    """
+    Filters out the tuples with a zero at cost_ind.
+    """
+    return [t for t in lst if t[cost_ind] > 0]
+
+
 def nodes_from_dict(flow_dict: NestedDict) -> List[List[Node]]:
     """
     Returns the nodes, in the format expected from the sankeyflow module,
@@ -60,23 +67,29 @@ def nodes_from_dict(flow_dict: NestedDict) -> List[List[Node]]:
         nodes (List[List[Node]]): the flow in the format
             expected from sankeyflow
     """
-    return [
-        [
-            ("Saved", dictionary_sum(flow_dict["Saved"])),
-            ("Controllable", dictionary_sum(flow_dict["Controllable"])),
-            ("Not Controllable", dictionary_sum(flow_dict["Not Controllable"])),
-        ],
-        _dict_to_node_list(_not_other(flow_dict["Controllable"]))
-        + [
-            (
-                "Other",
-                flow_dict["Controllable"]["Other"]
-                + flow_dict["Not Controllable"]["Other"],
-            )
-        ]
-        + _dict_to_node_list(_not_other(flow_dict["Not Controllable"])),
-        _dict_to_node_list(flow_dict["Not Controllable"]["Food"]),
-    ]
+
+    return list(
+        map(
+            lambda lst: _filter_zeros(lst, 1),
+            [
+                [
+                    ("Saved", dictionary_sum(flow_dict["Saved"])),
+                    ("Controllable", dictionary_sum(flow_dict["Controllable"])),
+                    ("Not Controllable", dictionary_sum(flow_dict["Not Controllable"])),
+                ],
+                _dict_to_node_list(_not_other(flow_dict["Controllable"]))
+                + [
+                    (
+                        "Other",
+                        flow_dict["Controllable"]["Other"]
+                        + flow_dict["Not Controllable"]["Other"],
+                    )
+                ]
+                + _dict_to_node_list(_not_other(flow_dict["Not Controllable"])),
+                _dict_to_node_list(flow_dict["Not Controllable"]["Food"]),
+            ],
+        )
+    )
 
 
 def flow_array_from_dict(flow_dict: NestedDict) -> List[Flow]:
@@ -90,19 +103,24 @@ def flow_array_from_dict(flow_dict: NestedDict) -> List[Flow]:
     Returns:
         flow_arr (List[NestedDict]): the flow as an array of tuples
     """
-    return [
-        *[
-            ("Controllable", cat, dictionary_sum(d))
-            for cat, d in _not_other(flow_dict["Controllable"]).items()
+    return _filter_zeros(
+        [
+            *[
+                ("Controllable", cat, dictionary_sum(d))
+                for cat, d in _not_other(flow_dict["Controllable"]).items()
+            ],
+            *[
+                (control_key, "Other", flow_dict[control_key]["Other"])
+                for control_key in ["Controllable", "Not Controllable"]
+            ],
+            *[
+                ("Not Controllable", cat, dictionary_sum(d))
+                for cat, d in _not_other(flow_dict["Not Controllable"]).items()
+            ],
+            *[
+                ("Food", cat, dictionary_sum(d))
+                for cat, d in flow_dict["Not Controllable"]["Food"].items()
+            ],
         ],
-        ("Controllable", "Other", flow_dict["Controllable"]["Other"]),
-        ("Not Controllable", "Other", flow_dict["Not Controllable"]["Other"]),
-        *[
-            ("Not Controllable", cat, dictionary_sum(d))
-            for cat, d in _not_other(flow_dict["Not Controllable"]).items()
-        ],
-        *[
-            ("Food", cat, dictionary_sum(d))
-            for cat, d in flow_dict["Not Controllable"]["Food"].items()
-        ],
-    ]
+        2,
+    )

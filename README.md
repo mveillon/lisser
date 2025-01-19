@@ -47,7 +47,6 @@ The only files that the user will interact with are `config.yml` and all the fil
 │           ├── ...
 │           ├── Untracked.xlsx      # large expenses to exclude from monthly calculations
 │       ├── aggregation.yml         # generated aggregations
-│       ├── income.txt              # how much money was earned this year
 │   ├── 2025
 │       ├── ...
 │   ├── ...
@@ -58,9 +57,7 @@ It is not necessary to have every month of the year, and there may be gaps in be
 
 ## Input
 
-First, `data/{year}/income.txt` should contain how much take-home money was made, or is expected to make, for that full year.
-
-Secondly, each spreadsheet in `data/{year}/spending/{month}.xlsx` should have a row for every transaction in which the user spent money. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+Each spreadsheet in `data/{year}/spending/{month}.xlsx` should have a row for every transaction in which the user spent money. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
 
 The `spending` folder also has an `Untracked.xlsx` . This is meant for extremely large purchases and expenses; the kinds of transactions that you do once or twice a year and that would completely throw off the monthly graphs. The transactions will be excluded from monthly calculations and certain yearly calculations. Feel free to use this however much suits your lifestyle, or not at all.
 
@@ -76,6 +73,14 @@ There are also aggregations done on the full year of data. These are found at `d
 # Configuration
 
 Additional plots and aggregations can be added to the `config.yml` file. There are also some built-in ones that can be removed or changed as desired.
+
+## Globals
+
+There are a few global variables that can be configured.
+
+- `YEARLY_TAKE_HOME_PAY`: how much take-home pay you had for each year you have spending data.
+- `SANKEY_OTHER_THRESHOLD`: the proportion of the yearly income that the spending in a category has to exceed to not be put in the "Other" category.
+- `PROJECTED_SPENDING_BILL_THRESHOLD`: at what price threshold bills are filtered out from weekly samples at averaged out over the whole month.
 
 ## Plots
 

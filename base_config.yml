@@ -1,3 +1,10 @@
+globals:
+  YEARLY_TAKE_HOME_PAY:
+    "2024": 65000
+    "2025": 68000
+  SANKEY_OTHER_THRESHOLD: 0.03
+  PROJECTED_SPENDING_BILL_THRESHOLD: 100
+
 plots:
   bills_over_time:
     timeframe: yearly
