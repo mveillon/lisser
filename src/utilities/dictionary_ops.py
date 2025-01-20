@@ -11,7 +11,7 @@ def dictionary_sum(d: NestedDict) -> Number:
     Recursively sums the numeric leaves of the dictionary. The
     leaves are not required to al be numeric.
 
-    Params:
+    Parameters:
         d (nested_dict): the tree of numbers
 
     Returns:
@@ -60,7 +60,7 @@ def nodes_from_dict(flow_dict: NestedDict) -> List[List[Node]]:
     from a nested dictionary representing the tree. Does not include the
     source layer.
 
-    Params:
+    Parameters:
         flow (NestedDict): a tree of money spent
 
     Returns:
@@ -97,7 +97,7 @@ def flow_array_from_dict(flow_dict: NestedDict) -> List[Flow]:
     Converts the flow dictionary into a list of flows as expected from the
     sankeyflow module. Does not include source flows.
 
-    Params:
+    Parameters:
         flow_dict (NestedDict): the tree of spending
 
     Returns:
@@ -124,3 +124,33 @@ def flow_array_from_dict(flow_dict: NestedDict) -> List[Flow]:
         ],
         2,
     )
+
+
+def recursive_merge(d1: Dict[str, Any], d2: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Recursively merges `d2` into `d1`, keeping all keys from `d1`, but adding
+    and preferring all key/value pairs in `d2`. `d1` is merged in place.
+
+    Parameters:
+        d1 (Dict[str, Any]): a potentially nested dictionary. Will be updated by this
+            operation
+        d2 (Dict[str, Any]): a potentially nested citionary whose values will be
+            preferred
+
+    Returns:
+        None
+    """
+    for k, new_val in d2.items():
+        if new_val == {}:
+            continue
+        if isinstance(new_val, dict) and k in d1:
+            if not isinstance(d1[k], dict):
+                raise ValueError(
+                    "YAML merge error. "
+                    + f"Key `{k}` is dictionary in overwrite but not base."
+                )
+
+            recursive_merge(d1[k], new_val)
+
+        else:
+            d1[k] = new_val

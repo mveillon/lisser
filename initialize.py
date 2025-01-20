@@ -33,9 +33,9 @@ def check_overwrite(dest: str) -> bool:
     )
 
 
-def copy_config():
+def init_config():
     """
-    Copies the base_config.yml file to config.yml.
+    Initialize the config.yml file.
 
     Parameters:
         None
@@ -46,24 +46,16 @@ def copy_config():
     dest = config_path()
 
     if check_overwrite(dest):
-        shutil.copy("base_config.yml", dest)
-
-
-def add_income_file():
-    """
-    Creates the income file for this year.
-
-    Paramters:
-        None
-
-    Returns:
-        None
-    """
-    dest = income_path()
-
-    if check_overwrite(dest):
         with open(dest, "w") as out:
-            out.write("65000")
+            out.write(
+                "\n\n".join(
+                    (
+                        "globals: {}",
+                        "plots: {}",
+                        "aggregations: {}",
+                    )
+                )
+            )
 
 
 def add_spending_dir():
@@ -78,8 +70,6 @@ def add_spending_dir():
     """
     dest = sheet_dir()
     makedirs(dest, exist_ok=True)
-
-    add_income_file()
 
     untracked = untracked_path()
     if check_overwrite(untracked):
@@ -100,5 +90,5 @@ def add_spending_dir():
 
 
 if __name__ == "__main__":
-    copy_config()
+    init_config()
     add_spending_dir()

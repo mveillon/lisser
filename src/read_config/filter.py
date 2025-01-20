@@ -3,7 +3,7 @@ from typing import Literal, Any, Callable
 import pandas as pd
 from operator import __eq__, __gt__, __lt__, __ge__, __le__
 
-type OperatorFunction = Callable[[pd.Series, Any], pd.Series]
+OperatorFunction = Callable[[pd.Series, Any], pd.Series]
 
 
 @dataclass

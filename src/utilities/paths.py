@@ -165,4 +165,17 @@ def config_path() -> str:
     Returns:
         path (str): the path to the config file
     """
-    return "config.yml"
+    return "config_overwrite.yml"
+
+
+def base_config() -> str:
+    """
+    Returns the path to the base_config.
+
+    Parameters:
+        None
+
+    Returns:
+        path (str): the path to base_config.yml
+    """
+    return "base_config.yml"
