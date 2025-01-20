@@ -21,9 +21,9 @@ def controllable_proportions(
         not_controllable (float): how much is not controllable
         total_income (float): how much money was made in that period
     """
-    control_sum = df.loc[df[Column.CONTROLLABLE.value]][Column.PRICE.value].sum()
-    not_control_sum = df.loc[~df[Column.CONTROLLABLE.value]][Column.PRICE.value].sum()
+    control_sum = df.loc[df[Column.CONTROLLABLE]][Column.PRICE].sum()
+    not_control_sum = df.loc[~df[Column.CONTROLLABLE]][Column.PRICE].sum()
 
-    total_days = (df[Column.DATE.value].max() - df[Column.DATE.value].min()).days
+    total_days = (df[Column.DATE].max() - df[Column.DATE].min()).days
     total_income = monthly_income * (total_days * 12 / 365)
     return control_sum, not_control_sum, total_income

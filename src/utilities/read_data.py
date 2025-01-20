@@ -23,21 +23,20 @@ def read_data(path: str) -> pd.DataFrame:
         path,
         sheet_name="Sheet1",
         header=0,
+        # usecols=[*Column],
         dtype={
-            Column.DATE.value: "str",
-            Column.DESCRIPTION.value: "str",
-            Column.VENDOR.value: "str",
-            Column.CATEGORY.value: "str",
-            Column.PRICE.value: "float",
-            Column.IS_FOOD.value: "int",
-            Column.CONTROLLABLE.value: "int",
+            Column.DATE: "str",
+            Column.DESCRIPTION: "str",
+            Column.VENDOR: "str",
+            Column.CATEGORY: "str",
+            Column.PRICE: "float",
+            Column.IS_FOOD: "int",
+            Column.CONTROLLABLE: "int",
         },
     )
-    df[Column.DATE.value] = pd.to_datetime(
-        df[Column.DATE.value], format="%Y-%m-%d %H:%M:%S"
-    )
-    df[Column.IS_FOOD.value] = df[Column.IS_FOOD.value].astype("boolean")
-    df[Column.CONTROLLABLE.value] = df[Column.CONTROLLABLE.value].astype("boolean")
+    df[Column.DATE] = pd.to_datetime(df[Column.DATE], format="%Y-%m-%d %H:%M:%S")
+    df[Column.IS_FOOD] = df[Column.IS_FOOD].astype("boolean")
+    df[Column.CONTROLLABLE] = df[Column.CONTROLLABLE].astype("boolean")
 
     if df.shape[0] == 0:
         return pd.DataFrame(
@@ -66,18 +65,16 @@ def _read_numbers(path: str) -> pd.DataFrame:
         csv_path,
         header=0,
         dtype={
-            Column.DATE.value: "str",
-            Column.DESCRIPTION.value: "str",
-            Column.VENDOR.value: "str",
-            Column.CATEGORY.value: "str",
-            Column.PRICE.value: "float",
-            Column.IS_FOOD.value: "boolean",
-            Column.CONTROLLABLE.value: "boolean",
+            Column.DATE: "str",
+            Column.DESCRIPTION: "str",
+            Column.VENDOR: "str",
+            Column.CATEGORY: "str",
+            Column.PRICE: "float",
+            Column.IS_FOOD: "boolean",
+            Column.CONTROLLABLE: "boolean",
         },
     )
-    df[Column.DATE.value] = pd.to_datetime(
-        df[Column.DATE.value], format="%Y-%m-%d %H:%M:%S%z"
-    )
+    df[Column.DATE] = pd.to_datetime(df[Column.DATE], format="%Y-%m-%d %H:%M:%S%z")
     return df
 
 

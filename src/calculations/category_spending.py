@@ -21,12 +21,12 @@ def category_spending(
         categories (Dict[str, float]): mapping from category name to how much
             was spent on that category
     """
-    totals = df.groupby([Column.CATEGORY.value])[Column.PRICE.value].sum()
+    totals = df.groupby([Column.CATEGORY])[Column.PRICE].sum()
 
     # we add one so the range is inclusive of both ends
-    num_days = (df[Column.DATE.value].max() - df[Column.DATE.value].min()).days + 1
+    num_days = (df[Column.DATE].max() - df[Column.DATE].min()).days + 1
     prorated_income = num_days * income * 12 / 365
 
     x = list(totals.index) + ["Total spent", "Income"]
-    y = list(totals.values) + [df[Column.PRICE.value].sum(), prorated_income]
+    y = list(totals.values) + [df[Column.PRICE].sum(), prorated_income]
     return dict(zip(x, y))

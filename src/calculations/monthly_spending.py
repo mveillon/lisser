@@ -19,8 +19,8 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
         monthly_spending (Dict[str, float]): mapping from month name to
             how much was spent that month
     """
-    current: date = df[Column.DATE.value].min().date()
-    end: date = df[Column.DATE.value].max().date()
+    current: date = df[Column.DATE].min().date()
+    end: date = df[Column.DATE].max().date()
     res = {}
     fmt = "%Y/%m/%d"
 
@@ -35,7 +35,7 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
         if next_date > end:
             spent = projected_spending(df, month_str, filter_big_bills=False)
         else:
-            spent = month_df[Column.PRICE.value].sum()
+            spent = month_df[Column.PRICE].sum()
 
         res[current.strftime("%b")] = spent
         current = next_date

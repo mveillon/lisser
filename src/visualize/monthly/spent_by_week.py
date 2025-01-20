@@ -22,7 +22,7 @@ def spent_by_week(df: pd.DataFrame, out_dir: str, income: int = monthly_income()
     Returns:
         None
     """
-    weeks = get_weeks(df[Column.DATE.value].min(), df[Column.DATE.value].max())
+    weeks = get_weeks(df[Column.DATE].min(), df[Column.DATE].max())
     avgs = weekly_projection(df)
     income_arr = np.full(len(avgs), income)
     avg_arr = np.full(len(avgs), np.average(avgs))

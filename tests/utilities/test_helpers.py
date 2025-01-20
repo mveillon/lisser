@@ -52,5 +52,5 @@ def test_time_filter():
 
     filt = time_filter(data, start.strftime(fmt), end.strftime(fmt))
 
-    assert filt[Column.DATE.value].min().date() >= start
-    assert filt[Column.DATE.value].max().date() <= end
+    assert filt[Column.DATE].min().date() >= start
+    assert filt[Column.DATE].max().date() <= end

@@ -105,18 +105,15 @@ def find_big_bills():
     res = {}
     df = combined_df(sheet_dir())
     big_bills = df.loc[
-        (
-            df[Column.PRICE.value]
-            >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"]
-        )
-        & (df[Column.CATEGORY.value] == "Bills")
+        (df[Column.PRICE] >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"])
+        & (df[Column.CATEGORY] == "Bills")
     ]
     for _, bill in big_bills.reset_index().iterrows():
-        month = bill[Column.DATE.value].strftime("%B")
+        month = bill[Column.DATE].strftime("%B")
         if month in res:
-            res[month][bill[Column.DESCRIPTION.value]] = bill[Column.PRICE.value]
+            res[month][bill[Column.DESCRIPTION]] = bill[Column.PRICE]
         else:
-            res[month] = {bill[Column.DESCRIPTION.value]: bill[Column.PRICE.value]}
+            res[month] = {bill[Column.DESCRIPTION]: bill[Column.PRICE]}
 
     with open(join(staging_dir(), "bills.json"), "w") as out:
         json.dump(res, out)
@@ -136,6 +133,4 @@ def time_filter(df: pd.DataFrame, min_date: str, max_date: str) -> pd.DataFrame:
     Returns:
         df (DataFrame): `df` filtered to be between `min_date` and `max_date`
     """
-    return df.loc[
-        (df[Column.DATE.value] >= min_date) & (df[Column.DATE.value] < max_date)
-    ]
+    return df.loc[(df[Column.DATE] >= min_date) & (df[Column.DATE] < max_date)]

@@ -47,9 +47,7 @@ def compare_months(
 
     cats_1 = category_spending(df_1, income=income)
 
-    num_weeks = (
-        df_1[Column.DATE.value].max() - df_1[Column.DATE.value].min()
-    ).days // 7
+    num_weeks = (df_1[Column.DATE].max() - df_1[Column.DATE].min()).days // 7
 
     if month_2:
         df_2 = read_data(join(sheet_dir(), month_2 + ".xlsx"))
