@@ -3,7 +3,7 @@ from os.path import exists, join
 from os import makedirs
 from datetime import date, timedelta
 
-from src.utilities.paths import config_path, income_path, sheet_dir, untracked_path
+from src.utilities.paths import config_path, sheet_dir, untracked_path
 from src.utilities.parse_args import parse_args
 
 
@@ -35,7 +35,7 @@ def check_overwrite(dest: str) -> bool:
 
 def init_config():
     """
-    Initialize the config.yml file.
+    Initialize the config_overwrite.yml file.
 
     Parameters:
         None

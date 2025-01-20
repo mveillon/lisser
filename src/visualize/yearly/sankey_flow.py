@@ -62,8 +62,8 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
 
     flows = [
         *[
-            ("Income", dest, nodes[1][i][1], {"flow_color_mode": "source"})
-            for i, dest in enumerate(flow)
+            ("Income", node[0], node[1], {"flow_color_mode": "source"})
+            for node in nodes[1]
         ],
         *flow_array_from_dict(flow),
     ]

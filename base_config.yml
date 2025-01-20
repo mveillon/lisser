@@ -30,20 +30,6 @@ plots:
           value: 1
         style: b
 
-  groceries_over_time:
-    timeframe: yearly
-    title: "Money spent on groceries over time"
-    lines:
-      - filters:
-        - column: Category
-          operator: "="
-          value: Groceries
-        - column: Description
-          operator: "="
-          value: Groceries
-        style: b
-        disjunction: False
-
 aggregations:
   coffees_bought:
     filters:

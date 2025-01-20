@@ -141,8 +141,6 @@ def recursive_merge(d1: Dict[str, Any], d2: Dict[str, Any]) -> Dict[str, Any]:
         None
     """
     for k, new_val in d2.items():
-        if new_val == {}:
-            continue
         if isinstance(new_val, dict) and k in d1:
             if not isinstance(d1[k], dict):
                 raise ValueError(

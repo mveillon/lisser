@@ -142,19 +142,6 @@ def aggregation_path() -> str:
     return join(this_years_data(), "aggregation.yml")
 
 
-def income_path() -> str:
-    """
-    Returns the path to the income file.
-
-    Parameters:
-        None
-
-    Returns:
-        path (str): the path to the income file
-    """
-    return join(this_years_data(), "income.txt")
-
-
 def config_path() -> str:
     """
     Returns the path to the config file.
