@@ -146,7 +146,7 @@ def config_path() -> str:
     """
     Returns the path to the config file.
 
-    Paramters:
+    Parameters:
         None
 
     Returns:

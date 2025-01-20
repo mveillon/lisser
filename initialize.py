@@ -12,7 +12,7 @@ def check_overwrite(dest: str) -> bool:
     Checks with the user on the CLI before overwriting files,
     unless the --force option is enabled.
 
-    Paramters:
+    Parameters:
         dest (str): the destination path
 
     Returns:
