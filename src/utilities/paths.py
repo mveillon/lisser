@@ -142,27 +142,27 @@ def aggregation_path() -> str:
     return join(this_years_data(), "aggregation.yml")
 
 
-def income_path() -> str:
+def config_path() -> str:
     """
-    Returns the path to the income file.
+    Returns the path to the config file.
 
     Parameters:
         None
 
     Returns:
-        path (str): the path to the income file
+        path (str): the path to the config file
     """
-    return join(this_years_data(), "income.txt")
+    return "config_overwrite.yml"
 
 
-def config_path() -> str:
+def base_config() -> str:
     """
-    Returns the path to the config file.
+    Returns the path to the base_config.
 
-    Paramters:
+    Parameters:
         None
 
     Returns:
-        path (str): the path to the config file
+        path (str): the path to base_config.yml
     """
-    return "config.yml"
+    return "base_config.yml"

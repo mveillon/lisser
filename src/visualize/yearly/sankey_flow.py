@@ -13,6 +13,7 @@ from src.utilities.dictionary_ops import (
     nodes_from_dict,
     flow_array_from_dict,
 )
+from src.read_config.config_globals import config_globals
 
 
 def sankey_flow(df: pd.DataFrame, out_dir: str):
@@ -40,29 +41,30 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
     for cat, controllable_prop in cats.items():
         this_cat = df.loc[df[Column.CATEGORY.value] == cat]
         cat_spent = this_cat[Column.PRICE.value].sum()
-        is_other = cat_spent < total_spent * 0.05
+        cat_t = (
+            cat.title()
+            if cat_spent > total_spent * config_globals()["SANKEY_OTHER_THRESHOLD"]
+            else "Other"
+        )
         control_key = (
             "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
         )
 
-        cat_t = cat.title()
         if round(this_cat[Column.IS_FOOD.value].mean()) == 1:
             flow["Not Controllable"]["Food"][cat_t] = (
                 flow["Not Controllable"]["Food"].get(cat_t, 0) + cat_spent
             )
 
         else:
-            if is_other:
-                flow[control_key]["Other"] += cat_spent
-            else:
-                flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
+            flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
 
     nodes = [[("Income", estimated_income_after_tax(df))], *nodes_from_dict(flow)]
 
     flows = [
-        ("Income", "Saved", nodes[1][0][1], {"flow_color_mode": "source"}),
-        ("Income", "Controllable", nodes[1][1][1], {"flow_color_mode": "source"}),
-        ("Income", "Not Controllable", nodes[1][2][1], {"flow_color_mode": "source"}),
+        *[
+            ("Income", node[0], node[1], {"flow_color_mode": "source"})
+            for node in nodes[1]
+        ],
         *flow_array_from_dict(flow),
     ]
 

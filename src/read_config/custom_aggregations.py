@@ -1,16 +1,15 @@
-import yaml
 import pandas as pd
 from functools import reduce
 from operator import __and__, __or__
 
 from typing import Callable, Any, Dict
 
-from src.utilities.paths import config_path
 from src.read_config.filter import Filter
 from src.read_config.agg_function import AggFunction
+from src.read_config.get_config import get_config
 from src.utilities.column import Column
 
-type AggFunc = Callable[[pd.DataFrame], Any]
+AggFunc = Callable[[pd.DataFrame], Any]
 
 
 def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
@@ -23,14 +22,13 @@ def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
     Returns:
         aggs (Dict[str, Any]): a mapping of agg name to value
     """
-    with open(config_path(), "r") as c:
-        data = yaml.safe_load(c)
+    data = get_config()["aggregations"]
 
     num_days = max((df[Column.DATE.value].max() - df[Column.DATE.value].min()).days, 1)
 
     res = {}
-    for agg in data["aggregations"]:
-        agg_data = data["aggregations"][agg]
+    for agg in data:
+        agg_data = data[agg]
 
         if len(agg_data["filters"]) > 0:
             conjunction = reduce(

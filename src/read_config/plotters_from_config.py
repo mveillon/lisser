@@ -1,4 +1,3 @@
-import yaml
 import pandas as pd
 
 from typing import Callable, Tuple, List
@@ -6,9 +5,9 @@ from typing import Callable, Tuple, List
 from src.read_config.plot import Plot
 from src.read_config.filter import Filter
 from src.read_config.line import Line
-from src.utilities.paths import config_path
+from src.read_config.get_config import get_config
 
-type Plotter = Callable[[pd.DataFrame, str]]
+Plotter = Callable[[pd.DataFrame, str], None]
 
 
 def _read_convert_plots() -> List[Plot]:
@@ -21,14 +20,13 @@ def _read_convert_plots() -> List[Plot]:
     Returns:
         plots (List[Plot]): a list of converted plots
     """
-    with open(config_path(), "r") as c:
-        data = yaml.safe_load(c)
+    data = get_config()["plots"]
 
     res = []
-    for plot in (all_plots := data["plots"]):
+    for plot in data:
         new_lines = []
 
-        for line in all_plots[plot]["lines"]:
+        for line in data[plot]["lines"]:
             new_filts = []
 
             for filter in line["filters"]:
@@ -36,7 +34,7 @@ def _read_convert_plots() -> List[Plot]:
 
             new_lines.append(Line(**(line | {"filters": new_filts})))
 
-        res.append(Plot(**(all_plots[plot] | {"lines": new_lines, "plot_name": plot})))
+        res.append(Plot(**(data[plot] | {"lines": new_lines, "plot_name": plot})))
 
     return res
 

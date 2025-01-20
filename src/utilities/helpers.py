@@ -6,8 +6,9 @@ from datetime import timedelta, date
 import json
 
 from src.utilities.read_data import combined_df
-from src.utilities.paths import sheet_dir, staging_dir, income_path
+from src.utilities.paths import sheet_dir, staging_dir, get_year
 from src.utilities.column import Column
+from src.read_config.config_globals import config_globals
 
 
 def monthly_income() -> float:
@@ -20,8 +21,7 @@ def monthly_income() -> float:
     Returns:
         income (float): how much income was made each month
     """
-    with open(income_path(), "r") as income:
-        return float(income.readline().strip()) / 12
+    return config_globals()["YEARLY_TAKE_HOME_PAY"][str(get_year())] / 12
 
 
 def format_currency(money: float) -> str:
@@ -105,7 +105,11 @@ def find_big_bills():
     res = {}
     df = combined_df(sheet_dir())
     big_bills = df.loc[
-        (df[Column.PRICE.value] >= 100) & (df[Column.CATEGORY.value] == "Bills")
+        (
+            df[Column.PRICE.value]
+            >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"]
+        )
+        & (df[Column.CATEGORY.value] == "Bills")
     ]
     for _, bill in big_bills.reset_index().iterrows():
         month = bill[Column.DATE.value].strftime("%B")

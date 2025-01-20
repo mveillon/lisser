@@ -165,7 +165,7 @@ data/
 
 .DS_Store
 spending-tracking/
-config.yml
+config_overwrite.yml
 
 .vscode
 

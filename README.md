@@ -30,7 +30,7 @@ This will analyze one year of data. By default, this will be the year of the cur
 
 # Files
 
-The only files that the user will interact with are `config.yml` and all the files in the `data` directory. The `data` directory will have the following structure.
+The only files that the user will interact with are `config_overwrite.yml` and all the files in the `data` directory. The `data` directory will have the following structure.
 
 ```bash
 ├── data
@@ -47,20 +47,17 @@ The only files that the user will interact with are `config.yml` and all the fil
 │           ├── ...
 │           ├── Untracked.xlsx      # large expenses to exclude from monthly calculations
 │       ├── aggregation.yml         # generated aggregations
-│       ├── income.txt              # how much money was earned this year
 │   ├── 2025
 │       ├── ...
 │   ├── ...
-├── config.yml
+├── config_overwrite.yml
 ```
 
 It is not necessary to have every month of the year, and there may be gaps in between months. Any gaps will be treated as if no money was spent that month.
 
 ## Input
 
-First, `data/{year}/income.txt` should contain how much take-home money was made, or is expected to make, for that full year.
-
-Secondly, each spreadsheet in `data/{year}/spending/{month}.xlsx` should have a row for every transaction in which the user spent money. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+Each spreadsheet in `data/{year}/spending/{month}.xlsx` should have a row for every transaction in which the user spent money. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
 
 The `spending` folder also has an `Untracked.xlsx` . This is meant for extremely large purchases and expenses; the kinds of transactions that you do once or twice a year and that would completely throw off the monthly graphs. The transactions will be excluded from monthly calculations and certain yearly calculations. Feel free to use this however much suits your lifestyle, or not at all.
 
@@ -75,17 +72,29 @@ There are also aggregations done on the full year of data. These are found at `d
 
 # Configuration
 
-Additional plots and aggregations can be added to the `config.yml` file. There are also some built-in ones that can be removed or changed as desired.
+There are a number of built-in plots and aggregations that can be found in the `base_config.yml` file. The user is free to edit these however they please. They also serve as an example. 
+
+Additional plots and aggregations can be added to the `config_overwrite.yml` file. If a key in the `config_overwrite.yml` file is also present in `base_config.yml`, the value from `config_overwrite.yml` will be used.
+
+This is mostly useful for developers (like the one writing this!), as `config_overwrite.yml` is not tracked by git so developers can use the code without pushing any personal information that might be in their config files. Other users are also free to use the functionality for organization or what have you. 
+
+## Globals
+
+There are a few global variables that can be configured under the `globals` key.
+
+- `YEARLY_TAKE_HOME_PAY`: how much take-home pay you had for each year you have spending data.
+- `SANKEY_OTHER_THRESHOLD`: the proportion of the yearly income that the spending in a category has to exceed to not be put in the "Other" category.
+- `PROJECTED_SPENDING_BILL_THRESHOLD`: at what price threshold bills are filtered out from weekly samples at averaged out over the whole month.
 
 ## Plots
 
-This is a dictionary where each key maps to a single plot. Each plot will be a line plot with any number of lines.
+The `plots` key maps to a dictionary where each key maps to a single plot. Each plot will be a line plot with any number of lines.
 
 Each line will be the sum of the `Price` column over either each month (if `timeframe = monthly`) or each year (if `timeframe = yearly`), with any numbers of filters applied to the data over any of the columns.
 
 Each filter listed will be combined using `AND` operators, forming a conjunction. For both plots and aggregations, a `disjunction` key can be provided at the same level as the filters. If the value is `True`, the filters will be combined using the `OR` operator instead.
 
-There is currently no support for combining the `AND` and `OR` operators in a single plot/aggregation.
+There is currently no support for combining the `AND` and `OR` operators in a single line/aggregation.
 
 If there are multiple lines in a plot, it is recommended to provide the optional `style` and `label` parameters to each line. If the label is not present on any of the lines, it will not be in the legend, which will only be present if at least one line has a label.
 
@@ -99,7 +108,7 @@ The allowed values for `func` are any of the methods of a [Pandas Series](https:
 
 The value of the `column` parameter will be the column selected from the data for aggregation. If the `divide` key is provided and set to True, the resulting total will be grouped weekly, monthly, and yearly.
 
-The key for each aggregation in `config.yml` will be converted to a title and be a key in `data/{year}/aggregation.yml`.
+The key for each aggregation in `config_overwrite.yml` ∪ `base_config.yml` will be converted to a title and be a key in `data/{year}/aggregation.yml`.
 
 # Other Notes
 
@@ -109,4 +118,4 @@ One of the most useful features of this repo is normalizing spending using what 
 
 Many people have rent or other bills due on the first of the month, and there are various other reasons why spending might consistently and predictably spike at certain points each month. Projected spending takes all rows where the Category is "Bills" and they're over a small threshold, and smooths out those expenses over the course of the entire month. This effectively lowers the total amount spent that week, and raises that of the other weeks.
 
-It also prorates the total amount spent over seven days if the week is not complete.
+It then takes the weekly spending and prorates it over a month, since the "weekly" spending value has bills from the full month.
