@@ -11,7 +11,7 @@ def test_group_by_month():
     starts, partitions = group_by_month(data)
 
     num_months = math.ceil(
-        (data[Column.DATE.value].max() - data[Column.DATE.value].min()).days / 30
+        (data[Column.DATE].max() - data[Column.DATE].min()).days / 30
     )
 
     assert len(starts) == num_months
@@ -24,9 +24,7 @@ def test_group_by_week():
     data = sample_data()
     starts, partitions = group_by_week(data)
 
-    num_weeks = math.ceil(
-        (data[Column.DATE.value].max() - data[Column.DATE.value].min()).days / 7
-    )
+    num_weeks = math.ceil((data[Column.DATE].max() - data[Column.DATE].min()).days / 7)
 
     assert len(starts) == num_weeks
     assert len(partitions) == num_weeks

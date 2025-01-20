@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class Column(Enum):
+class Column(StrEnum):
     DATE = "Date"
     DESCRIPTION = "Description"
     VENDOR = "Vendor"

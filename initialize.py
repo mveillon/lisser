@@ -1,9 +1,13 @@
 import shutil
-from os.path import exists, join
+from os.path import exists
 from os import makedirs
-from datetime import date, timedelta
 
-from src.utilities.paths import config_path, sheet_dir, untracked_path
+from src.utilities.paths import (
+    config_path,
+    spending_path,
+    untracked_path,
+    this_years_data,
+)
 from src.utilities.parse_args import parse_args
 
 
@@ -58,7 +62,7 @@ def init_config():
             )
 
 
-def add_spending_dir():
+def add_spending_sheet():
     """
     Creates the base of the spending directory.
 
@@ -68,27 +72,17 @@ def add_spending_dir():
     Returns:
         None
     """
-    dest = sheet_dir()
-    makedirs(dest, exist_ok=True)
+    makedirs(this_years_data(), exist_ok=True)
 
     untracked = untracked_path()
     if check_overwrite(untracked):
         shutil.copy("base_sheet.xlsx", untracked)
 
-    current = date(parse_args().year, 1, 1)
-    end = min(date.today(), date(current.year, 12, 31))
-    while current <= end:
-        this_month = join(dest, current.strftime("%B") + ".xlsx")
-
-        if check_overwrite(this_month):
-            shutil.copy("base_sheet.xlsx", this_month)
-            next_month = current + timedelta(days=31)
-            current = date(next_month.year, next_month.month, 1)
-
-        else:
-            current = date.max
+    spending = spending_path()
+    if check_overwrite(spending):
+        shutil.copy("base_sheet.xlsx", spending)
 
 
 if __name__ == "__main__":
     init_config()
-    add_spending_dir()
+    add_spending_sheet()

@@ -41,25 +41,20 @@ The only files that the user will interact with are `config_overwrite.yml` and a
 │           ├── February            # plots for the month of February
 │           ├── ...
 │           ├── Combined            # plots for the whole year
-│       ├── spending
-│           ├── January.xlsx        # all spending for the month of January
-│           ├── February.xlsx       # all spending for the month of February
-│           ├── ...
-│           ├── Untracked.xlsx      # large expenses to exclude from monthly calculations
 │       ├── aggregation.yml         # generated aggregations
+│       ├── Spending.xlsx           # spending for the whole year
+│       ├── Untracked.xlsx          # large expenses to exclude from monthly calculations
 │   ├── 2025
 │       ├── ...
 │   ├── ...
 ├── config_overwrite.yml
 ```
 
-It is not necessary to have every month of the year, and there may be gaps in between months. Any gaps will be treated as if no money was spent that month.
-
 ## Input
 
-Each spreadsheet in `data/{year}/spending/{month}.xlsx` should have a row for every transaction in which the user spent money. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+The `data/{year}/Spending.xlsx` spreadsheet should have a row for every transaction in which the user spent money that year. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
 
-The `spending` folder also has an `Untracked.xlsx` . This is meant for extremely large purchases and expenses; the kinds of transactions that you do once or twice a year and that would completely throw off the monthly graphs. The transactions will be excluded from monthly calculations and certain yearly calculations. Feel free to use this however much suits your lifestyle, or not at all.
+That folder also has an `Untracked.xlsx` . This is meant for extremely large purchases and expenses; the kinds of transactions that you do once or twice a year and that would completely throw off the monthly graphs. The transactions will be excluded from monthly calculations and certain yearly calculations. Feel free to use this however much suits your lifestyle, or not at all.
 
 ## Output
 

@@ -1,14 +1,14 @@
 import pandas as pd
-from os import listdir
-from os.path import join, basename
-import subprocess
-from datetime import datetime
+from datetime import datetime, date
+from functools import lru_cache
+from typing import List
 
-from src.utilities.paths import staging_dir, month_from_path, is_excel, untracked_path
 from src.utilities.column import Column
 from src.utilities.parse_args import parse_args
+from src.utilities.paths import spending_path
 
 
+@lru_cache(maxsize=16)
 def read_data(path: str) -> pd.DataFrame:
     """
     Reads the data and converts any columns that need converting.
@@ -23,21 +23,20 @@ def read_data(path: str) -> pd.DataFrame:
         path,
         sheet_name="Sheet1",
         header=0,
+        usecols=list(Column),
         dtype={
-            Column.DATE.value: "str",
-            Column.DESCRIPTION.value: "str",
-            Column.VENDOR.value: "str",
-            Column.CATEGORY.value: "str",
-            Column.PRICE.value: "float",
-            Column.IS_FOOD.value: "int",
-            Column.CONTROLLABLE.value: "int",
+            Column.DATE: "str",
+            Column.DESCRIPTION: "str",
+            Column.VENDOR: "str",
+            Column.CATEGORY: "str",
+            Column.PRICE: "float",
+            Column.IS_FOOD: "int",
+            Column.CONTROLLABLE: "int",
         },
     )
-    df[Column.DATE.value] = pd.to_datetime(
-        df[Column.DATE.value], format="%Y-%m-%d %H:%M:%S"
-    )
-    df[Column.IS_FOOD.value] = df[Column.IS_FOOD.value].astype("boolean")
-    df[Column.CONTROLLABLE.value] = df[Column.CONTROLLABLE.value].astype("boolean")
+    df[Column.DATE] = pd.to_datetime(df[Column.DATE], format="%Y-%m-%d %H:%M:%S")
+    df[Column.IS_FOOD] = df[Column.IS_FOOD].astype("boolean")
+    df[Column.CONTROLLABLE] = df[Column.CONTROLLABLE].astype("boolean")
 
     if df.shape[0] == 0:
         return pd.DataFrame(
@@ -48,40 +47,7 @@ def read_data(path: str) -> pd.DataFrame:
     return df
 
 
-def _read_numbers(path: str) -> pd.DataFrame:
-    """
-    Reads the data from the .numbers file and converts any columns that
-    need converting. Kept only for historical reasons.
-
-    Parameters:
-        path (str): the path of the *.numbers file
-
-    Returns:
-        df (DataFrame): a Pandas DataFrame with the spreadsheet info
-    """
-    csv_path = join(staging_dir(), month_from_path(path) + ".csv")
-    subprocess.Popen(f"cat-numbers -b {path} > {csv_path}", shell=True).wait()
-
-    df = pd.read_csv(
-        csv_path,
-        header=0,
-        dtype={
-            Column.DATE.value: "str",
-            Column.DESCRIPTION.value: "str",
-            Column.VENDOR.value: "str",
-            Column.CATEGORY.value: "str",
-            Column.PRICE.value: "float",
-            Column.IS_FOOD.value: "boolean",
-            Column.CONTROLLABLE.value: "boolean",
-        },
-    )
-    df[Column.DATE.value] = pd.to_datetime(
-        df[Column.DATE.value], format="%Y-%m-%d %H:%M:%S%z"
-    )
-    return df
-
-
-def combined_df(root: str) -> pd.DataFrame:
+def combined_df() -> pd.DataFrame:
     """
     Returns a single DataFrame with all spreadsheets combined.
 
@@ -92,9 +58,39 @@ def combined_df(root: str) -> pd.DataFrame:
         df (DataFrame): a Pandas DataFrame with the data of
             all the spreadsheets
     """
-    dfs = []
-    for path in listdir(root):
-        if is_excel(path) and basename(path) != basename(untracked_path()):
-            dfs.append(read_data(join(root, path)))
+    return read_data(spending_path())
 
-    return pd.concat(dfs)
+
+def get_months(year_data: pd.DataFrame) -> List[pd.DataFrame]:
+    """
+    Returns the transactions partitioned into months.
+
+    Parameters:
+        year_data (DataFrame): the full year of data
+
+    Returns:
+        months (List[DataFrame]): the data partitioned into months
+    """
+    groups = year_data.groupby(pd.Grouper(key=Column.DATE, freq="ME"))
+    return [df for _, df in groups]
+
+
+def month_to_df(month: str) -> pd.DataFrame:
+    """
+    Reads and filters the data to just transactions in the given
+    month.
+
+    Parameters:
+        month (str): which month to filter. Should be '%B' format,
+            e.g. January, March
+
+    Returns:
+        data (DataFrame): the month of data
+    """
+    mo = int(datetime.strftime(month, "%B").strptime("%m"))
+    full = combined_df()
+    yr = round(full[Column.DATE].mean())
+    return full.loc[
+        (full[Column.DATE] >= date(yr, mo, 1))
+        & (full[Column.DATE] < date(yr + int(mo == 12), (mo % 12) + 1, 1))
+    ]

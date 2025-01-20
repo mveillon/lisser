@@ -28,7 +28,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
         None
     """
     df = pd.concat([df, read_data(untracked_path())])
-    total_spent = df[Column.PRICE.value].sum()
+    total_spent = df[Column.PRICE].sum()
 
     flow: NestedDict = {
         "Saved": estimated_income_after_tax(df) - total_spent,
@@ -36,11 +36,11 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
         "Not Controllable": {"Food": {}, "Other": 0},
     }
 
-    cats = df.groupby([Column.CATEGORY.value])[Column.CONTROLLABLE.value].mean()
+    cats = df.groupby([Column.CATEGORY])[Column.CONTROLLABLE].mean()
 
     for cat, controllable_prop in cats.items():
-        this_cat = df.loc[df[Column.CATEGORY.value] == cat]
-        cat_spent = this_cat[Column.PRICE.value].sum()
+        this_cat = df.loc[df[Column.CATEGORY] == cat]
+        cat_spent = this_cat[Column.PRICE].sum()
         cat_t = (
             cat.title()
             if cat_spent > total_spent * config_globals()["SANKEY_OTHER_THRESHOLD"]
@@ -50,7 +50,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
             "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
         )
 
-        if round(this_cat[Column.IS_FOOD.value].mean()) == 1:
+        if round(this_cat[Column.IS_FOOD].mean()) == 1:
             flow["Not Controllable"]["Food"][cat_t] = (
                 flow["Not Controllable"]["Food"].get(cat_t, 0) + cat_spent
             )

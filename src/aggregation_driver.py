@@ -2,7 +2,7 @@ from pathlib import Path
 import yaml
 from typing import Any
 
-from src.utilities.paths import aggregation_path, sheet_dir
+from src.utilities.paths import aggregation_path
 from src.utilities.helpers import format_currency
 from src.utilities.read_data import combined_df
 from src.read_config.custom_aggregations import custom_aggregations
@@ -31,7 +31,7 @@ class AggregationDriver:
         Returns:
             None
         """
-        spending = combined_df(sheet_dir())
+        spending = combined_df()
         out = {}
 
         to_title = lambda s: s.replace("_", " ").title()

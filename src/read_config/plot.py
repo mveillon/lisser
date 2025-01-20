@@ -51,7 +51,7 @@ class Plot:
         metrics = {}
         for line in self.lines:
             if len(line.filters) == 0:
-                y_vals = list(map(lambda p: p[Column.PRICE.value].sum(), partitions))
+                y_vals = list(map(lambda p: p[Column.PRICE].sum(), partitions))
 
             else:
                 y_vals = []
@@ -60,7 +60,7 @@ class Plot:
                         __or__ if line.disjunction else __and__,
                         map(lambda f: f.filter_cond(part), line.filters),
                     )
-                    y_vals.append(part.loc[conjunction][Column.PRICE.value].sum())
+                    y_vals.append(part.loc[conjunction][Column.PRICE].sum())
 
             metrics[line.label] = (y_vals, line.style)
 

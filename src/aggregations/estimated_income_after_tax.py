@@ -26,6 +26,6 @@ def estimated_income_after_tax(
         datetime.strptime(f"{get_year()}-12-31", fmt).date()
         - datetime.strptime(f"{get_year()}-01-01", fmt).date()
     ).days
-    days_in_data = (df[Column.DATE.value].max() - df[Column.DATE.value].min()).days
+    days_in_data = (df[Column.DATE].max() - df[Column.DATE].min()).days
 
     return (days_in_data / days_this_year) * monthly_income * 12

@@ -20,7 +20,7 @@ def weekly_projection(df: pd.DataFrame) -> List[float]:
     """
     fmt = "%m/%d/%Y"
     one_week = timedelta(weeks=1)
-    all_dates = get_weeks(df[Column.DATE.value].min(), df[Column.DATE.value].max())
+    all_dates = get_weeks(df[Column.DATE].min(), df[Column.DATE].max())
 
     avgs = []
     for i in range(len(all_dates)):
@@ -33,7 +33,7 @@ def weekly_projection(df: pd.DataFrame) -> List[float]:
         avgs.append(
             projected_spending(
                 week_df,
-                week_df[Column.DATE.value].max().strftime("%B"),
+                week_df[Column.DATE].max().strftime("%B"),
                 total_days=one_week.days,
             )
             if week_df.shape[0] > 0

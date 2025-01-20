@@ -33,9 +33,9 @@ def projected_spending(
       per_month (float): a projection of how much would be spent over a
         full month at the pace given in `df`
     """
-    total_spent = df[Column.PRICE.value].sum()
+    total_spent = df[Column.PRICE].sum()
     if total_days == 0:
-        total_days = (df[Column.DATE.value].max() - df[Column.DATE.value].min()).days
+        total_days = (df[Column.DATE].max() - df[Column.DATE].min()).days
 
     bills_total = 0
     if filter_big_bills:
@@ -43,8 +43,8 @@ def projected_spending(
             data = json.load(bills)
             for bill in data.get(month, {}):
                 total_spent -= df.loc[
-                    df[Column.DESCRIPTION.value].str.lower() == bill.lower()
-                ][Column.PRICE.value].sum()
+                    df[Column.DESCRIPTION].str.lower() == bill.lower()
+                ][Column.PRICE].sum()
                 bills_total += data[month][bill]
 
     res = (total_spent / total_days) * (365 / 12) if total_days > 0 else 0

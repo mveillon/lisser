@@ -16,7 +16,4 @@ def total_spent(df: pd.DataFrame) -> float:
     Returns:
         spent (float): the total amount spent
     """
-    return (
-        df[Column.PRICE.value].sum()
-        + read_data(untracked_path())[Column.PRICE.value].sum()
-    )
+    return df[Column.PRICE].sum() + read_data(untracked_path())[Column.PRICE].sum()

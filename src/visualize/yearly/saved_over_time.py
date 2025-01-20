@@ -24,7 +24,7 @@ def saved_over_time(df: pd.DataFrame, out_dir: str):
     """
     df = pd.concat([df, read_data(untracked_path())])
     fmt = "%b"
-    payments = get_weeks(df[Column.DATE.value].min(), df[Column.DATE.value].max())
+    payments = get_weeks(df[Column.DATE].min(), df[Column.DATE].max())
     dates = []
     balance_changes = []
     expected_saved = [0]
@@ -36,7 +36,7 @@ def saved_over_time(df: pd.DataFrame, out_dir: str):
 
     expected_saved = expected_saved[1:]
 
-    spending = df.groupby(Column.DATE.value)[Column.PRICE.value].sum()
+    spending = df.groupby(Column.DATE)[Column.PRICE].sum()
     for date, spent in spending.to_dict().items():
         dates.append(date)
         balance_changes.append(-spent)

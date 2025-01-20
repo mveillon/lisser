@@ -24,7 +24,7 @@ def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
     """
     data = get_config()["aggregations"]
 
-    num_days = max((df[Column.DATE.value].max() - df[Column.DATE.value].min()).days, 1)
+    num_days = max((df[Column.DATE].max() - df[Column.DATE].min()).days, 1)
 
     res = {}
     for agg in data:

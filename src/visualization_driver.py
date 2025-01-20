@@ -1,25 +1,21 @@
 import pandas as pd
-from os import listdir, mkdir
-from os.path import join, exists, basename
+from os import mkdir
+from os.path import join, exists
 from shutil import rmtree
 from typing import List
 from pathlib import Path
 
 from src.utilities.paths import (
-    sheet_dir,
     plots_dir,
     staging_dir,
-    month_from_path,
-    get_out_dir,
-    is_excel,
-    untracked_path,
 )
-from src.utilities.read_data import read_data, combined_df
+from src.utilities.read_data import combined_df, get_months
 from src.utilities.helpers import find_big_bills
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
     get_modules_from_folder,
 )
+from src.utilities.column import Column
 
 from src.read_config.plotters_from_config import plotters_from_config, Plotter
 
@@ -86,12 +82,12 @@ class VisualizationDriver:
         Returns:
             None
         """
-        for path in listdir(sheet_dir()):
-            if is_excel(path) and basename(path) != basename(untracked_path()):
-                df = read_data(join(sheet_dir(), path))
-                self._plot_df(df, get_out_dir(month_from_path(path)))
+        all_dfs = combined_df()
+        for df in get_months(all_dfs):
+            self._plot_df(
+                df, join(plots_dir(), df[Column.DATE].median().strftime("%B"))
+            )
 
-        all_dfs = combined_df(sheet_dir())
         combined_path = join(plots_dir(), "Combined")
 
         plot_funcs = [
