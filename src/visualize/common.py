@@ -8,8 +8,7 @@ import matplotlib.dates as mdates
 
 from src.utilities.helpers import monthly_income, format_currency
 from src.utilities.column import Column
-from src.utilities.paths import sheet_dir
-from src.utilities.read_data import read_data
+from src.utilities.read_data import month_to_df
 from src.calculations.category_spending import category_spending
 
 
@@ -39,7 +38,7 @@ def compare_months(
         mkdir(out_dir)
 
     if isinstance(month_1, str):
-        df_1 = read_data(join(sheet_dir(), month_1 + ".xlsx"))
+        df_1 = month_to_df(month_1)
         colors = [{"color": "b", "label": month_1}, {"color": "g", "label": month_2}]
     else:
         df_1 = month_1
@@ -50,7 +49,7 @@ def compare_months(
     num_weeks = (df_1[Column.DATE].max() - df_1[Column.DATE].min()).days // 7
 
     if month_2:
-        df_2 = read_data(join(sheet_dir(), month_2 + ".xlsx"))
+        df_2 = month_to_df(month_2)
         cats_2 = category_spending(df_2, income=income)
 
         for cat in cats_1:

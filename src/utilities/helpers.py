@@ -6,7 +6,7 @@ from datetime import timedelta, date
 import json
 
 from src.utilities.read_data import combined_df
-from src.utilities.paths import sheet_dir, staging_dir, get_year
+from src.utilities.paths import staging_dir, get_year
 from src.utilities.column import Column
 from src.read_config.config_globals import config_globals
 
@@ -103,7 +103,7 @@ def find_big_bills():
         None
     """
     res = {}
-    df = combined_df(sheet_dir())
+    df = combined_df()
     big_bills = df.loc[
         (df[Column.PRICE] >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"])
         & (df[Column.CATEGORY] == "Bills")

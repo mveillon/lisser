@@ -1,4 +1,4 @@
-from os.path import splitext, basename, join
+from os.path import splitext, join
 
 from src.utilities.parse_args import parse_args
 
@@ -29,17 +29,17 @@ def this_years_data() -> str:
     return join("data", str(get_year()))
 
 
-def sheet_dir() -> str:
+def spending_path() -> str:
     """
-    Returns the directory where the .numbers spreadsheets are located.
+    Returns the directory where this year's spending spreadsheet is located.
 
     Parameters:
         None
 
     Returns:
-        dir (str): where the spreadsheets are located
+        dir (str): where the spreadsheet is located
     """
-    return join(this_years_data(), "spending")
+    return join(this_years_data(), "Spending.xlsx")
 
 
 def plots_dir() -> str:
@@ -66,23 +66,6 @@ def staging_dir() -> str:
         dir (str): where the spreadsheets are located
     """
     return join(this_years_data(), "staging")
-
-
-def month_from_path(path: str) -> str:
-    """
-    Parses the path to find the name of the month. Assumes the spreadsheet
-    is named {{month}}.numbers or {{month}}.xlsx.
-
-    Parameters:
-        path (str): the potentially absolute path of the spreadsheet
-            with the month name in it
-
-    Returns:
-        month (str): the name of the month of the spreadsheet
-    """
-    if path[-1] == "/":
-        path = path[:-1]
-    return splitext(basename(path))[0]
 
 
 def get_out_dir(month: str) -> str:
@@ -126,7 +109,7 @@ def untracked_path() -> str:
     Returns:
         path (str): the path to the untracked sheet
     """
-    return join(sheet_dir(), "Untracked.xlsx")
+    return join(this_years_data(), "Untracked.xlsx")
 
 
 def aggregation_path() -> str:
