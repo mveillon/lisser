@@ -4,14 +4,13 @@ from os.path import join
 from sankeyflow import Sankey
 import matplotlib.pyplot as plt
 
+from src.visualize.yearly._sankey_helpers import sankey_inputs
 from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
 from src.utilities.read_data import read_data
 from src.utilities.paths import untracked_path, get_year
 from src.utilities.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,
-    nodes_from_dict,
-    flow_array_from_dict,
 )
 from src.read_config.config_globals import config_globals
 
@@ -31,9 +30,11 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
     total_spent = df[Column.PRICE].sum()
 
     flow: NestedDict = {
-        "Saved": estimated_income_after_tax(df) - total_spent,
-        "Controllable": {"Other": 0},
-        "Not Controllable": {"Food": {}, "Other": 0},
+        "Income": {
+            "Saved": estimated_income_after_tax(df) - total_spent,
+            "Controllable": {"Other": 0},
+            "Not Controllable": {"Food": {}, "Other": 0},
+        }
     }
 
     cats = df.groupby([Column.CATEGORY])[Column.CONTROLLABLE].mean()
@@ -51,22 +52,16 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
         )
 
         if round(this_cat[Column.IS_FOOD].mean()) == 1:
-            flow["Not Controllable"]["Food"][cat_t] = (
-                flow["Not Controllable"]["Food"].get(cat_t, 0) + cat_spent
+            flow["Income"]["Not Controllable"]["Food"][cat_t] = (
+                flow["Income"]["Not Controllable"]["Food"].get(cat_t, 0) + cat_spent
             )
 
         else:
-            flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
+            flow["Income"][control_key][cat_t] = (
+                flow["Income"][control_key].get(cat_t, 0) + cat_spent
+            )
 
-    nodes = [[("Income", estimated_income_after_tax(df))], *nodes_from_dict(flow)]
-
-    flows = [
-        *[
-            ("Income", node[0], node[1], {"flow_color_mode": "source"})
-            for node in nodes[1]
-        ],
-        *flow_array_from_dict(flow),
-    ]
+    nodes, flows = sankey_inputs(flow)
 
     plt.clf()
     plt.figure(figsize=(15, 8))
