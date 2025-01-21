@@ -1,6 +1,7 @@
 from src.utilities.dictionary_ops import (
     dictionary_sum,
     recursive_merge,
+    recursive_index,
 )
 
 
@@ -72,3 +73,22 @@ def test_recursive_merge():
 
     recursive_merge(base, overwrite)
     assert base == expected
+
+
+def test_recursive_index():
+    base = {
+        "a": 1,
+        "b": 2,
+        "c": {
+            "d": 1,
+            "e": 2,
+            "f": {"g": 3},
+        },
+        "d": 0,
+        "i": {"j": 4},
+    }
+
+    assert recursive_index(base, []) == base
+    assert recursive_index(base, ["a"]) == 1
+    assert recursive_index(base, ["c", "d"]) == 1
+    assert recursive_index(base, ["c", "f"]) == {"g": 3}

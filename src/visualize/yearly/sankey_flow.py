@@ -1,8 +1,11 @@
 import pandas as pd
 from os.path import join
-
 from sankeyflow import Sankey
 import matplotlib.pyplot as plt
+
+from typing import List, NamedTuple
+from numbers import Number
+from itertools import chain
 
 from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
 from src.utilities.read_data import read_data
@@ -10,10 +13,49 @@ from src.utilities.paths import untracked_path, get_year
 from src.utilities.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,
-    nodes_from_dict,
-    flow_array_from_dict,
+    dictionary_sum,
 )
 from src.read_config.config_globals import config_globals
+
+
+class Flow(NamedTuple):
+    """
+    A flow connecting two nodes.
+
+    Attributes:
+        source (str): the source of the flow
+        dest (str): the destination of the flow
+        flow_size (Number): how much money is flowing
+        options (dict): optional dictionary passed to Sankey
+    """
+
+    source: str
+    dest: str
+    flow_size: Number
+    options: dict = {}
+
+
+def _get_flows(source: str, d: NestedDict) -> List[Flow]:
+    """
+    Returns all the flows in this subdictionary.
+    """
+    if not isinstance(d, dict):
+        return []
+
+    options = {}
+    if source == "Income":
+        options["flow_color_mode"] = "source"
+
+    this_layer = []
+    for label, branch in d.items():
+        subtotal = dictionary_sum(branch)
+        if subtotal > 0:
+            this_layer.append(Flow(source, label, subtotal, options))
+
+    this_layer.extend(
+        chain(*[_get_flows(label, branch) for label, branch in d.items()])
+    )
+    return this_layer
 
 
 def sankey_flow(df: pd.DataFrame, out_dir: str):
@@ -58,23 +100,12 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
         else:
             flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
 
-    nodes = [[("Income", estimated_income_after_tax(df))], *nodes_from_dict(flow)]
-
-    flows = [
-        *[
-            ("Income", node[0], node[1], {"flow_color_mode": "source"})
-            for node in nodes[1]
-        ],
-        *flow_array_from_dict(flow),
-    ]
-
     plt.clf()
-    plt.figure(figsize=(15, 8))
+    plt.figure(figsize=(12, 8))
     plt.title(f"Spending Flow for {get_year()}")
 
     s = Sankey(
-        flows=flows,
-        nodes=nodes,
+        flows=_get_flows("Income", flow),
     )
     s.draw()
     plt.savefig(join(out_dir, "sankey.png"))
