@@ -1,4 +1,4 @@
-from typing import Union, Dict, List, Any
+from typing import Union, Dict, Tuple, Any
 from numbers import Number
 
 NestedDict = Union[Number, Dict[str, "NestedDict"]]
@@ -58,7 +58,7 @@ def recursive_merge(d1: Dict[str, Any], d2: Dict[str, Any]) -> Dict[str, Any]:
             d1[k] = new_val
 
 
-def recursive_index(d: Dict[str, Any], path: List[str]) -> Any:
+def recursive_index(d: Dict[str, Any], path: Tuple[str, ...]) -> Any:
     """
     Returns the branch of the nested dictionary, following the path
     of labels.

@@ -1,4 +1,4 @@
-from typing import NamedTuple, Dict, List, Tuple
+from typing import NamedTuple, Dict, List, Tuple, Set
 from numbers import Number
 
 from src.utilities.dictionary_ops import NestedDict, recursive_index, dictionary_sum
@@ -37,48 +37,58 @@ class FlowTree(NamedTuple):
     One node in the flow tree.
 
     Attributes:
-        paths (List[List[str]]): all possible paths to this node, including the name of
-            the node
+        paths (Set[Tuple[str, ...]]): all possible paths to this node, including
+            the name of the node
         branches (Dict[str, FlowTree]): a dictionary mapping labels to subtrees
         leaves (Dict[str, List[FlowTree]]): a dictionary mapping leaf name to a list of
             nodes with the same name. Sharing a name is only allowed for leaves
     """
 
-    paths: List[List[str]]
+    paths: Set[Tuple[str, ...]]
     branches: Dict[str, "FlowTree"]
     leaves: Dict[str, List["FlowTree"]]
 
     @staticmethod
-    def _dict_convert_helper(flow_dict: NestedDict, path: List[str]) -> "FlowTree":
+    def _dict_convert_helper(
+        flow_dict: NestedDict, path: Tuple[str, ...]
+    ) -> "FlowTree":
         """
         Helper function for the `from_flow_dict` function.
         """
         sub_flow = recursive_index(flow_dict, path)
         if not isinstance(sub_flow, dict):
             return FlowTree(
-                paths=[path],
+                paths={(path,)},
                 branches=[],
                 leaves=[],
             )
 
         branches = {}
         leaves = {}
+
+        def add_leaf(label: str, leaf: FlowTree):
+            if label in leaves:
+                leaf.paths |= leaves[label][0].paths
+                leaves[label].append(leaf)
+                for old_leaf in leaves[label]:
+                    old_leaf.paths = leaf.paths
+
+            else:
+                leaves[label] = [leaf]
+
         for label in sub_flow:
-            new_path = path + [label]
+            new_path = path + (label,)
             branches[label] = FlowTree._dict_convert_helper(flow_dict, new_path)
 
-            # if len(branches[label].branches) == 0:
-            #     if label in leaves:
-            #         leaves[label][0].paths.append(new_path)
-            #         leaves[label].append(branches[label])
-            #         for leaf in leaves[label]:
-            #             leaf.paths = leaves[label][0].paths
+            if len(branches[label].leaves) == 0:
+                add_leaf(label, branches[label])
 
-            #     else:
-            #         leaves[label] = [branches[label]]
+            else:
+                for label, leaf in branches[label].leaves.items():
+                    add_leaf(label, leaf)
 
         return FlowTree(
-            paths=[path],
+            paths={(path,)},
             branches=branches,
             leaves=leaves,
         )
@@ -95,7 +105,7 @@ class FlowTree(NamedTuple):
         Returns:
             tree (FlowTree): the tree with the same information
         """
-        return FlowTree._dict_convert_helper(flow_dict, [])
+        return FlowTree._dict_convert_helper(flow_dict, tuple())
 
     def _raw_node_list(self, flow_dict: NestedDict) -> List[List[Node]]:
         """
