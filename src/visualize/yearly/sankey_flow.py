@@ -42,17 +42,15 @@ def _get_flows(source: str, d: NestedDict) -> List[Flow]:
     if not isinstance(d, dict):
         return []
 
+    options = {}
     if source == "Income":
-        options = {"flow_color_mode": "source"}
-    else:
-        options = {}
+        options["flow_color_mode"] = "source"
 
-    this_layer = [
-        Flow(
-            source=source, dest=label, flow_size=dictionary_sum(branch), options=options
-        )
-        for label, branch in d.items()
-    ]
+    this_layer = []
+    for label, branch in d.items():
+        subtotal = dictionary_sum(branch)
+        if subtotal > 0:
+            this_layer.append(Flow(source, label, subtotal, options))
 
     this_layer.extend(
         chain(*[_get_flows(label, branch) for label, branch in d.items()])
@@ -103,7 +101,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
             flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
 
     plt.clf()
-    plt.figure(figsize=(15, 8))
+    plt.figure(figsize=(12, 8))
     plt.title(f"Spending Flow for {get_year()}")
 
     s = Sankey(
