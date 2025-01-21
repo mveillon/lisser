@@ -17,35 +17,40 @@ from src.utilities.dictionary_ops import (
 )
 from src.read_config.config_globals import config_globals
 
+
 class Flow(NamedTuple):
     """
     A flow connecting two nodes.
 
     Attributes:
         source (str): the source of the flow
-        target (str): the destination of the flow
+        dest (str): the destination of the flow
         flow_size (Number): how much money is flowing
         options (dict): optional dictionary passed to Sankey
     """
 
     source: str
-    target: str
+    dest: str
     flow_size: Number
     options: dict = {}
+
 
 def _get_flows(source: str, d: NestedDict) -> List[Flow]:
     """
     Returns all the flows in this subdictionary.
     """
-    if not isinstance(d, dict): return []
-    
+    if not isinstance(d, dict):
+        return []
+
     if source == "Income":
         options = {"flow_color_mode": "source"}
     else:
         options = {}
 
     this_layer = [
-        Flow(source=source, target=label, flow_size=dictionary_sum(branch), options=options)
+        Flow(
+            source=source, dest=label, flow_size=dictionary_sum(branch), options=options
+        )
         for label, branch in d.items()
     ]
 
@@ -53,6 +58,7 @@ def _get_flows(source: str, d: NestedDict) -> List[Flow]:
         chain(*[_get_flows(label, branch) for label, branch in d.items()])
     )
     return this_layer
+
 
 def sankey_flow(df: pd.DataFrame, out_dir: str):
     """
@@ -94,9 +100,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
             )
 
         else:
-            flow[control_key][cat_t] = (
-                flow[control_key].get(cat_t, 0) + cat_spent
-            )
+            flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
 
     plt.clf()
     plt.figure(figsize=(15, 8))
