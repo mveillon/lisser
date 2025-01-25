@@ -23,7 +23,7 @@ def dictionary_sum(d: NestedDict) -> Number:
         return 0
 
 
-def recursive_merge(d1: Dict[str, NestedDict], d2: Dict[str, NestedDict]):
+def recursive_merge(d1: Dict[str, NestedDict], d2: Dict[str, NestedDict]) -> None:
     """
     Recursively merges `d2` into `d1`, keeping all keys from `d1`, but adding
     and preferring all key/value pairs in `d2`. `d1` is merged in place.
