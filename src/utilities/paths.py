@@ -1,4 +1,6 @@
+from os import listdir
 from os.path import splitext, join
+import re
 
 from src.utilities.parse_args import parse_args
 
@@ -29,6 +31,22 @@ def this_years_data() -> str:
     return join("data", str(get_year()))
 
 
+def _first_spreadsheet(parent: str, sheet_name: str) -> str:
+    """
+    Returns the path to the first spreadsheet with the given name in the given
+    directory.
+    """
+    sheet_regex = re.escape(sheet_name) + r"\.(xlsx|csv|numbers)$"
+    try:
+        return next(
+            join(parent, f)
+            for f in listdir(parent)
+            if re.match(sheet_regex, f, flags=re.IGNORECASE)
+        )
+    except StopIteration:
+        return join(parent, sheet_name + ".xlsx")
+
+
 def spending_path() -> str:
     """
     Returns the directory where this year's spending spreadsheet is located.
@@ -39,7 +57,7 @@ def spending_path() -> str:
     Returns:
         dir (str): where the spreadsheet is located
     """
-    return join(this_years_data(), "Spending.xlsx")
+    return _first_spreadsheet(this_years_data(), "Spending")
 
 
 def plots_dir() -> str:
@@ -109,7 +127,7 @@ def untracked_path() -> str:
     Returns:
         path (str): the path to the untracked sheet
     """
-    return join(this_years_data(), "Untracked.xlsx")
+    return _first_spreadsheet(this_years_data(), "Untracked")
 
 
 def aggregation_path() -> str:

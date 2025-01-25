@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from src.read_config.filter import Filter
+from src.read_config.agg_function import AggFunction
 
 
 @dataclass
@@ -11,15 +12,19 @@ class Line:
 
     Attributes:
         filters (List[Filter]): what filters to apply to draw this line
+        agg (Optional[AggFunction]): a function used to aggregate the line. In
+            the config file, this is a list of aggregations, but the list is
+            exploded so there is just one function per line
         style (str): how to style the line, according to matplotlib rules
         label (str): the label of the line in the legend. If empty, will not
             appear in the legend, which will only be there if at least one
-            line has a label.
+            line has a label
         disjunction (bool): whether to combine the filters using OR instead
             of AND. Default is False
     """
 
     filters: List[Filter]
+    agg: AggFunction = None
     style: str = "b"
     label: str = ""
     disjunction: bool = False

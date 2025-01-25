@@ -1,50 +1,106 @@
+import numpy as np
 import pandas as pd
+from pandas.api.types import is_string_dtype
+from os.path import splitext
+
 from datetime import datetime, date
 from functools import lru_cache
+from uuid import uuid4
+from numbers_parser import Document
 from typing import List
 
 from src.utilities.column import Column
-from src.utilities.parse_args import parse_args
 from src.utilities.paths import spending_path
+
+
+SCHEMA = {
+    Column.DATE: "str",
+    Column.VENDOR: "str",
+    Column.CATEGORY: "str",
+    Column.PRICE: "float",
+    Column.IS_FOOD: "int",
+    Column.CONTROLLABLE: "int",
+    Column.TRANSACTION_ID: "str",
+}
 
 
 @lru_cache(maxsize=16)
 def read_data(path: str) -> pd.DataFrame:
     """
-    Reads the data and converts any columns that need converting.
+    Reads the data and converts any columns that need converting. Can read
+    many different file types.
 
     Parameters:
-        path (str): the path of the *.xlsx file
+        path (str): the path of the spreadsheet
 
     Returns:
         df (DataFrame): a Pandas DataFrame with the spreadsheet info
     """
-    df = pd.read_excel(
+    readers = {
+        ".txt": _read_csv,
+        ".csv": _read_csv,
+        ".numbers": _read_numbers,
+        ".xlsx": _read_excel,
+    }
+    df = readers[splitext(path)[1]](path)
+
+    new_cols = {
+        Column.TRANSACTION_ID: np.fromiter(
+            map(lambda _: str(uuid4()), np.empty(df.shape[0])),
+            count=df.shape[0],
+            dtype=np.dtypes.StringDType(),
+        )
+    }
+    if is_string_dtype(df[Column.PRICE]):
+        new_cols[Column.PRICE] = df[Column.PRICE].str.replace(
+            r"[^\d\-.]",
+            "",
+            regex=True,
+        )
+
+    df = df.assign(**new_cols)
+    for col_name, dtype in SCHEMA.items():
+        df[col_name] = df[col_name].astype(dtype)
+
+    # if df.shape[0] == 0:
+    #     df = pd.DataFrame(
+    #         [[datetime(parse_args().year, 1, 1), "", "", 0.0, False, False]],
+    #         columns=df.columns,
+    #     )
+
+    df[Column.IS_FOOD] = df[Column.IS_FOOD].astype("boolean")
+    df[Column.CONTROLLABLE] = df[Column.CONTROLLABLE].astype("boolean")
+    df[Column.DATE] = pd.to_datetime(
+        df[Column.DATE], format="mixed", dayfirst=False, yearfirst=False
+    )
+
+    return df
+
+
+def _read_excel(path: str) -> pd.DataFrame:
+    """
+    Reads an excel file and turns it into an unprocessed DataFrame.
+    """
+    return pd.read_excel(
         path,
         sheet_name="Sheet1",
         header=0,
-        usecols=list(Column),
-        dtype={
-            Column.DATE: "str",
-            Column.DESCRIPTION: "str",
-            Column.VENDOR: "str",
-            Column.CATEGORY: "str",
-            Column.PRICE: "float",
-            Column.IS_FOOD: "int",
-            Column.CONTROLLABLE: "int",
-        },
     )
-    df[Column.DATE] = pd.to_datetime(df[Column.DATE], format="%Y-%m-%d %H:%M:%S")
-    df[Column.IS_FOOD] = df[Column.IS_FOOD].astype("boolean")
-    df[Column.CONTROLLABLE] = df[Column.CONTROLLABLE].astype("boolean")
 
-    if df.shape[0] == 0:
-        return pd.DataFrame(
-            [[datetime(parse_args().year, 1, 1), "", "", "", 0.0, False, False]],
-            columns=df.columns,
-        )
 
-    return df
+def _read_csv(path: str) -> pd.DataFrame:
+    """
+    Reads a csv file and turns it into an unprocessed DataFrame.
+    """
+    return pd.read_csv(path, header=0, encoding="ISO-8859-1")
+
+
+def _read_numbers(path: str) -> pd.DataFrame:
+    """
+    Reads a numbers file and turns it into an unprocessed DataFrame.
+    """
+    data = Document(path).sheets[0].tables[0]
+    return pd.DataFrame(data[1:], columns=data[0])
 
 
 def combined_df() -> pd.DataFrame:

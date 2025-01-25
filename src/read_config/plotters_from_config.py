@@ -6,6 +6,7 @@ from src.read_config.plot import Plot
 from src.read_config.filter import Filter
 from src.read_config.line import Line
 from src.read_config.get_config import get_config
+from src.read_config.agg_function import AggFunction
 
 Plotter = Callable[[pd.DataFrame, str], None]
 
@@ -32,7 +33,16 @@ def _read_convert_plots() -> List[Plot]:
             for filter in line["filters"]:
                 new_filts.append(Filter(**filter))
 
-            new_lines.append(Line(**(line | {"filters": new_filts})))
+            with_filters = line | {"filters": new_filts}
+
+            if "agg" in line:
+                # exploding the optional agg array
+                for agg in line["agg"]:
+                    new_lines.append(
+                        Line(**(with_filters | {"agg": AggFunction(**agg)}))
+                    )
+            else:
+                new_lines.append(Line(**with_filters))
 
         res.append(Plot(**(data[plot] | {"lines": new_lines, "plot_name": plot})))
 
