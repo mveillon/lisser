@@ -22,7 +22,7 @@ jobs:
         run: python3 -m black --check src tests main.py initialize.py
       - name: Linting
         run: python3 -m flake8 src tests main.py initialize.py
-      - name: Tests
-        run: python3 -m pytest
       - name: Type Check
         run: mypy src --config-file=mypy.ini
+      - name: Tests
+        run: python3 -m pytest
