@@ -9,6 +9,7 @@ def test_category_spending():
     data = sample_data()
 
     cats = category_spending(data)
+    raise ValueError(str(cats))
 
     assert np.isclose(cats["Total spent"], 1520.89)
     assert np.isclose(cats["Groceries"], 89.28)
