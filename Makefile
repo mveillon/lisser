@@ -13,5 +13,5 @@ init:
 run:
 	python3 main.py
 
-type:
+types:
 	mypy src --config-file=mypy.ini
