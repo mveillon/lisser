@@ -111,9 +111,9 @@ def find_big_bills():
     for _, bill in big_bills.reset_index().iterrows():
         month = bill[Column.DATE].strftime("%B")
         if month in res:
-            res[month][bill[Column.DESCRIPTION]] = bill[Column.PRICE]
+            res[month][bill[Column.TRANSACTION_ID]] = bill[Column.PRICE]
         else:
-            res[month] = {bill[Column.DESCRIPTION]: bill[Column.PRICE]}
+            res[month] = {bill[Column.TRANSACTION_ID]: bill[Column.PRICE]}
 
     with open(join(staging_dir(), "bills.json"), "w") as out:
         json.dump(res, out)

@@ -16,18 +16,9 @@ def dictionary_sum(d: NestedDict) -> Number:
         total (Number): the total of all the leaves
     """
     if isinstance(d, dict):
-        return sum(
-            map(
-                dictionary_sum,
-                [
-                    sub_dict
-                    for sub_dict in d.values()
-                    if isinstance(sub_dict, dict) or isinstance(sub_dict, Number)
-                ],
-            )
-        )
+        return sum(map(dictionary_sum, d.values()))
 
-    return d
+    return d if isinstance(d, Number) else 0
 
 
 def recursive_merge(d1: Dict[str, Any], d2: Dict[str, Any]) -> Dict[str, Any]:

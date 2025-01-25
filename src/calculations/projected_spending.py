@@ -41,11 +41,11 @@ def projected_spending(
     if filter_big_bills:
         with open(join(staging_dir(), "bills.json")) as bills:
             data = json.load(bills)
-            for bill in data.get(month, {}):
-                total_spent -= df.loc[
-                    df[Column.DESCRIPTION].str.lower() == bill.lower()
-                ][Column.PRICE].sum()
-                bills_total += data[month][bill]
+            for bill_id in data.get(month, {}):
+                total_spent -= df.loc[df[Column.TRANSACTION_ID] == bill_id][
+                    Column.PRICE
+                ].sum()
+                bills_total += data[month][bill_id]
 
     res = (total_spent / total_days) * (365 / 12) if total_days > 0 else 0
     res += bills_total

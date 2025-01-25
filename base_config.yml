@@ -29,6 +29,15 @@ plots:
           operator: "="
           value: 1
         style: b
+        label: total
+      - filters:
+        - column: "Is Food"
+          operator: "="
+          value: 1
+        style: "g--"
+        label: average
+        agg:
+          - func: mean
 
 aggregations:
   coffees_bought:

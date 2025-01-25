@@ -2,8 +2,8 @@ from enum import StrEnum
 
 
 class Column(StrEnum):
+    TRANSACTION_ID = "Transaction ID"
     DATE = "Date"
-    DESCRIPTION = "Description"
     VENDOR = "Vendor"
     CATEGORY = "Category"
     PRICE = "Price"

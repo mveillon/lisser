@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Literal, List
+import numpy as np
 import pandas as pd
 from os.path import join
 
@@ -56,11 +57,17 @@ class Plot:
             else:
                 y_vals = []
                 for part in partitions:
-                    conjunction = reduce(
-                        __or__ if line.disjunction else __and__,
-                        map(lambda f: f.filter_cond(part), line.filters),
+                    y_vals.append(
+                        part.loc[
+                            reduce(
+                                __or__ if line.disjunction else __and__,
+                                map(lambda f: f.filter_cond(part), line.filters),
+                            )
+                        ][Column.PRICE].sum()
                     )
-                    y_vals.append(part.loc[conjunction][Column.PRICE].sum())
+
+            if line.agg is not None:
+                y_vals = np.full(len(partitions), getattr(np, line.agg.func)(y_vals))
 
             metrics[line.label] = (y_vals, line.style)
 
