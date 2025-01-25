@@ -44,7 +44,7 @@ def _first_spreadsheet(parent: str, sheet_name: str) -> str:
             if re.match(sheet_regex, f, flags=re.IGNORECASE)
         )
     except StopIteration:
-        raise ValueError(f"Cannot find {sheet_name} spreadsheet.")
+        return join(parent, sheet_name + ".xlsx")
 
 
 def spending_path() -> str:

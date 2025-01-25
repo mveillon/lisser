@@ -20,6 +20,9 @@ def _group_df(
         dates (List[dates]): the starting dates of each chunk
         partitions (List[DataFrame]): the list of partitions
     """
+    if df.shape[0] == 0:
+        return [], []
+
     dates = date_func(df[Column.DATE].min().date(), df[Column.DATE].max().date())
     partitions = []
     for i in range(len(dates) - 1):
