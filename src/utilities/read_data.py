@@ -3,7 +3,6 @@ import pandas as pd
 from pandas.api.types import is_string_dtype
 from os.path import splitext
 
-from datetime import datetime, date
 from functools import lru_cache
 from uuid import uuid4
 from numbers_parser import Document
@@ -125,4 +124,3 @@ def get_months(year_data: pd.DataFrame) -> List[pd.DataFrame]:
     """
     groups = year_data.groupby(pd.Grouper(key=Column.DATE, freq="ME"))
     return [df for _, df in groups]
-
