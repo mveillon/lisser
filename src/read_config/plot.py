@@ -31,7 +31,7 @@ class Plot:
     timeframe: Literal["yearly", "monthly"]
     lines: List[Line]
 
-    def create_plot(self, df: pd.DataFrame, out_dir: str):
+    def create_plot(self, df: pd.DataFrame, out_dir: str) -> None:
         """
         Writes the plot to the correct path.
 
@@ -63,11 +63,18 @@ class Plot:
                     )
                     y_vals.append(part.loc[conjunction][Column.PRICE].sum())
 
-            if line.agg is not None:
-                y_vals = np.full(len(partitions), getattr(np, line.agg.func)(y_vals))
+            if line.agg is None:
+                y_vals_arr = np.array(y_vals)
+            else:
+                y_vals_arr = np.full(
+                    len(partitions), getattr(np, line.agg.func)(y_vals)
+                ).tolist()
 
-            metrics[line.label] = (y_vals, line.style)
+            metrics[line.label] = (y_vals_arr, line.style)
 
         metrics_over_time(
-            starts, metrics, self.title, join(out_dir, self.plot_name + ".png")
+            np.array(starts),
+            metrics,
+            self.title,
+            join(out_dir, self.plot_name + ".png"),
         )

@@ -1,9 +1,7 @@
-from typing import Dict, Any
-
 from src.read_config.get_config import get_config
 
 
-def config_globals() -> Dict[str, Any]:
+def config_globals() -> dict:
     """
     Returns the global variables set in the config file.
 

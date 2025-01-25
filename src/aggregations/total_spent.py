@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import cast
 
 from src.utilities.column import Column
 from src.utilities.read_data import read_data
@@ -16,4 +17,7 @@ def total_spent(df: pd.DataFrame) -> float:
     Returns:
         spent (float): the total amount spent
     """
-    return df[Column.PRICE].sum() + read_data(untracked_path())[Column.PRICE].sum()
+    return cast(
+        float,
+        df[Column.PRICE].sum() + read_data(untracked_path())[Column.PRICE].sum(),
+    )

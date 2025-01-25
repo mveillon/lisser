@@ -7,7 +7,7 @@ from datetime import datetime, date
 from functools import lru_cache
 from uuid import uuid4
 from numbers_parser import Document
-from typing import List
+from typing import List, cast, Dict
 
 from src.utilities.column import Column
 from src.utilities.paths import spending_path
@@ -44,7 +44,7 @@ def read_data(path: str) -> pd.DataFrame:
     }
     df = readers[splitext(path)[1]](path)
 
-    new_cols = {
+    new_cols: Dict[str, np.ndarray] = {
         Column.TRANSACTION_ID: np.fromiter(
             map(lambda _: str(uuid4()), np.empty(df.shape[0])),
             count=df.shape[0],
@@ -52,21 +52,17 @@ def read_data(path: str) -> pd.DataFrame:
         )
     }
     if is_string_dtype(df[Column.PRICE]):
-        new_cols[Column.PRICE] = df[Column.PRICE].str.replace(
-            r"[^\d\-.]",
-            "",
-            regex=True,
+        new_cols[Column.PRICE] = np.array(
+            df[Column.PRICE].str.replace(
+                r"[^\d\-.]",
+                "",
+                regex=True,
+            )
         )
 
     df = df.assign(**new_cols)
     for col_name, dtype in SCHEMA.items():
-        df[col_name] = df[col_name].astype(dtype)
-
-    # if df.shape[0] == 0:
-    #     df = pd.DataFrame(
-    #         [[datetime(parse_args().year, 1, 1), "", "", 0.0, False, False]],
-    #         columns=df.columns,
-    #     )
+        df[col_name] = df[col_name].astype(cast(pd.BooleanDtype, dtype))
 
     df[Column.IS_FOOD] = df[Column.IS_FOOD].astype("boolean")
     df[Column.CONTROLLABLE] = df[Column.CONTROLLABLE].astype("boolean")
@@ -99,7 +95,7 @@ def _read_numbers(path: str) -> pd.DataFrame:
     """
     Reads a numbers file and turns it into an unprocessed DataFrame.
     """
-    data = Document(path).sheets[0].tables[0]
+    data = Document(path).sheets[0].tables[0].rows(values_only=True)
     return pd.DataFrame(data[1:], columns=data[0])
 
 
@@ -143,7 +139,7 @@ def month_to_df(month: str) -> pd.DataFrame:
     Returns:
         data (DataFrame): the month of data
     """
-    mo = int(datetime.strftime(month, "%B").strptime("%m"))
+    mo = int(datetime.strptime(month, "%B").strftime("%m"))
     full = combined_df()
     yr = round(full[Column.DATE].mean())
     return full.loc[

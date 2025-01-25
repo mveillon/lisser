@@ -1,11 +1,54 @@
 globals:
+  # --------------------------------------------------------------------
+  # CHANGE ME
   YEARLY_TAKE_HOME_PAY:
-    "2024": 65000
-    "2025": 68000
-  SANKEY_OTHER_THRESHOLD: 0.03
+    # ... previous years up here
+    "2024": 0   # how much you made in 2024, after taxes
+    "2025": 0   # the same, but for 2025
+    # ... future years down here
+  # --------------------------------------------------------------------
+
+
+  # --------------------------------------------------------------------
+  # WEIRD CONFIGS
+  # only change if you know what you're doing
+  SANKEY_OTHER_THRESHOLD: 0.03 
   PROJECTED_SPENDING_BILL_THRESHOLD: 100
+  # --------------------------------------------------------------------
+
 
 plots:
+  # each of these will be its own .png image in the plots directory
+
+  # --------------------------------------------------------------------
+  food_over_time:   # name of the output image
+    timeframe: yearly   # how frequently the transaction totals are sampled. Can be either monthly or yearly
+    title: "Money spent on food over time"  # title of plot
+    
+    # each of these will be its own line in the plot
+    lines:
+      - filters:
+        - column: "Is Food"   # name of column to filter
+          operator: "="   # how to filter
+          value: 1  # what to compare against
+        style: b
+        label: total  # label of first line
+        disjunction: False  # for multiple filters, set to True if you want them to be combined with OR instead of AND
+
+      - filters:
+        - column: "Is Food"
+          operator: "="
+          value: 1
+        style: "g--"
+        label: average  # label of second line
+
+        # optional aggregations to perform. Each func will have its own line
+        # note that the `column` key is not used here
+        agg:
+          - func: mean
+  # --------------------------------------------------------------------
+
+  # --------------------------------------------------------------------
   bills_over_time:
     timeframe: yearly
     title: "Money spent on bills over time"
@@ -19,27 +62,29 @@ plots:
       - filters: []
         style: g
         label: total
+  # --------------------------------------------------------------------
 
-  food_over_time:
-    timeframe: yearly
-    title: "Money spent on food over time"
-    lines:
-      - filters:
-        - column: "Is Food"
-          operator: "="
-          value: 1
-        style: b
-        label: total
-      - filters:
-        - column: "Is Food"
-          operator: "="
-          value: 1
-        style: "g--"
-        label: average
-        agg:
-          - func: mean
 
 aggregations:
+  # each of these will be a key in the aggregations.yml file
+
+  # --------------------------------------------------------------------
+  spent_on_coffee:  # what the key will be
+
+    # of each of these will filter the data, just like with plots
+    filters:
+      - column: Description
+        operator: icontains
+        value: coffee
+
+    # how we're going to aggregate the filtered data into a single number (ish)
+    agg:
+      column: Price   # what column to aggregate. Usually Price
+      func: sum   # what function to perform on the column
+      divide: False   # set to True if you want the totals by week, month, year, etc.
+  # --------------------------------------------------------------------
+
+  # --------------------------------------------------------------------
   coffees_bought:
     filters:
       - column: Description
@@ -47,16 +92,10 @@ aggregations:
         value: coffee
     agg:
       func: count
+      # column key is not needed for the `count` function only
+  # --------------------------------------------------------------------
 
-  spent_on_coffee:
-    filters:
-      - column: Description
-        operator: icontains
-        value: coffee
-    agg:
-      func: sum
-      column: Price
-
+  # --------------------------------------------------------------------
   spent_on_gas:
     filters:
       - column: Description
@@ -65,3 +104,4 @@ aggregations:
     agg:
       func: sum
       column: Price
+  # --------------------------------------------------------------------

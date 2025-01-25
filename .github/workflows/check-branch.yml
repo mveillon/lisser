@@ -14,6 +14,8 @@ jobs:
           python-version: '3.12'
       - name: Install Dependencies
         run: python3 -m pip install -r requirements.txt
+      - name: Install Dev Dependencies
+        run: python3 -m pip install -r requirements-dev.txt
       - name: Initialize
         run: python3 initialize.py < /dev/null
       - name: Check Formatting
@@ -22,3 +24,5 @@ jobs:
         run: python3 -m flake8 src tests main.py initialize.py
       - name: Tests
         run: python3 -m pytest
+      - name: Type Check
+        run: mypy src --config-file=mypy.ini

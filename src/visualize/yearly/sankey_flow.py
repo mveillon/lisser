@@ -3,8 +3,7 @@ from os.path import join
 from sankeyflow import Sankey
 import matplotlib.pyplot as plt
 
-from typing import List, NamedTuple
-from numbers import Number
+from typing import List, NamedTuple, cast
 from itertools import chain
 
 from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
@@ -15,6 +14,7 @@ from src.utilities.dictionary_ops import (
     NestedDict,
     dictionary_sum,
 )
+from src.utilities.types import Number
 from src.read_config.config_globals import config_globals
 
 
@@ -58,7 +58,7 @@ def _get_flows(source: str, d: NestedDict) -> List[Flow]:
     return this_layer
 
 
-def sankey_flow(df: pd.DataFrame, out_dir: str):
+def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
     """
     Plots where spending went in a Sankey chart.
 
@@ -72,7 +72,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
     df = pd.concat([df, read_data(untracked_path())])
     total_spent = df[Column.PRICE].sum()
 
-    flow: NestedDict = {
+    flow = {
         "Saved": estimated_income_after_tax(df) - total_spent,
         "Controllable": {"Other": 0},
         "Not Controllable": {"Food": {}, "Other": 0},
@@ -84,7 +84,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
         this_cat = df.loc[df[Column.CATEGORY] == cat]
         cat_spent = this_cat[Column.PRICE].sum()
         cat_t = (
-            cat.title()
+            cast(str, cat).title()
             if cat_spent > total_spent * config_globals()["SANKEY_OTHER_THRESHOLD"]
             else "Other"
         )
@@ -109,3 +109,4 @@ def sankey_flow(df: pd.DataFrame, out_dir: str):
     )
     s.draw()
     plt.savefig(join(out_dir, "sankey.png"))
+    plt.close()

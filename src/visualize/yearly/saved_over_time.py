@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from os.path import join
+from typing import cast, List
 
 from src.utilities.helpers import monthly_income, get_weeks
 from src.utilities.column import Column
@@ -10,7 +11,7 @@ from src.utilities.read_data import read_data
 from src.utilities.paths import untracked_path
 
 
-def saved_over_time(df: pd.DataFrame, out_dir: str):
+def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:
     """
     Plots how much was saved over the course of the DataFrame
     with a line plot.
@@ -27,7 +28,7 @@ def saved_over_time(df: pd.DataFrame, out_dir: str):
     payments = get_weeks(df[Column.DATE].min(), df[Column.DATE].max())
     dates = []
     balance_changes = []
-    expected_saved = [0]
+    expected_saved = [0.0]
     for dtm in payments:
         dates.append(dtm)
         made = 12 * monthly_income() / 52
@@ -64,8 +65,9 @@ def saved_over_time(df: pd.DataFrame, out_dir: str):
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter(fmt))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator(bymonthday=[1]))
     plt.plot(x, y, "b", label="Saved")
-    plt.plot(payments, expected_saved, "g", label="Goal")
+    plt.plot(cast(List[int], payments), expected_saved, "g", label="Goal")
     plt.plot(x, trend, "--b", label="trend")
     plt.legend()
 
     plt.savefig(join(out_dir, "total_saved.png"))
+    plt.close()

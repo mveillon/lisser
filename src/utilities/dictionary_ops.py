@@ -1,7 +1,5 @@
-from typing import Union, Dict, Tuple, Any
-from numbers import Number
-
-NestedDict = Union[Number, Dict[str, "NestedDict"]]
+from typing import Dict, Tuple, cast
+from src.utilities.types import Number, NestedDict
 
 
 def dictionary_sum(d: NestedDict) -> Number:
@@ -18,18 +16,22 @@ def dictionary_sum(d: NestedDict) -> Number:
     if isinstance(d, dict):
         return sum(map(dictionary_sum, d.values()))
 
-    return d if isinstance(d, Number) else 0
+    try:
+        _ = float(d)
+        return d
+    except ValueError:
+        return 0
 
 
-def recursive_merge(d1: Dict[str, Any], d2: Dict[str, Any]) -> Dict[str, Any]:
+def recursive_merge(d1: Dict[str, NestedDict], d2: Dict[str, NestedDict]):
     """
     Recursively merges `d2` into `d1`, keeping all keys from `d1`, but adding
     and preferring all key/value pairs in `d2`. `d1` is merged in place.
 
     Parameters:
-        d1 (Dict[str, Any]): a potentially nested dictionary. Will be updated by this
-            operation
-        d2 (Dict[str, Any]): a potentially nested citionary whose values will be
+        d1 (Dict[str, NestedDict]): a potentially nested dictionary. Will be updated by
+            this operation
+        d2 (Dict[str, NestedDict]): a potentially nested citionary whose values will be
             preferred
 
     Returns:
@@ -43,13 +45,13 @@ def recursive_merge(d1: Dict[str, Any], d2: Dict[str, Any]) -> Dict[str, Any]:
                     + f"Key `{k}` is dictionary in overwrite but not base."
                 )
 
-            recursive_merge(d1[k], new_val)
+            recursive_merge(cast(Dict[str, NestedDict], d1[k]), new_val)
 
         else:
             d1[k] = new_val
 
 
-def recursive_index(d: Dict[str, Any], path: Tuple[str, ...]) -> Any:
+def recursive_index(d: Dict[str, NestedDict], path: Tuple[str, ...]) -> Number:
     """
     Returns the branch of the nested dictionary, following the path
     of labels.
@@ -62,6 +64,6 @@ def recursive_index(d: Dict[str, Any], path: Tuple[str, ...]) -> Any:
     """
     current = d
     for label in path:
-        current = current[label]
+        current = current[label]  # type: ignore
 
-    return current
+    return current  # type: ignore
