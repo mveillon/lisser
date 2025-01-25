@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import Literal, Any, Callable
+from typing import Literal, Any
 import pandas as pd
 from operator import __eq__, __gt__, __lt__, __ge__, __le__
 
-OperatorFunction = Callable[[pd.Series, Any], pd.Series]
+from src.utilities.types import OperatorFunction
 
 
 @dataclass

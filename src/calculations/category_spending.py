@@ -1,12 +1,13 @@
 import pandas as pd
 from typing import Dict
+from src.utilities.types import Number
 
 from src.utilities.helpers import monthly_income
 from src.utilities.column import Column
 
 
 def category_spending(
-    df: pd.DataFrame, income: int = monthly_income()
+    df: pd.DataFrame, income: Number = monthly_income()
 ) -> Dict[str, float]:
     """
     Calculates how much was spent on each category, as well as how much was
@@ -14,8 +15,8 @@ def category_spending(
 
     Parameters:
         df (DataFrame): the Pandas DataFrame to analyze
-        income (int): the monthly income to compare to. Defaults to
-            `helpers.monthly_income()`
+        income (Optional[Number]): the monthly income to compare to. Defaults
+            to `helpers.monthly_income()`
 
     Returns:
         categories (Dict[str, float]): mapping from category name to how much

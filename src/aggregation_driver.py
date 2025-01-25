@@ -17,10 +17,7 @@ class AggregationDriver:
     Class to perform all aggregations.
     """
 
-    def __init__(self):
-        pass
-
-    def aggregate(self):
+    def aggregate(self) -> None:
         """
         Performs a series of aggregations writes the output to the
         plots directory.
@@ -46,7 +43,7 @@ class AggregationDriver:
             return val
 
         for path in get_modules_from_folder(
-            (Path(__file__).parent / "aggregations").resolve()
+            str(Path(__file__).parent / "aggregations")
         ):
             for func in get_funcs_from_module(path):
                 out[to_title(func.__name__)] = format_out(func(spending))

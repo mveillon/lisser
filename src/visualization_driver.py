@@ -2,8 +2,9 @@ import pandas as pd
 from os import mkdir
 from os.path import join, exists
 from shutil import rmtree
-from typing import List
+from typing import List, cast
 from pathlib import Path
+from datetime import date
 
 from src.utilities.paths import (
     plots_dir,
@@ -32,7 +33,7 @@ class VisualizationDriver:
     monthlys: List[Plotter]
     yearlys: List[Plotter]
 
-    def __init__(self):
+    def __init__(self) -> None:
         for dir in (staging_dir(), plots_dir(), join(plots_dir(), "Combined")):
             if not exists(dir):
                 mkdir(dir)
@@ -51,7 +52,7 @@ class VisualizationDriver:
             for func in get_funcs_from_module(mod):
                 self.yearlys.append(func)
 
-    def _plot_df(self, df: pd.DataFrame, out_dir: str):
+    def _plot_df(self, df: pd.DataFrame, out_dir: str) -> None:
         """
         Makes a bunch of plots for the dataframe and puts them in the `out_dir`
         directory.
@@ -71,7 +72,7 @@ class VisualizationDriver:
         for m in self.monthlys:
             m(df, out_dir)
 
-    def visualize(self):
+    def visualize(self) -> None:
         """
         Creates plots of all the spreadsheets. Main driver for
         the visualizations.
@@ -85,7 +86,8 @@ class VisualizationDriver:
         all_dfs = combined_df()
         for df in get_months(all_dfs):
             self._plot_df(
-                df, join(plots_dir(), df[Column.DATE].median().strftime("%B"))
+                df,
+                join(plots_dir(), cast(date, df[Column.DATE].median()).strftime("%B")),
             )
 
         combined_path = join(plots_dir(), "Combined")

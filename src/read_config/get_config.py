@@ -2,14 +2,12 @@ import yaml
 from functools import lru_cache
 import os.path
 
-from typing import Dict, Any
-
 from src.utilities.paths import base_config, config_path
 from src.utilities.dictionary_ops import recursive_merge
 
 
 @lru_cache(maxsize=1)
-def get_config() -> Dict[str, Any]:
+def get_config() -> dict:
     """
     Returns all user configs.
 

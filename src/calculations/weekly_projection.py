@@ -24,10 +24,11 @@ def weekly_projection(df: pd.DataFrame) -> List[float]:
 
     avgs = []
     for i in range(len(all_dates)):
+        dtm = datetime.combine(all_dates[i], datetime.min.time())
         week_df = time_filter(
             df,
-            datetime.strftime(all_dates[i], fmt),
-            datetime.strftime(all_dates[i] + one_week, fmt),
+            datetime.strftime(dtm, fmt),
+            datetime.strftime(dtm, fmt),
         )
 
         avgs.append(

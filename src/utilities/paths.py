@@ -1,6 +1,7 @@
 from os import listdir
 from os.path import splitext, join
 import re
+from typing import cast
 
 from src.utilities.parse_args import parse_args
 
@@ -15,7 +16,7 @@ def get_year() -> int:
     Returns:
         year (int): the year passed by the user
     """
-    return parse_args().year
+    return cast(int, parse_args().year)
 
 
 def this_years_data() -> str:

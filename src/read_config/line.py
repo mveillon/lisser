@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from src.read_config.filter import Filter
 from src.read_config.agg_function import AggFunction
@@ -24,7 +24,7 @@ class Line:
     """
 
     filters: List[Filter]
-    agg: AggFunction = None
+    agg: Optional[AggFunction] = None
     style: str = "b"
     label: str = ""
     disjunction: bool = False

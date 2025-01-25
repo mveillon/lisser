@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 import pandas as pd
 
 
@@ -19,7 +19,7 @@ class AggFunction:
 
     func: str
     divide: bool = False
-    column: str = None
+    column: Optional[str] = None
 
     def aggregate(self, df: pd.DataFrame, num_days: int) -> Any:
         """

@@ -1,7 +1,7 @@
 import locale
 import pandas as pd
 from os.path import join
-from typing import List
+from typing import List, cast, Dict
 from datetime import timedelta, date
 import json
 
@@ -9,6 +9,7 @@ from src.utilities.read_data import combined_df
 from src.utilities.paths import staging_dir, get_year
 from src.utilities.column import Column
 from src.read_config.config_globals import config_globals
+from src.utilities.types import Number
 
 
 def monthly_income() -> float:
@@ -21,7 +22,7 @@ def monthly_income() -> float:
     Returns:
         income (float): how much income was made each month
     """
-    return config_globals()["YEARLY_TAKE_HOME_PAY"][str(get_year())] / 12
+    return cast(float, config_globals()["YEARLY_TAKE_HOME_PAY"][str(get_year())]) / 12
 
 
 def format_currency(money: float) -> str:
@@ -91,10 +92,11 @@ def get_months(min_day: date, max_day: date) -> List[date]:
     return all_dates[:-1]
 
 
-def find_big_bills():
+def find_big_bills() -> None:
     """
-    Generates a JSON with all big bills using all spreadsheets in
-    `utils.sheet_dir()`, writing the result to `utils.csv_dir()`.
+    Generates a JSON with all big bills using the spreadsheet in
+    `src.utilities.spending_dir()`, writing the result to
+    `src.utilities.staging_dir()`.
 
     Parameters:
         None
@@ -102,7 +104,7 @@ def find_big_bills():
     Returns:
         None
     """
-    res = {}
+    res: Dict[str, Dict[str, Number]] = {}
     df = combined_df()
     big_bills = df.loc[
         (df[Column.PRICE] >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"])

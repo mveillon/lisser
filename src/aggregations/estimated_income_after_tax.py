@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+from typing import cast
 
 from src.utilities.helpers import monthly_income
 from src.utilities.paths import get_year
@@ -28,4 +29,4 @@ def estimated_income_after_tax(
     ).days
     days_in_data = (df[Column.DATE].max() - df[Column.DATE].min()).days
 
-    return (days_in_data / days_this_year) * monthly_income * 12
+    return cast(float, days_in_data / days_this_year) * monthly_income * 12

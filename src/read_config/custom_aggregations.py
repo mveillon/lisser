@@ -2,14 +2,12 @@ import pandas as pd
 from functools import reduce
 from operator import __and__, __or__
 
-from typing import Callable, Any, Dict
+from typing import Any, Dict
 
 from src.read_config.filter import Filter
 from src.read_config.agg_function import AggFunction
 from src.read_config.get_config import get_config
 from src.utilities.column import Column
-
-AggFunc = Callable[[pd.DataFrame], Any]
 
 
 def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:

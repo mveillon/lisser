@@ -10,7 +10,7 @@ from src.calculations.monthly_spending import monthly_spending
 from src.utilities.helpers import monthly_income, format_currency
 
 
-def saved_per_month(df: pd.DataFrame, out_dir: str):
+def saved_per_month(df: pd.DataFrame, out_dir: str) -> None:
     """
     Plots how much was saved over the course of the DataFrame,
     grouped by month.
@@ -51,3 +51,4 @@ def saved_per_month(df: pd.DataFrame, out_dir: str):
         ax.annotate(format_currency(y_loc), (x_loc, y_loc))
 
     plt.savefig(join(out_dir, "saved_per_month.png"))
+    plt.close()

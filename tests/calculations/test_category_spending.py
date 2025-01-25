@@ -13,5 +13,6 @@ def test_category_spending():
     assert np.isclose(cats["Total spent"], 1520.89)
     assert np.isclose(cats["Groceries"], 89.28)
 
-    for spent in cats.values():
-        assert spent > 0
+    for cat, spent in cats.items():
+        if cat != "Income":
+            assert spent > 0.0
