@@ -126,23 +126,3 @@ def get_months(year_data: pd.DataFrame) -> List[pd.DataFrame]:
     groups = year_data.groupby(pd.Grouper(key=Column.DATE, freq="ME"))
     return [df for _, df in groups]
 
-
-def month_to_df(month: str) -> pd.DataFrame:
-    """
-    Reads and filters the data to just transactions in the given
-    month.
-
-    Parameters:
-        month (str): which month to filter. Should be '%B' format,
-            e.g. January, March
-
-    Returns:
-        data (DataFrame): the month of data
-    """
-    mo = int(datetime.strptime(month, "%B").strftime("%m"))
-    full = combined_df()
-    yr = round(full[Column.DATE].mean())
-    return full.loc[
-        (full[Column.DATE] >= date(yr, mo, 1))
-        & (full[Column.DATE] < date(yr + int(mo == 12), (mo % 12) + 1, 1))
-    ]
