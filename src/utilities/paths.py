@@ -29,7 +29,7 @@ def this_years_data() -> str:
     Returns:
         path (str): this year's data
     """
-    return join("data", str(get_year()))
+    return join("src/ui/static/data", str(get_year()))
 
 
 def _first_spreadsheet(parent: str, sheet_name: str) -> str:

@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from os.path import join
-from typing import cast, List
 
 from src.utilities.helpers import monthly_income, get_weeks
 from src.utilities.column import Column
@@ -45,7 +44,7 @@ def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:
     inds = sorted(range(len(dates)), key=dates.__getitem__)
     x = np.array(dates)[inds]
     sorted_changes = np.array(balance_changes)[inds]
-    balance = [0]
+    balance = [0.0]
     for change in sorted_changes:
         balance.append(balance[-1] + change)
 
@@ -65,7 +64,7 @@ def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter(fmt))
     plt.gca().xaxis.set_major_locator(mdates.DayLocator(bymonthday=[1]))
     plt.plot(x, y, "b", label="Saved")
-    plt.plot(cast(List[int], payments), expected_saved, "g", label="Goal")
+    plt.plot(x, expected_saved, "g", label="Goal")
     plt.plot(x, trend, "--b", label="trend")
     plt.legend()
 

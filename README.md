@@ -30,7 +30,7 @@ This will analyze one year of data. By default, this will be the year of the cur
 
 # Files
 
-The only files that the user will interact with are `config_overwrite.yml` and all the files in the `data` directory. The `data` directory will have the following structure.
+The only files that the user will interact with are `base_config.yml / config_overwrite.yml` and all the files in the `src/ui/static/data` directory. The directory is nested so much to allow the UI to find the data, but it will just be referred to as `data/`. The `data/` directory will have the following structure.
 
 ```bash
 ├── data
