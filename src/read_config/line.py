@@ -1,11 +1,11 @@
-from dataclasses import dataclass
 from typing import List, Optional
 
 from src.read_config.filter import Filter
 from src.read_config.agg_function import AggFunction
+from src.utilities.decorators import dataclass_from_json
 
 
-@dataclass
+@dataclass_from_json({"filters": Filter})
 class Line:
     """
     A line in a plot, summing the total amount spent over a period of time.
