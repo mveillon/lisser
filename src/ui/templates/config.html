@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ site_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+  </head>
+  <body>
+    <div class-name="header">
+        <h1>
+            {{ site_title }}
+        </h1>
+    </div>
+    <div class-name="content columns">
+        <div class-name="col">
+            <p>Globals:</p>
+            {% for var_name, var_value in globals.items() %}
+                <label for="{{ var_name }}" class-name="config-label">
+                    {{ var_name | replace("_", " ") | title}}:
+                </label>
+                {% if var_value is number %}
+                    <input type="number" value="{{ var_value }}" class-name="number-input" />
+                {% elif var_value is boolean %}
+                    {% if var_value %}
+                        <input type="checkbox" checked="checked" class-name="checkbox" />
+                    {% else %}
+                        <input type="checkbox" checked="checked" class-name="checkbox" />
+                    {% endif %}
+                {% else %}
+                    <input type="text" autocomplete="on" value="{{ var_value }}" class-name="text-input" />
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class-name="col">
+            <p>Plots:</p>
+            {% for plot in plots %}
+                <label for
+            {% endfor %}
+        </div>
+
+        <div class-name="col">
+            <p>Aggregations:</p>
+            ...
+        </div>
+    </div>
+  </body>
+</html>
