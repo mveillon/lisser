@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Literal, List
 import numpy as np
 import pandas as pd
@@ -11,9 +10,12 @@ from src.read_config.line import Line
 from src.utilities.df_grouping import group_by_month, group_by_week
 from src.utilities.column import Column
 from src.visualize.common import metrics_over_time
+from src.utilities.decorators import dataclass_from_converted_json
 
 
-@dataclass
+@dataclass_from_converted_json(
+    converters={"lines": lambda lst: list(map(Line, lst))}  # type: ignore
+)
 class Plot:
     """
     One plot to generate.

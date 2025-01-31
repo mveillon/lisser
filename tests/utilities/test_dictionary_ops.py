@@ -2,6 +2,7 @@ from src.utilities.dictionary_ops import (
     dictionary_sum,
     recursive_merge,
     recursive_index,
+    convert_dict,
 )
 
 
@@ -92,3 +93,27 @@ def test_recursive_index():
     assert recursive_index(base, ["a"]) == 1
     assert recursive_index(base, ["c", "d"]) == 1
     assert recursive_index(base, ["c", "f"]) == {"g": 3}
+
+
+def test_convert_dict():
+    base = {
+        "a": "hello world",
+        "b": {
+            "c": 40,
+        },
+        "d": {
+            "e": 80,
+        },
+    }
+    converters = {"b": lambda d: d["c"], "e": lambda n: n * 2}
+
+    expected = {
+        "a": "hello world",
+        "b": 40,
+        "d": {
+            "e": 160,
+        },
+    }
+
+    convert_dict(base, converters)
+    assert base == expected

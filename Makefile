@@ -8,10 +8,10 @@ test:
 	pytest
 
 init:
-	python3 -m pip install -r requirements.txt; python3 initialize.py
+	python -m pip install -r requirements.txt; python initialize.py
 
 run:
-	python3 main.py
+	python main.py
 
 types:
 	mypy src --config-file=mypy.ini

@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, cast
+from typing import Dict, Tuple, cast, Callable
 from src.utilities.types import Number, NestedDict
 
 
@@ -67,3 +67,22 @@ def recursive_index(d: Dict[str, NestedDict], path: Tuple[str, ...]) -> Number:
         current = current[label]  # type: ignore
 
     return current  # type: ignore
+
+
+def convert_dict(d: dict, converters: Dict[str, Callable]) -> None:
+    """
+    Recursively converts all the values in d, modifying d in place.
+
+    Parameters:
+        d (dict): the potentially nested dictionary to convert
+        converters (Dict[str, Callable]): a mapping of key names to
+            functions to call on each value
+
+    Returns:
+        None
+    """
+    for k in d.keys() & converters.keys():
+        d[k] = converters[k](d[k])
+
+    for sub_d in filter(lambda b: isinstance(d[b], dict), d.keys()):
+        convert_dict(d[sub_d], converters)

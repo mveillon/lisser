@@ -1,12 +1,12 @@
-from dataclasses import dataclass
 from typing import Literal, Any
 import pandas as pd
 from operator import __eq__, __gt__, __lt__, __ge__, __le__
 
 from src.utilities.types import OperatorFunction
+from src.utilities.decorators import dataclass_from_json
 
 
-@dataclass
+@dataclass_from_json
 class Filter:
     """
     A way to a filter a DataFrame by comparing a column to a literal value.
