@@ -2,10 +2,15 @@ from typing import List, Optional
 
 from src.read_config.filter import Filter
 from src.read_config.agg_function import AggFunction
-from src.utilities.decorators import dataclass_from_json
+from src.utilities.decorators import dataclass_from_converted_json
 
 
-@dataclass_from_json({"filters": Filter})
+@dataclass_from_converted_json(
+    converters={
+        "filters": lambda lst: list(map(Filter, lst)),  # type: ignore
+        "agg": AggFunction,
+    }
+)
 class Line:
     """
     A line in a plot, summing the total amount spent over a period of time.

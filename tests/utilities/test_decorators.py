@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from src.utilities.decorators import dataclass_from_json
+from src.utilities.decorators import dataclass_from_converted_json
 
 
 class DataclassFromJsonTestClass:
@@ -12,7 +12,7 @@ class DataclassFromJsonTestClass:
 def test_dataclass_from_json():
     convert_str = lambda s: s.replace("_", " ").capitalize()
     deco1 = dataclass
-    deco2 = dataclass_from_json(converters={"var_name": convert_str})
+    deco2 = dataclass_from_converted_json(converters={"var_name": convert_str})
 
     fields = {
         "var_name": "secret_to_the_universe",

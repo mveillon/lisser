@@ -6,7 +6,7 @@ from src.utilities.types import OperatorFunction
 from src.utilities.decorators import dataclass_from_json
 
 
-@dataclass_from_json()
+@dataclass_from_json
 class Filter:
     """
     A way to a filter a DataFrame by comparing a column to a literal value.

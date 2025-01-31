@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from os.path import join
 
-from itertools import starmap
 from functools import reduce
 from operator import __and__, __or__
 
@@ -11,10 +10,12 @@ from src.read_config.line import Line
 from src.utilities.df_grouping import group_by_month, group_by_week
 from src.utilities.column import Column
 from src.visualize.common import metrics_over_time
-from src.utilities.decorators import dataclass_from_json
+from src.utilities.decorators import dataclass_from_converted_json
 
 
-@dataclass_from_json(converters={"lines": lambda lst: list(starmap(Line, lst))})
+@dataclass_from_converted_json(
+    converters={"lines": lambda lst: list(map(Line, lst))}  # type: ignore
+)
 class Plot:
     """
     One plot to generate.

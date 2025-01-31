@@ -1,10 +1,7 @@
 from typing import Tuple, List, cast
 
 from src.read_config.plot import Plot
-from src.read_config.filter import Filter
-from src.read_config.line import Line
 from src.read_config.get_config import get_config
-from src.read_config.agg_function import AggFunction
 from src.utilities.types import Plotter
 
 
@@ -20,30 +17,20 @@ def _read_convert_plots() -> List[Plot]:
     """
     data = get_config()["plots"]
 
-    res = []
     for plot in data:
         new_lines = []
-
         for line in data[plot]["lines"]:
-            new_filts = []
-
-            for filter in line["filters"]:
-                new_filts.append(Filter(**filter))
-
-            with_filters = line | {"filters": new_filts}
-
             if "agg" in line:
-                # exploding the optional agg array
                 for agg in line["agg"]:
-                    new_lines.append(
-                        Line(**(with_filters | {"agg": AggFunction(**agg)}))
-                    )
+                    new_lines.append(line | {"agg": agg})
+
             else:
-                new_lines.append(Line(**with_filters))
+                new_lines.append(line)
 
-        res.append(Plot(**(data[plot] | {"lines": new_lines, "plot_name": plot})))
+        data[plot]["lines"] = new_lines
+        data[plot]["plot_name"] = plot
 
-    return res
+    return list(map(Plot, data.values()))  # type: ignore
 
 
 def plotters_from_config() -> Tuple[List[Plotter], List[Plotter]]:
