@@ -1,9 +1,10 @@
-from dataclasses import dataclass
 from typing import Any, Optional
 import pandas as pd
 
+from src.utilities.decorators import dataclass_from_json
 
-@dataclass
+
+@dataclass_from_json
 class AggFunction:
     """
     A function to aggregate a column of a Pandas DataFrame.
