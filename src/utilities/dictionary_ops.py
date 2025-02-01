@@ -1,4 +1,6 @@
-from typing import Dict, Tuple, cast, Callable
+from typing import Dict, Tuple, no_type_check, Callable, cast
+import re
+
 from src.utilities.types import Number, NestedDict
 
 
@@ -51,22 +53,47 @@ def recursive_merge(d1: Dict[str, NestedDict], d2: Dict[str, NestedDict]) -> Non
             d1[k] = new_val
 
 
-def recursive_index(d: Dict[str, NestedDict], path: Tuple[str, ...]) -> Number:
+@no_type_check
+def recursive_index(
+    d: Dict[str, NestedDict], path: Tuple[str, ...], set_to: Number | None = None
+) -> Number:
     """
     Returns the branch of the nested dictionary, following the path
     of labels.
 
     Parameters:
         d (Dict[str, Any]): the tree to search
+        path (Tuple[str, ...]): a tuple of sub-keys to index recursively
+        set_to (Number): what to set as the new value. Defaults to None, at which point
+            the value is not overwritten. If set, set_to will be returned
 
     Returns:
-        branch (Any): the branch at the end of the path
+        branch (NestedDict): the branch at the end of the path, or set_to if it is set
     """
     current = d
-    for label in path:
-        current = current[label]  # type: ignore
+    new_path = []
+    lst_re = r"[^\[]*\[[0-9]+\]"
+    to_int = lambda ind: int(re.sub(r"[^0-9]", "", ind))
 
-    return current  # type: ignore
+    for label in path:
+        if re.match(lst_re, label):
+            parts = label.split("[")
+            new_path.append(parts[0])
+            new_path.extend([to_int(parts[i]) for i in range(1, len(parts))])
+        else:
+            new_path.append(label)
+
+    if set_to is not None:
+        last_ind = new_path.pop()
+
+    for label in new_path:
+        current = current[label]
+
+    if set_to is not None:
+        current[last_ind] = set_to
+        return set_to
+
+    return current
 
 
 def convert_dict(d: dict, converters: Dict[str, Callable]) -> None:

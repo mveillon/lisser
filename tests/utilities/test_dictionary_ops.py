@@ -87,12 +87,20 @@ def test_recursive_index():
         },
         "d": 0,
         "i": {"j": 4},
+        "k": [
+            [
+                {
+                    "m": 5,
+                }
+            ]
+        ],
     }
 
     assert recursive_index(base, []) == base
     assert recursive_index(base, ["a"]) == 1
     assert recursive_index(base, ["c", "d"]) == 1
     assert recursive_index(base, ["c", "f"]) == {"g": 3}
+    assert recursive_index(base, ["k[0][0]", "m"]) == 5
 
 
 def test_convert_dict():

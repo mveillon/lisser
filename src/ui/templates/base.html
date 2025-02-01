@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ site_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/global.css') }}">
+    {% endblock %}
+</head>
+<body>
+    <script src="{{ url_for('static', filename='js/domHelpers.js') }}"></script>
+    
+    {% macro title(s) %}
+        {{ s | replace("_", " ") | title }}
+    {% endmacro %}
+
+    {% macro config_input(var_name, var_value, allow_delete=False) %}
+        <div id="{{ var_name }}-input" class-name="input-div">
+            {% if allow_delete %}
+                <button class-name="delete-button" onclick="() => deleteInput('{{ var_name }}' + '-input')">
+                    -
+                </button>
+            {% endif %}
+
+            <label for="{{ var_name }}" class-name="input-label">
+                {% call title(var_name) %}:
+            </label>
+
+            {% if var_value is number %}
+                <input type="number" value="{{ var_value }}" class-name="number-input" />
+            {% elif var_value is boolean %}
+                {% if var_value %}
+                    <input type="checkbox" checked="checked" class-name="checkbox-input" />
+                {% else %}
+                    <input type="checkbox" class-name="checkbox-input" />
+                {% endif %}
+            {% elif var_value is sequence %}
+                <p>{% call title(var_name) %}</p>
+
+                {% for item in var_value %}
+                    {% call config_input(var_name + "[" + loop.index + "]", item, allow_delete=True) %}
+                {% endfor %}
+            {% elif var_value is mapping %}
+                <p>{% call title(var_name) %}</p>
+
+                {% for branch_name, branch_val in var_value.items() %}
+                    {% call config_input(var_name + "." + branch_name, branch_val, allow_delete=True) %}
+                {% endfor %}
+            {% else %}
+                <input type="text" autocomplete="on" value="{{ var_value }}" class-name="text-input" />
+            {% endif %}
+        </div>
+    {% endmacro %}
+
+    <div class-name="header">
+        <h1>
+            {{ site_title }}
+        </h1>
+    </div>
+
+    <div class-name="content columns">
+        {% block content} {% endblock %}
+    </div>
+</body>
+</html>
