@@ -1,59 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ site_title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/global.css') }}">
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
-  </head>
-  <body>
-    <div class-name="header">
-        <h1>
-            {{ site_title }}
-        </h1>
+{% endblock %}
+
+{% block content %}
+{% if invalid %}
+    <p>spreadsheet is invalid.</p>
+{% endif %}
+
+<form action="{{ url_for('home') }}" target="_self" method="post" enctype="multipart/form-data">
+    <div class-name="block">
+        <label for="sheet-input" class-name="input-label">
+            Upload your spending spreadsheet!
+        </label>
+        <input
+            type="file"
+            class-name="file-input"
+            accept=".xlsx, .csv, .txt"
+            autofocus="autofocus"
+        />
     </div>
-    <div class-name="content columns">
-        <div class-name="config">
-            <div class-name="block">
-                <p>Globals:</p>
-                {% for var_name, var_value in globals.items() %}
-                    <label for="{{ var_name }}" class-name="config-label">
-                        {{ var_name | replace("_", " ") | title}}:
-                    </label>
-                    {% if var_value is number %}
-                        <input type="number" value="{{ var_value }}" class-name="number-input" />
-                    {% elif var_value is boolean %}
-                        {% if var_value %}
-                            <input type="checkbox" checked="checked" class-name="checkbox" />
-                        {% else %}
-                            <input type="checkbox" checked="checked" class-name="checkbox" />
-                        {% endif %}
-                    {% else %}
-                        <input type="text" autocomplete="on" value="{{ var_value }}" class-name="text-input" />
-                    {% endif %}
-                {% endfor %}
-            </div>
-
-            <div class-name="block">
-                <p>Plots:</p>
-                ...
-            </div>
-
-            <div class-name="block">
-                <p>Aggregations:</p>
-                ...
-            </div>
-        </div>
-
-        <div class-name="data-input">
-
-        </div>
-
-        <div class-name="data-output">
-
-        </div>
-    </div>
-  </body>
-</html>
+</form>
+{% endblock %}

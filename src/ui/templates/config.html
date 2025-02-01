@@ -2,10 +2,15 @@
 
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/config.css') }}">
 {% endblock %}
 
 {% block content %}
+{% if invalid %}
+    <p>Invalid config input.</p>
+{% endif %}
+
+<form action="{{ url_for('config') }}" target="_self", method="post" class-name="columns">
     <div class-name="block">
         <p>Globals:</p>
         <div class-name="scrollable">
@@ -39,4 +44,5 @@
             {% endfor %}
         </div>
     </div>
+</form>
 {% endblock %}

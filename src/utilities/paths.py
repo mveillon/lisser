@@ -29,7 +29,7 @@ def this_years_data() -> str:
     Returns:
         path (str): this year's data
     """
-    return join("src", "ui", "static", "data", str(get_year()))
+    return join("data", str(get_year()))
 
 
 def _first_spreadsheet(parent: str, sheet_name: str) -> str:
@@ -168,3 +168,16 @@ def base_config() -> str:
         path (str): the path to base_config.yml
     """
     return "base_config.yml"
+
+
+def static_path() -> str:
+    """
+    Returns the path to the static folder, used by the UI.
+
+    Paramters:
+        None
+
+    Returns:
+        path (str): the path to the static folder
+    """
+    return join("src", "ui", "static")

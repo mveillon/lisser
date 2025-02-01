@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% set site_title = "Fauxduciary" %}
 <head>
     {% block head %}
     <meta charset="UTF-8">
@@ -11,7 +12,7 @@
 </head>
 <body>
     <script src="{{ url_for('static', filename='js/domHelpers.js') }}"></script>
-    
+
     {% macro title(s) %}
         {{ s | replace("_", " ") | title }}
     {% endmacro %}
@@ -55,13 +56,19 @@
     {% endmacro %}
 
     <div class-name="header">
+        <div></div>
+
         <h1>
             {{ site_title }}
         </h1>
+
+        <button class-name="config-nav" onclick="() => window.location.href = `{{ url_for('config') }}`">
+            Settings
+        </button>
     </div>
 
-    <div class-name="content columns">
-        {% block content} {% endblock %}
+    <div class-name="content">
+        {% block content required} {% endblock %}
     </div>
 </body>
 </html>
