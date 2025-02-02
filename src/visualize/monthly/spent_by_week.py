@@ -11,9 +11,7 @@ from src.visualize.common import metrics_over_time
 
 
 def spent_by_week(
-    df: pd.DataFrame,
-    out_dir: str,
-    income: Number = monthly_income(),
+    df: pd.DataFrame, out_dir: str, income: Number = monthly_income()
 ) -> None:
     """
     Plots spending by week smoothed out as a per month average, compared to the monthly
