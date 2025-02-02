@@ -5,7 +5,6 @@ from os import makedirs
 from src.utilities.paths import (
     config_path,
     spending_path,
-    untracked_path,
     this_years_data,
 )
 from src.utilities.parse_args import parse_args
@@ -73,10 +72,6 @@ def add_spending_sheet():
         None
     """
     makedirs(this_years_data(), exist_ok=True)
-
-    untracked = untracked_path()
-    if check_overwrite(untracked):
-        shutil.copy("base_sheet.xlsx", untracked)
 
     spending = spending_path()
     if check_overwrite(spending):

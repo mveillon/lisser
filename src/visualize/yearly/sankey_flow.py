@@ -7,8 +7,7 @@ from typing import List, NamedTuple, cast
 from itertools import chain
 
 from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
-from src.utilities.read_data import read_data
-from src.utilities.paths import untracked_path, get_year
+from src.utilities.paths import get_year
 from src.utilities.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,
@@ -69,7 +68,6 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
     Returns:
         None
     """
-    df = pd.concat([df, read_data(untracked_path())])
     total_spent = df[Column.PRICE].sum()
 
     flow = {

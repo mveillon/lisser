@@ -6,6 +6,7 @@ from os.path import join
 from functools import reduce
 from operator import __and__, __or__
 
+from src.utilities.read_data import filter_large_transactions
 from src.read_config.line import Line
 from src.utilities.df_grouping import group_by_month, group_by_week
 from src.utilities.column import Column
@@ -45,7 +46,7 @@ class Plot:
             None
         """
         if self.timeframe == "monthly":
-            starts, partitions = group_by_week(df)
+            starts, partitions = group_by_week(filter_large_transactions(df))
         elif self.timeframe == "yearly":
             starts, partitions = group_by_month(df)
         else:

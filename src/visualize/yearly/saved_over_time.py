@@ -7,8 +7,6 @@ from typing import cast, List
 
 from src.utilities.helpers import monthly_income, get_weeks
 from src.utilities.column import Column
-from src.utilities.read_data import read_data
-from src.utilities.paths import untracked_path
 
 
 def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:
@@ -23,7 +21,6 @@ def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:
     Returns:
         None
     """
-    df = pd.concat([df, read_data(untracked_path())])
     fmt = "%b"
     payments = get_weeks(df[Column.DATE].min(), df[Column.DATE].max())
     dates = []
