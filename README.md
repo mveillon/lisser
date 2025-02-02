@@ -20,9 +20,21 @@ You can also set up the spreadsheets for a previous year using the `-y {year}` o
 
 ## Input
 
-The `data/{year}/Spending` spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
+The input spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
 
-Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+Note that income does not belong in these spreadsheets.
+
+The spreadsheet needs, at minimum, the following columns:
+
+- `Date`: the date of the transaction
+- `Category`: the general category of the transaction, e.g. "Groceries", or "Bills"
+- `Price`: how much was spent. Should always be positive
+- `Is Food`: whether the transaction was spent on food. Either zero (no) or one (yes)
+- `Controllable`: whether you had a reasonable amount of control over the transaction or how much it was. Either zero (no) or one (yes)
+
+Additionally, the default spreadsheets also have columns for `Description`, a brief description of what was bought, and `Vendor`, to whom the money went. These categories are not used by the code by default, but they can be accessed by any plots or aggregations in `config_overwrite.yml` as string columns.
+
+Although not needed by the machine, these columns are highly recommended for the human creating and/or reviewing the data.
 
 ## Output
 
@@ -34,11 +46,13 @@ There are also aggregations done on the full year of data. These are found at `d
 
 # CLI Usage
 
-Once installation is complete, you run the code with the following commands: `> python3 main.py`
+Once installation is complete, you run the code with the following commands: `> python3 main.py`. 
 
 Or if you have `make` installed, you can also run `> make run`.
 
 This will analyze one year of data. By default, this will be the year of the current local time, but this can be changed with the `-y {year}` or `--year={year}` option.
+
+Using this year, it will search for a spreadsheet at `data/{year}/Spending.{csv|txt|numbers|xlsx}`.
 
 # Running the GUI
 
