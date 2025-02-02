@@ -18,7 +18,6 @@ def controllable_bars(df: pd.DataFrame, out_dir: str) -> None:
     Returns:
         None
     """
-    df = filter_large_transactions(df)
     plt.clf()
 
     plt.title("How much spending is controllable")
