@@ -29,7 +29,7 @@ def this_years_data() -> str:
     Returns:
         path (str): this year's data
     """
-    return join("src", "ui", "static", "data", str(get_year()))
+    return join("data", str(get_year()))
 
 
 def _first_spreadsheet(parent: str, sheet_name: str) -> str:
@@ -113,22 +113,6 @@ def is_excel(path: str) -> bool:
         is_excel (bool): whether the file is an excel sheet that should be plotted
     """
     return splitext(path)[1] == ".xlsx" and "~" not in path
-
-
-def untracked_path() -> str:
-    """
-    Returns the path to the excel sheet of untracked expenses. This sheet
-    contains the handful of transactions that were so large they were not
-    included in the monthly spreadhseets so as not to completely throw off
-    the graphs.
-
-    Parameters:
-        None
-
-    Returns:
-        path (str): the path to the untracked sheet
-    """
-    return _first_spreadsheet(this_years_data(), "Untracked")
 
 
 def aggregation_path() -> str:

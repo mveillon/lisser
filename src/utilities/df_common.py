@@ -1,8 +1,10 @@
 import pandas as pd
-from typing import Callable, Tuple, List
+from typing import Callable, Tuple, List, cast
 from datetime import date
+
 from src.utilities.helpers import get_months, get_weeks
 from src.utilities.column import Column
+from src.read_config.config_globals import config_globals
 
 
 def _group_df(
@@ -63,3 +65,21 @@ def group_by_month(df: pd.DataFrame) -> Tuple[List[date], List[pd.DataFrame]]:
         partitions (List[DataFrame]): a list of each chunk of df
     """
     return _group_df(df, get_months)
+
+
+def filter_large_transactions(df: pd.DataFrame) -> Tuple[pd.DataFrame, float]:
+    """
+    Throws out outlier transactions that throw off certain calculations.
+
+    Parameters:
+        df (DataFrame): the Pandas DataFrame to filter
+
+    Returns:
+        df (DataFrame): the filtered DataFrame
+        filtered_out (float): how much money was filtered out
+    """
+    thresh = config_globals()["PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD"]
+    return (
+        df.loc[df[Column.PRICE] < thresh],
+        cast(float, df.loc[df[Column.PRICE] >= thresh][Column.PRICE].sum()),
+    )

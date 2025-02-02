@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 from os.path import join
 from datetime import datetime
 
-from src.utilities.read_data import read_data
-from src.utilities.paths import untracked_path, get_year
+from src.utilities.paths import get_year
 from src.calculations.monthly_spending import monthly_spending
 from src.utilities.helpers import monthly_income, format_currency
 
@@ -22,7 +21,6 @@ def saved_per_month(df: pd.DataFrame, out_dir: str) -> None:
     Returns:
         None
     """
-    df = pd.concat([df, read_data(untracked_path())])
     months = monthly_spending(df)
     saved = {m: monthly_income() - spent for m, spent in months.items()}
     average = np.mean(list(saved.values()))

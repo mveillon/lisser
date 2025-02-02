@@ -14,7 +14,6 @@ from src.utilities.paths import spending_path
 
 SCHEMA = {
     Column.DATE: "str",
-    Column.VENDOR: "str",
     Column.CATEGORY: "str",
     Column.PRICE: "float",
     Column.IS_FOOD: "int",
