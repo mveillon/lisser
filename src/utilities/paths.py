@@ -6,6 +6,10 @@ from typing import cast
 from src.utilities.parse_args import parse_args
 
 
+class Year:
+    year: int = cast(int, parse_args().year)
+
+
 def get_year() -> int:
     """
     Returns the year passed to the command on the command line.
@@ -16,7 +20,7 @@ def get_year() -> int:
     Returns:
         year (int): the year passed by the user
     """
-    return cast(int, parse_args().year)
+    return Year.year
 
 
 def this_years_data() -> str:

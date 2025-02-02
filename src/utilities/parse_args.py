@@ -22,7 +22,10 @@ def parse_args() -> argparse.Namespace:
         "-f",
         "--force",
         action="store_true",
-        help="force overwrite files that already exist. Default False",
+        help=(
+            "force overwrite files that already exist. "
+            + "Default False. Only applies to initialize.py"
+        ),
     )
     parser.add_argument(
         "-y",
@@ -30,5 +33,11 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=date.today().year,
         help="which year to process. Defaults to year of system time",
+    )
+    parser.add_argument(
+        "-t",
+        "--tkinter",
+        action="store_true",
+        help="launch Tkinter GUI to accept a file input. Only applies to main.py",
     )
     return parser.parse_args()

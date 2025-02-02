@@ -18,15 +18,47 @@ This will install all dependent libraries and create template files for you to p
 
 You can also set up the spreadsheets for a previous year using the `-y {year}` or `--year={year}` option.
 
-# Usage
+## Input
 
-Once installation is complete, you run the code with the following commands: `> python3 main.py`
+The input spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
+
+Note that income does not belong in these spreadsheets.
+
+The spreadsheet needs, at minimum, the following columns:
+
+- `Date`: the date of the transaction
+- `Category`: the general category of the transaction, e.g. "Groceries", or "Bills"
+- `Price`: how much was spent. Should always be positive
+- `Is Food`: whether the transaction was spent on food. Either zero (no) or one (yes)
+- `Controllable`: whether you had a reasonable amount of control over the transaction or how much it was. Either zero (no) or one (yes)
+
+Additionally, the default spreadsheets also have columns for `Description`, a brief description of what was bought, and `Vendor`, to whom the money went. These categories are not used by the code by default, but they can be accessed by any plots or aggregations in `config_overwrite.yml` as string columns.
+
+Although not needed by the machine, these columns are highly recommended for the human creating and/or reviewing the data.
+
+## Output
+
+After running the `main.py` file once, there will be two sets of outputs. If ran through the GUI, this will all be contained within the saved `.zip` file.
+
+The main output are the graphs in `data/{year}/plots`. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `data/{year}/plots/Combined`.
+
+There are also aggregations done on the full year of data. These are found at `data/{year}/aggregation.yml`.
+
+# CLI Usage
+
+Once installation is complete, you run the code with the following commands: `> python3 main.py`. 
 
 Or if you have `make` installed, you can also run `> make run`.
 
 This will analyze one year of data. By default, this will be the year of the current local time, but this can be changed with the `-y {year}` or `--year={year}` option.
 
-*Note the `main.py` file also has a `-f` option because it uses the same function as the `initialize.py` file, but this flag does nothing here.*
+Using this year, it will search for a spreadsheet at `data/{year}/Spending.{csv|txt|numbers|xlsx}`.
+
+# Running the GUI
+
+There is also a very barebones GUI just to make the file navigation a little easier. Simply run `python main.py -t` or `make ui` and it will launch a window.
+
+Click the prompt to upload a spreadsheet, wait a few seconds for it to process the numbers, and tell it where to save the output zip file.
 
 # Files
 
@@ -42,7 +74,7 @@ The only files that the user will interact with are `base_config.yml / config_ov
 │           ├── ...
 │           ├── Combined                    # plots for the whole year
 │       ├── aggregation.yml                 # generated aggregations
-│       ├── Spending.\{csv\|xlsx\|txt\}     # spending for the whole year
+│       ├── Spending.{csv|xlsx|txt}         # spending for the whole year
 │   ├── 2025
 │       ├── ...
 │   ├── ...
@@ -73,7 +105,6 @@ There are a number of built-in plots and aggregations that can be found in the `
 Additional plots and aggregations can be added to the `config_overwrite.yml` file. If a key in the `config_overwrite.yml` file is also present in `base_config.yml`, the value from `config_overwrite.yml` will be used.
 
 This is useful because if there are ever changes to the code and you want to download them, if you've changed anything in `base_config.yml` directly, there will be conflicts and it may be hard to resolve them.
-
 
 ## Globals
 
