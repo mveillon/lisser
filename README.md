@@ -68,6 +68,22 @@ The only files that the user will interact with are `base_config.yml / config_ov
 ├── config_overwrite.yml                    # user-defined configuration overwrites
 ```
 
+## Input
+
+The `data/{year}/Spending` spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
+
+Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+
+
+## Output
+
+After running the `main.py` file once, there will be two sets of outputs. 
+
+The main output are the graphs in `data/{year}/plots`. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `data/{year}/plots/Combined`.
+
+There are also aggregations done on the full year of data. These are found at `data/{year}/aggregation.yml`.
+
+
 # Configuration
 
 There are a number of built-in plots and aggregations that can be found in the `base_config.yml` file. The user is free to edit these however they please. They also serve as an example. 
