@@ -11,7 +11,10 @@ from src.visualize.common import metrics_over_time
 
 
 def spent_by_week(
-    df: pd.DataFrame, out_dir: str, income: Number = monthly_income()
+    df: pd.DataFrame,
+    out_dir: str,
+    income: Number = monthly_income(),
+    add_large_expenses_back: bool = False,
 ) -> None:
     """
     Plots spending by week smoothed out as a per month average, compared to the monthly
@@ -22,13 +25,18 @@ def spent_by_week(
         out_dir (str): the directory to put the plots in
         income (int): the monthly income to compare spending to. Defaults to
             `helpers.monthly_income()`
+        add_large_expenses_back (bool): after large expenses are filtered out, should
+            they be smoothed over all the weeks and added back in.
 
     Returns:
         None
     """
-    df = filter_large_transactions(df)
+    df, filt_total = filter_large_transactions(df)
     weeks = np.array(get_weeks(df[Column.DATE].min(), df[Column.DATE].max()))
     avgs = np.array(weekly_projection(df))
+    if add_large_expenses_back:
+        avgs += filt_total / avgs.shape[0]
+
     income_arr = np.full(len(avgs), income)
     avg_arr = np.full(len(avgs), np.average(avgs))
 

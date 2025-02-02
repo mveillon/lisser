@@ -4,7 +4,6 @@ from os.path import join
 
 from src.calculations.controllable_proportions import controllable_proportions
 from src.utilities.helpers import format_currency
-from src.utilities.df_common import filter_large_transactions
 
 
 def controllable_bars(df: pd.DataFrame, out_dir: str) -> None:

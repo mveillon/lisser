@@ -15,6 +15,3 @@ run:
 
 types:
 	mypy src --config-file=mypy.ini
-
-make local:
-	flask --app src/ui/app.py --debug run

@@ -30,31 +30,32 @@ This will analyze one year of data. By default, this will be the year of the cur
 
 # Files
 
-The only files that the user will interact with are `base_config.yml / config_overwrite.yml` and all the files in the `src/ui/static/data` directory. The directory is nested so much to allow the UI to find the data, but it will just be referred to as `data/`. The `data/` directory will have the following structure.
+The only files that the user will interact with are `base_config.yml / config_overwrite.yml` and all the files in the `data` directory. These files should be arranged like this. 
 
 ```bash
 ├── data
 │   ├── ...
 │   ├── 2024
 │       ├── plots
-│           ├── January             # plots for the month of January
-│           ├── February            # plots for the month of February
+│           ├── January                     # plots for the month of January
+│           ├── February                    # plots for the month of February
 │           ├── ...
-│           ├── Combined            # plots for the whole year
-│       ├── aggregation.yml         # generated aggregations
-│       ├── Spending.xlsx           # spending for the whole year
-│       ├── Untracked.xlsx          # large expenses to exclude from monthly calculations
+│           ├── Combined                    # plots for the whole year
+│       ├── aggregation.yml                 # generated aggregations
+│       ├── Spending.\{csv\|xlsx\|txt\}     # spending for the whole year
 │   ├── 2025
 │       ├── ...
 │   ├── ...
-├── config_overwrite.yml
+├── base_config.yml                         # default configurations
+├── config_overwrite.yml                    # user-defined configuration overwrites
 ```
 
 ## Input
 
-The `data/{year}/Spending.xlsx` spreadsheet should have a row for every transaction in which the user spent money that year. Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+The `data/{year}/Spending` spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
 
-That folder also has an `Untracked.xlsx` . This is meant for extremely large purchases and expenses; the kinds of transactions that you do once or twice a year and that would completely throw off the monthly graphs. The transactions will be excluded from monthly calculations and certain yearly calculations. Feel free to use this however much suits your lifestyle, or not at all.
+Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+
 
 ## Output
 
@@ -71,7 +72,8 @@ There are a number of built-in plots and aggregations that can be found in the `
 
 Additional plots and aggregations can be added to the `config_overwrite.yml` file. If a key in the `config_overwrite.yml` file is also present in `base_config.yml`, the value from `config_overwrite.yml` will be used.
 
-This is mostly useful for developers (like the one writing this!), as `config_overwrite.yml` is not tracked by git so developers can use the code without pushing any personal information that might be in their config files. Other users are also free to use the functionality for organization or what have you. 
+This is useful because if there are ever changes to the code and you want to download them, if you've changed anything in `base_config.yml` directly, there will be conflicts and it may be hard to resolve them.
+
 
 ## Globals
 
@@ -80,6 +82,7 @@ There are a few global variables that can be configured under the `globals` key.
 - `YEARLY_TAKE_HOME_PAY`: how much take-home pay you had for each year you have spending data.
 - `SANKEY_OTHER_THRESHOLD`: the proportion of the yearly income that the spending in a category has to exceed to not be put in the "Other" category.
 - `PROJECTED_SPENDING_BILL_THRESHOLD`: at what price threshold bills are filtered out from weekly samples at averaged out over the whole month.
+- `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD`: at what price threshold transactions are filtered out from certain graphs and smoothed out. See __Projected Spending__.
 
 ## Plots
 
@@ -109,10 +112,28 @@ The key for each aggregation in `config_overwrite.yml` ∪ `base_config.yml` wil
 
 # Other Notes
 
-## What is projected spending
+## What is projected spending?
 
 One of the most useful features of this repo is normalizing spending using what I call "projection".
 
 Many people have rent or other bills due on the first of the month, and there are various other reasons why spending might consistently and predictably spike at certain points each month. Projected spending takes all rows where the Category is "Bills" and they're over a small threshold, and smooths out those expenses over the course of the entire month. This effectively lowers the total amount spent that week, and raises that of the other weeks.
 
 It then takes the weekly spending and prorates it over a month, since the "weekly" spending value has bills from the full month.
+
+This concept of smoothing outliers is also applied to certain graphs. For these graphs, all transactions over the threshold defined in the `config` files will be removed.
+
+This happens for all monthly graphs, and the transaction totals are not smoothed and added back in.
+
+This only happens for yearly graphs that are grouped by week instead of month. This is to say that a full year of data would produce a graph with 52 dots instead of 12. With a smaller sample size, the data points would seem much more extreme. In this case, the total price of the outliers is smoothed out evenly over the whole graph and added back in.
+
+## Can I turn projected spending off?
+
+__YES!__
+
+If this whole smoothing-things-out thing isn't for you, you can disable it in the configs.
+
+If you want to disable filtering and smoothing large bills, set the `PROJECTED_SPENDING_BILL_THRESHOLD` global variable to zero.
+
+Similarly, to disable the large transaction filtering, set the `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD` global variable to zero.
+
+These variables are independent and don't interact with each other. You can disable one, the other, or both.

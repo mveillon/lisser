@@ -17,4 +17,6 @@ def analyze_spending() -> None:
     start = datetime.now()
     VisualizationDriver().visualize()
     AggregationDriver().aggregate()
-    print(f"Completed in {round((datetime.now() - start).microseconds / 1e5, 2)} seconds.")
+    print(
+        f"Completed in {round((datetime.now() - start).microseconds / 1e5, 2)} seconds."
+    )

@@ -6,9 +6,12 @@ from os.path import join
 from functools import reduce
 from operator import __and__, __or__
 
-from src.utilities.df_common import filter_large_transactions
 from src.read_config.line import Line
-from src.utilities.df_common import group_by_month, group_by_week
+from src.utilities.df_common import (
+    group_by_month,
+    group_by_week,
+    filter_large_transactions,
+)
 from src.utilities.column import Column
 from src.visualize.common import metrics_over_time
 from src.utilities.decorators import dataclass_from_converted_json
@@ -45,8 +48,9 @@ class Plot:
         Returns:
             None
         """
+        filt_total = 0
         if self.timeframe == "monthly":
-            starts, partitions = group_by_week(filter_large_transactions(df))
+            starts, partitions = group_by_week(df)
         elif self.timeframe == "yearly":
             starts, partitions = group_by_month(df)
         else:
@@ -64,13 +68,15 @@ class Plot:
                         __or__ if line.disjunction else __and__,
                         map(lambda f: f.filter_cond(part), line.filters),
                     )
-                    y_vals.append(part.loc[conjunction][Column.PRICE].sum())
 
-            if line.agg is None:
-                y_vals_arr = np.array(y_vals)
-            else:
+                    part_filt, to_add = filter_large_transactions(part.loc[conjunction])
+                    y_vals.append(part_filt[Column.PRICE].sum())
+                    filt_total += to_add
+
+            y_vals_arr = np.array(y_vals) + (filt_total / len(y_vals))
+            if line.agg is not None:
                 y_vals_arr = np.full(
-                    len(partitions), getattr(np, line.agg.func)(y_vals)
+                    len(partitions), getattr(np, line.agg.func)(y_vals_arr)
                 ).tolist()
 
             metrics[line.label] = (y_vals_arr, line.style)
