@@ -18,7 +18,21 @@ This will install all dependent libraries and create template files for you to p
 
 You can also set up the spreadsheets for a previous year using the `-y {year}` or `--year={year}` option.
 
-# Usage
+## Input
+
+The `data/{year}/Spending` spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
+
+Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
+
+## Output
+
+After running the `main.py` file once, there will be two sets of outputs. If ran through the GUI, this will all be contained within the saved `.zip` file.
+
+The main output are the graphs in `data/{year}/plots`. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `data/{year}/plots/Combined`.
+
+There are also aggregations done on the full year of data. These are found at `data/{year}/aggregation.yml`.
+
+# CLI Usage
 
 Once installation is complete, you run the code with the following commands: `> python3 main.py`
 
@@ -26,7 +40,11 @@ Or if you have `make` installed, you can also run `> make run`.
 
 This will analyze one year of data. By default, this will be the year of the current local time, but this can be changed with the `-y {year}` or `--year={year}` option.
 
-*Note the `main.py` file also has a `-f` option because it uses the same function as the `initialize.py` file, but this flag does nothing here.*
+# Running the GUI
+
+There is also a very barebones GUI just to make the file navigation a little easier. Simply run `python main.py -t` or `make ui` and it will launch a window.
+
+Click the prompt to upload a spreadsheet, wait a few seconds for it to process the numbers, and tell it where to save the output zip file.
 
 # Files
 
@@ -50,22 +68,6 @@ The only files that the user will interact with are `base_config.yml / config_ov
 ├── config_overwrite.yml                    # user-defined configuration overwrites
 ```
 
-## Input
-
-The `data/{year}/Spending` spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
-
-Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
-
-
-## Output
-
-After running the `main.py` file once, there will be two sets of outputs. 
-
-The main output are the graphs in `data/{year}/plots`. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `data/{year}/plots/Combined`.
-
-There are also aggregations done on the full year of data. These are found at `data/{year}/aggregation.yml`.
-
-
 # Configuration
 
 There are a number of built-in plots and aggregations that can be found in the `base_config.yml` file. The user is free to edit these however they please. They also serve as an example. 
@@ -73,7 +75,6 @@ There are a number of built-in plots and aggregations that can be found in the `
 Additional plots and aggregations can be added to the `config_overwrite.yml` file. If a key in the `config_overwrite.yml` file is also present in `base_config.yml`, the value from `config_overwrite.yml` will be used.
 
 This is useful because if there are ever changes to the code and you want to download them, if you've changed anything in `base_config.yml` directly, there will be conflicts and it may be hard to resolve them.
-
 
 ## Globals
 

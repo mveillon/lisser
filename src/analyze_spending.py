@@ -66,8 +66,10 @@ class AnalyzeSpending(tk.Tk):
 
         self.output_label.config(text="Processing complete!")
 
-        out_name = fd.asksaveasfilename(filetypes=[("Archive Files", "*.zip")], defaultextension=".zip")
-        
+        out_name = fd.asksaveasfilename(
+            filetypes=[("Archive Files", "*.zip")], defaultextension=".zip"
+        )
+
         skip_extns = {
             ".csv",
             ".txt",
@@ -83,8 +85,6 @@ class AnalyzeSpending(tk.Tk):
                         full_path = join(dir_path, file)
                         archive_path = relpath(full_path, this_years_data())
                         archive.write(full_path, archive_path)
-
-        
 
     @staticmethod
     def analyze_spending(verbose: bool = True) -> None:

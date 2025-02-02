@@ -15,3 +15,6 @@ run:
 
 types:
 	mypy src --config-file=mypy.ini
+
+make ui:
+	python main.py -t
