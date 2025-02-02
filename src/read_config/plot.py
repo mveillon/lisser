@@ -48,7 +48,7 @@ class Plot:
         Returns:
             None
         """
-        filt_total = 0
+        filt_total = 0.0
         if self.timeframe == "monthly":
             starts, partitions = group_by_week(df)
         elif self.timeframe == "yearly":
