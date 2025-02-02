@@ -4,7 +4,7 @@ from os.path import join
 
 from src.visualize.common import metrics_over_time
 from src.calculations.controllable_proportions import controllable_proportions
-from src.utilities.df_grouping import group_by_month
+from src.utilities.df_common import group_by_month
 
 
 def controllable_proportions_over_time(df: pd.DataFrame, out_dir: str) -> None:

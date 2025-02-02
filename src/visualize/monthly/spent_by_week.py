@@ -5,6 +5,7 @@ from os.path import join
 from src.utilities.types import Number
 from src.utilities.helpers import monthly_income, get_weeks
 from src.utilities.column import Column
+from src.utilities.df_common import filter_large_transactions
 from src.calculations.weekly_projection import weekly_projection
 from src.visualize.common import metrics_over_time
 
@@ -25,6 +26,7 @@ def spent_by_week(
     Returns:
         None
     """
+    df = filter_large_transactions(df)
     weeks = np.array(get_weeks(df[Column.DATE].min(), df[Column.DATE].max()))
     avgs = np.array(weekly_projection(df))
     income_arr = np.full(len(avgs), income)

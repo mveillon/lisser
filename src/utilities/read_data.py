@@ -10,7 +10,6 @@ from typing import List, cast, Dict
 
 from src.utilities.column import Column
 from src.utilities.paths import spending_path
-from src.read_config.config_globals import config_globals
 
 
 SCHEMA = {
@@ -72,17 +71,6 @@ def read_data(path: str) -> pd.DataFrame:
 
     return df
 
-def filter_large_transactions(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Throws out outlier transactions that throw off certain calculations.
-
-    Parameters:
-        df (DataFrame): the Pandas DataFrame to filter
-
-    Returns:
-        df (DataFrame): the filtered DataFrame
-    """
-    return df.loc[df[Column.PRICE] < config_globals()["LARGE_EXPENSE_THRESHOLD"]]
 
 def _read_excel(path: str) -> pd.DataFrame:
     """

@@ -1,8 +1,11 @@
 import pandas as pd
 from typing import Callable, Tuple, List
 from datetime import date
+from functools import lru_cache
+
 from src.utilities.helpers import get_months, get_weeks
 from src.utilities.column import Column
+from src.read_config.config_globals import config_globals
 
 
 def _group_df(
@@ -63,3 +66,25 @@ def group_by_month(df: pd.DataFrame) -> Tuple[List[date], List[pd.DataFrame]]:
         partitions (List[DataFrame]): a list of each chunk of df
     """
     return _group_df(df, get_months)
+
+
+@lru_cache(maxsize=32)
+def _filter_large_transactions_cache(df_tuple: Tuple[pd.DataFrame]) -> pd.DataFrame:
+    """
+    Cached helper function for filter_large_transactions.
+    """
+    df = df_tuple[0]
+    return df.loc[df[Column.PRICE] < config_globals()["LARGE_EXPENSE_THRESHOLD"]]
+
+
+def filter_large_transactions(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Throws out outlier transactions that throw off certain calculations.
+
+    Parameters:
+        df (DataFrame): the Pandas DataFrame to filter
+
+    Returns:
+        df (DataFrame): the filtered DataFrame
+    """
+    return _filter_large_transactions_cache(tuple(df))

@@ -10,7 +10,7 @@ from src.utilities.paths import (
     plots_dir,
     staging_dir,
 )
-from src.utilities.read_data import combined_df, get_months, filter_large_transactions
+from src.utilities.read_data import combined_df, get_months
 from src.utilities.helpers import find_big_bills
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
@@ -85,7 +85,6 @@ class VisualizationDriver:
         """
         all_dfs = combined_df()
         for df in get_months(all_dfs):
-            df = filter_large_transactions(df)
             self._plot_df(
                 df,
                 join(plots_dir(), cast(date, df[Column.DATE].median()).strftime("%B")),

@@ -4,6 +4,7 @@ from os.path import join
 
 from src.calculations.controllable_proportions import controllable_proportions
 from src.utilities.helpers import format_currency
+from src.utilities.df_common import filter_large_transactions
 
 
 def controllable_bars(df: pd.DataFrame, out_dir: str) -> None:
@@ -17,6 +18,7 @@ def controllable_bars(df: pd.DataFrame, out_dir: str) -> None:
     Returns:
         None
     """
+    df = filter_large_transactions(df)
     plt.clf()
 
     plt.title("How much spending is controllable")

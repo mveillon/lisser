@@ -1,6 +1,6 @@
 import math
 
-from src.utilities.df_grouping import group_by_month, group_by_week
+from src.utilities.df_common import group_by_month, group_by_week
 from src.utilities.column import Column
 
 from tests.test_utils import sample_data
