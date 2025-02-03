@@ -17,13 +17,17 @@ If you have `make` installed, you can also run `make init` instead.
 
 This will install all dependent libraries and create template files for you to populate. If you run this command more than once, it will prompt you before overwriting any files in case you've added any data. This can be disabled by adding the `-F` or `--force` flag to the python3 command.
 
-You can also set up the spreadsheets for a previous year using the `-y {year}` or `--year={year}` option.
+You can also set up the spreadsheets for a previous year using the `-y {year}` or `--year={year}` option. See **CLI_Usage**.
+
+# Running the Code
 
 ## Input
 
 The input spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
 
-Note that income does not belong in these spreadsheets.
+The year does not have to complete, but the year of every transaction should be the same (i.e. it should start no sooner than January 1st and end no later than December 31st the same year).
+
+Note that income does not belong in this spreadsheet.
 
 The spreadsheet needs, at minimum, the following columns:
 
@@ -35,21 +39,17 @@ The spreadsheet needs, at minimum, the following columns:
 
 Additionally, the default spreadsheets also have columns for `Description`, a brief description of what was bought, and `Vendor`, to whom the money went. These categories are not used by the code by default, but they can be accessed by any plots or aggregations in `config_overwrite.yml` as string columns.
 
-Although not needed by the machine, these columns are highly recommended for the human creating and/or reviewing the data.
-
-By default, the code will determine the year using either the `--year` CLI argument or the local time, and use that year to search for the spending spreadsheet at `data/{year}/Spreadsheet.{xlsx|csv|txt|numbers}`. This can be changed by passing the path to the spreadsheet using the `-f` or `--file` argument.
-
-If `--file` is passed, the `--year` flag will be ignored.
+Although not needed by the machine, these columns are highly recommended for the human creating or reviewing the data.
 
 ## Output
 
-After running the `cli` or `ui` command once, there will be two sets of outputs. If ran through the GUI, this will all be contained within the saved `.zip` file.
+After running the code at least once, there will be two sets of outputs saved to `data/{year}/`. If ran through the GUI, this will all also be served to the user as a `.zip` file.
 
-The main output are the graphs in `data/{year}/plots`. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `data/{year}/plots/Combined`.
+The main output are the graphs in the `plots/` directory. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `plots/Combined`.
 
-There are also aggregations done on the full year of data. These are found at `data/{year}/aggregation.yml`.
+There are also aggregations done on the full year of data. These are found at `aggregation.yml`.
 
-# CLI Usage
+## CLI Usage
 
 Once installation is complete, you run the code with the following commands: `> python3 main.py cli`. 
 
@@ -57,9 +57,11 @@ Or if you have `make` installed, you can also run `> make cli`.
 
 This will analyze one year of data. By default, this will be the year of the current local time, but this can be changed with the `-y {year}` or `--year={year}` option.
 
-Using this year, it will search for a spreadsheet at `data/{year}/Spending.{csv|txt|numbers|xlsx}`.
+Using this year, it will search for a spreadsheet at `data/{year}/Spending.{csv|txt|numbers|xlsx}`. This can be changed by passing the path to the spreadsheet using the `-f` or `--file` argument.
 
-# Running the GUI
+If `--file` is passed, the `--year` flag will be ignored.
+
+## Running the GUI
 
 There is also a very barebones GUI just to make the file navigation a little easier. Simply run `python3 main.py ui`, or `make ui` and it will launch a window.
 
@@ -87,38 +89,26 @@ The only files that the user will interact with are `base_config.yml / config_ov
 ├── config_overwrite.yml                        # user-defined configuration overwrites
 ```
 
-## Input
-
-The `data/{year}/Spending` spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
-
-Note that income does not belong in these spreadsheets, and the numbers in the `Price` column should always be positive. Furthermore, the values in `Is Food` and `Controllable` should either be zero (no) or one (yes).
-
-
-## Output
-
-After running the `main.py` file once, there will be two sets of outputs. 
-
-The main output are the graphs in `data/{year}/plots`. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `data/{year}/plots/Combined`.
-
-There are also aggregations done on the full year of data. These are found at `data/{year}/aggregation.yml`.
-
-
-# Configuration
+## Configuration
 
 There are a number of built-in plots and aggregations that can be found in the `base_config.yml` file. The user is free to edit these however they please. They also serve as an example. 
 
 Additional plots and aggregations can be added to the `config_overwrite.yml` file. If a key in the `config_overwrite.yml` file is also present in `base_config.yml`, the value from `config_overwrite.yml` will be used.
 
-This is useful because if there are ever changes to the code and you want to download them, if you've changed anything in `base_config.yml` directly, there will be conflicts and it may be hard to resolve them.
+This is useful because if there may be changes to the code that you want to download with `git pull`. If you've changed anything in `base_config.yml` directly, there will likely be conflicts and it may be hard to resolve them.
 
 ## Globals
 
 There are a few global variables that can be configured under the `globals` key.
 
-- `YEARLY_TAKE_HOME_PAY`: how much take-home pay you had for each year you have spending data.
-- `SANKEY_OTHER_THRESHOLD`: the proportion of the yearly income that the spending in a category has to exceed to not be put in the "Other" category.
-- `PROJECTED_SPENDING_BILL_THRESHOLD`: at what price threshold bills are filtered out from weekly samples at averaged out over the whole month.
-- `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD`: at what price threshold transactions are filtered out from certain graphs and smoothed out. See __Projected Spending__.
+- `YEARLY_TAKE_HOME_PAY`: how much take-home pay you had for each year you have spending data. **Must Be Overwritten**. The default is zero, which will cause the graphs to look very strange.
+- `SANKEY_OTHER_THRESHOLD`: the proportion of the yearly income that the spending in a category has to exceed to not be put in the "Other" category in `sankeyflow.png`.
+- `PROJECTED_SPENDING_BILL_THRESHOLD`: at what price threshold bills are filtered out from weekly samples and averaged out over the whole month. See **Projected Spending**.
+- `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD`: at what price threshold all transactions are filtered out from certain yearly graphs and smoothed out. See **Projected Spending**.
+
+Because the user has to set `globals.YEARLY_TAKE_HOME_PAY` for the code to work properly, and it is the only such config, many users will want to just change that one variable in `base_config.yml` and not worry about `config_overwrite.yml` since the base settings work pretty well out of the box.
+
+For that reason, we will never change the `base_config.yml` in such a way that will cause merge conflicts to that variable, meaning you are free to set it directly in `base_config.yml`.
 
 ## Plots
 
@@ -140,9 +130,11 @@ There is also an optional `agg` paramater, which is a list of aggregations, each
 
 The structure is similar to the `plots` dictionary. Each aggregation will summarize the whole year, with any number of filters applied. These filters have the same rules as those in `plots`.
 
-The allowed values for `func` are any of the methods of a [Pandas Series](https://pandas.pydata.org/docs/reference/api/pandas.Series.html), but only those that don't take an argument will work. Common values are `sum`, `any`, `all`, and `mean`. In addition `func` can equal `count`, at which point the `column` key is not needed and will not be used.
+The allowed values for `func` are any of the methods of a [Pandas Series](https://pandas.pydata.org/docs/reference/api/pandas.Series.html), but only those that don't take an argument will work. Common values are `sum`, `any`, `all`, and `mean`.
 
-The value of the `column` parameter will be the column selected from the data for aggregation. If the `divide` key is provided and set to True, the resulting total will be grouped weekly, monthly, and yearly.
+The value of the `column` parameter will be the column selected from the data for aggregation. It will almost always be `Price`. If the `divide` key is provided and set to True, the resulting total will be grouped weekly, monthly, and yearly.
+
+In addition `func` can equal `count`, at which point the `column` key is not needed and will not be used.
 
 The key for each aggregation in `config_overwrite.yml` ∪ `base_config.yml` will be converted to a title and be a key in `data/{year}/aggregation.yml`.
 
@@ -156,15 +148,15 @@ Many people have rent or other bills due on the first of the month, and there ar
 
 It then takes the weekly spending and prorates it over a month, since the "weekly" spending value has bills from the full month.
 
-This concept of smoothing outliers is also applied to certain graphs. For these graphs, all transactions over the threshold defined in the `config` files will be removed.
+This concept of smoothing outliers is also applied to all transactions for certain graphs. For these graphs, all transactions over the threshold defined in the `config` files will be removed.
 
-This happens for all monthly graphs, and the transaction totals are not smoothed and added back in.
+This happens for all monthly graphs. In this case, the transaction totals are not smoothed and added back in.
 
-This only happens for yearly graphs that are grouped by week instead of month. This is to say that a full year of data would produce a graph with 52 dots instead of 12. With a smaller sample size, the data points would seem much more extreme. In this case, the total price of the outliers is smoothed out evenly over the whole graph and added back in.
+The code also uses projected spending for yearly graphs that are grouped by week instead of month. This is to say that a full year of data would produce a graph with 52 dots instead of 12. With a smaller sample size, the data points would seem much more extreme. In this case, the total price of the outliers is smoothed out evenly over the whole graph and added back in.
 
 ## Can I turn projected spending off?
 
-__YES!__
+**YES!**
 
 If this whole smoothing-things-out thing isn't for you, you can disable it in the configs.
 
