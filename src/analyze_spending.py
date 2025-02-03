@@ -3,18 +3,17 @@ from tkinter import filedialog as fd
 
 import sys
 from datetime import datetime
-from shutil import copyfile
-from os import walk, remove
-from os.path import abspath, join, relpath, splitext
+from os import walk
+from os.path import join, relpath, splitext
 from zipfile import ZipFile
+import traceback as tb
 
 from typing import cast
 
 from src.visualization_driver import VisualizationDriver
 from src.aggregation_driver import AggregationDriver
 from src.utilities.read_data import read_data
-from src.utilities.paths import spending_path, this_years_data, aggregation_path
-import src.utilities.paths as util_paths
+from src.utilities.paths import Paths
 from src.utilities.column import Column
 
 
@@ -76,17 +75,13 @@ class AnalyzeSpending(tk.Tk):
         try:
             df = read_data(refs)
             new_year = cast(datetime, df[Column.DATE].median()).year
-            util_paths.get_year = lambda: new_year
+            Paths._year_mut[0] = new_year
+            Paths._sheet_override[0] = refs
 
-            extn = splitext(refs)[1]
-            new_path = splitext(spending_path())[0] + extn
-
-            if abspath(refs) != abspath(new_path):
-                remove(new_path)
-            copyfile(refs, new_path)
             AnalyzeSpending.analyze_spending(verbose=False)
         except Exception as e:
             self.output_label.config(text=f"Something went wrong: {str(e)}")
+            print(tb.format_exc())
             return
 
         self.output_label.config(text="Processing complete! Archiving data..")
@@ -97,13 +92,13 @@ class AnalyzeSpending(tk.Tk):
             )
 
             with ZipFile(out_name, "w") as archive:
-                archive.write(aggregation_path(), ".")
+                archive.write(Paths.aggregation_path(), ".")
 
-                for dir_path, _, file_names in walk(this_years_data()):
+                for dir_path, _, file_names in walk(Paths.this_years_data()):
                     for file in file_names:
                         if splitext(file)[1] not in allowed_extns:
                             full_path = join(dir_path, file)
-                            archive_path = relpath(full_path, this_years_data())
+                            archive_path = relpath(full_path, Paths.this_years_data())
                             archive.write(full_path, archive_path)
 
             self.output_label.config(text="Archive created!")

@@ -2,7 +2,7 @@ from pathlib import Path
 import yaml
 from typing import Any
 
-from src.utilities.paths import aggregation_path, spending_path
+from src.utilities.paths import Paths
 from src.utilities.helpers import format_currency
 from src.utilities.read_data import read_data
 from src.read_config.custom_aggregations import custom_aggregations
@@ -28,7 +28,7 @@ class AggregationDriver:
         Returns:
             None
         """
-        spending = read_data(spending_path())
+        spending = read_data(Paths.spending_path())
         out = {}
 
         to_title = lambda s: s.replace("_", " ").title()
@@ -51,5 +51,5 @@ class AggregationDriver:
         for title, agg_val in custom_aggregations(spending).items():
             out[to_title(title)] = format_out(agg_val)
 
-        with open(aggregation_path(), "w") as f:
+        with open(Paths.aggregation_path(), "w") as f:
             yaml.dump(out, f, default_flow_style=False, sort_keys=False)

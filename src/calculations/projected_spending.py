@@ -2,7 +2,7 @@ import pandas as pd
 from os.path import join
 import json
 
-from src.utilities.paths import staging_dir
+from src.utilities.paths import Paths
 from src.utilities.column import Column
 
 
@@ -39,7 +39,7 @@ def projected_spending(
 
     bills_total = 0
     if filter_big_bills:
-        with open(join(staging_dir(), "bills.json")) as bills:
+        with open(join(Paths.staging_dir(), "bills.json")) as bills:
             data = json.load(bills)
             for bill_id in data.get(month, {}):
                 total_spent -= df.loc[df[Column.TRANSACTION_ID] == bill_id][

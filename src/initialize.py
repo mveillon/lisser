@@ -2,11 +2,7 @@ import shutil
 from os.path import exists
 from os import makedirs
 
-from src.utilities.paths import (
-    config_path,
-    spending_path,
-    this_years_data,
-)
+from src.utilities.paths import Paths
 from src.utilities.parse_args import parse_args
 
 
@@ -46,7 +42,7 @@ def init_config() -> None:
     Returns:
         None
     """
-    dest = config_path()
+    dest = Paths.config_path()
 
     if check_overwrite(dest):
         with open(dest, "w") as out:
@@ -71,9 +67,9 @@ def add_spending_sheet() -> None:
     Returns:
         None
     """
-    makedirs(this_years_data(), exist_ok=True)
+    makedirs(Paths.this_years_data(), exist_ok=True)
 
-    spending = spending_path()
+    spending = Paths.spending_path()
     if check_overwrite(spending):
         shutil.copy("base_sheet.xlsx", spending)
 

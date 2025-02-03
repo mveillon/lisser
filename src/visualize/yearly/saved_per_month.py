@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from os.path import join
 from datetime import datetime
 
-from src.utilities.paths import get_year
+from src.utilities.paths import Paths
 from src.calculations.monthly_spending import monthly_spending
 from src.utilities.helpers import monthly_income, format_currency
 
@@ -33,7 +33,7 @@ def saved_per_month(df: pd.DataFrame, out_dir: str) -> None:
     plt.ylabel("Saved that month")
 
     x = sorted(
-        saved, key=lambda d: datetime.strptime(f"1 {d} {get_year()}", "%d %b %Y")
+        saved, key=lambda d: datetime.strptime(f"1 {d} {Paths.get_year()}", "%d %b %Y")
     )
     y = list(map(saved.__getitem__, x))
     inds = np.arange(len(x))
