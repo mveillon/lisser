@@ -41,6 +41,9 @@ class AnalyzeSpending(tk.Tk):
         self.output_label = tk.Label(self, text="Awaiting data.")
         self.output_label.pack()
 
+        self.quit_button = tk.Button(self, text="Quit", command=self.destroy)
+        self.quit_button.pack()
+
     def file_handler(self, path: str) -> None:
         """
         Processes the files and creates the plots and aggregations.
@@ -51,12 +54,18 @@ class AnalyzeSpending(tk.Tk):
         Returns:
             None
         """
+        allowed_extns = {
+            ".csv",
+            ".txt",
+            ".xlsx",
+            ".numbers",
+        }
         self.output_label.config(text="...processing data...")
         refs = fd.askopenfilename(
             parent=self,
             title="Spreadsheet to analyze:",
             initialdir=path,
-            filetypes=(("spreadsheets", "*.txt *.csv *.xlsx *.numbers"),),
+            filetypes=(("spreadsheets", ["*" + e for e in allowed_extns]),),
         )
 
         try:
@@ -64,35 +73,34 @@ class AnalyzeSpending(tk.Tk):
             new_year = cast(datetime, df[Column.DATE].median()).year
             util_paths.get_year = lambda: new_year
 
-            if abspath(refs) != abspath(spending_path()):
-                copyfile(refs, spending_path())
+            extn = splitext(refs)[1]
+            new_path = splitext(spending_path())[0] + extn
+
+            if abspath(refs) != abspath(new_path):
+                copyfile(refs, new_path)
             AnalyzeSpending.analyze_spending(verbose=False)
         except Exception as e:
             self.output_label.config(text=f"Something went wrong: {str(e)}")
             return
 
-        self.output_label.config(text="Processing complete!")
+        self.output_label.config(text="Processing complete! Archiving data..")
 
         try:
             out_name = fd.asksaveasfilename(
                 filetypes=[("Archive Files", "*.zip")], defaultextension=".zip"
             )
-
-            skip_extns = {
-                ".csv",
-                ".txt",
-                ".xlsx",
-                ".numbers",
-            }
+            
             with ZipFile(out_name, "w") as archive:
                 archive.write(aggregation_path(), ".")
 
                 for dir_path, _, file_names in walk(this_years_data()):
                     for file in file_names:
-                        if splitext(file)[1] not in skip_extns:
+                        if splitext(file)[1] not in allowed_extns:
                             full_path = join(dir_path, file)
                             archive_path = relpath(full_path, this_years_data())
                             archive.write(full_path, archive_path)
+
+            self.output_label.config(text="Archive created!")
         
         except Exception as e:
             self.output_label.config(text=f"Something went wrong saving the zip file: {e}")
