@@ -107,6 +107,7 @@ class AnalyzeSpending(tk.Tk):
             self.output_label.config(
                 text=f"Something went wrong saving the zip file: {e}"
             )
+            print(tb.format_exc())
             return
 
     @staticmethod

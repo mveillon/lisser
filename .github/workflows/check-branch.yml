@@ -17,11 +17,11 @@ jobs:
       - name: Install Dev Dependencies
         run: python3 -m pip install -r requirements-dev.txt
       - name: Initialize
-        run: python3 initialize.py < /dev/null
+        run: python3 main.py init < /dev/null
       - name: Check Formatting
-        run: python3 -m black --check src tests main.py initialize.py
+        run: python3 -m black --check src tests main.py
       - name: Linting
-        run: python3 -m flake8 src tests main.py initialize.py
+        run: python3 -m flake8 src tests main.py
       - name: Type Check
         run: mypy src --config-file=mypy.ini
       - name: Tests
