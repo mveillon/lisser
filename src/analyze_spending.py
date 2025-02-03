@@ -73,25 +73,30 @@ class AnalyzeSpending(tk.Tk):
 
         self.output_label.config(text="Processing complete!")
 
-        out_name = fd.asksaveasfilename(
-            filetypes=[("Archive Files", "*.zip")], defaultextension=".zip"
-        )
+        try:
+            out_name = fd.asksaveasfilename(
+                filetypes=[("Archive Files", "*.zip")], defaultextension=".zip"
+            )
 
-        skip_extns = {
-            ".csv",
-            ".txt",
-            ".xlsx",
-            ".numbers",
-        }
-        with ZipFile(out_name, "w") as archive:
-            archive.write(aggregation_path(), ".")
+            skip_extns = {
+                ".csv",
+                ".txt",
+                ".xlsx",
+                ".numbers",
+            }
+            with ZipFile(out_name, "w") as archive:
+                archive.write(aggregation_path(), ".")
 
-            for dir_path, _, file_names in walk(this_years_data()):
-                for file in file_names:
-                    if splitext(file)[1] not in skip_extns:
-                        full_path = join(dir_path, file)
-                        archive_path = relpath(full_path, this_years_data())
-                        archive.write(full_path, archive_path)
+                for dir_path, _, file_names in walk(this_years_data()):
+                    for file in file_names:
+                        if splitext(file)[1] not in skip_extns:
+                            full_path = join(dir_path, file)
+                            archive_path = relpath(full_path, this_years_data())
+                            archive.write(full_path, archive_path)
+        
+        except Exception as e:
+            self.output_label.config(text=f"Something went wrong saving the zip file: {e}")
+            return
 
     @staticmethod
     def analyze_spending(verbose: bool = True) -> None:

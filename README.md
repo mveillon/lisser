@@ -17,7 +17,7 @@ If you have `make` installed, you can also run `make init` instead.
 
 This will install all dependent libraries and create template files for you to populate. If you run this command more than once, it will prompt you before overwriting any files in case you've added any data. This can be disabled by adding the `-F` or `--force` flag to the python3 command.
 
-You can also set up the spreadsheets for a previous year using the `-y {year}` or `--year={year}` option. See **CLI_Usage**.
+You can also set up the spreadsheets for a previous year using the `-y {year}` or `--year={year}` option. See **CLI Usage**.
 
 # Running the Code
 
@@ -59,7 +59,7 @@ This will analyze one year of data. By default, this will be the year of the cur
 
 Using this year, it will search for a spreadsheet at `data/{year}/Spending.{csv|txt|numbers|xlsx}`. This can be changed by passing the path to the spreadsheet using the `-f` or `--file` argument.
 
-If `--file` is passed, the `--year` flag will be ignored.
+If `--file` is passed, the `--year` flag will be ignored, as the year will be inferred from the spreadsheet.
 
 ## Running the GUI
 
@@ -95,7 +95,7 @@ There are a number of built-in plots and aggregations that can be found in the `
 
 Additional plots and aggregations can be added to the `config_overwrite.yml` file. If a key in the `config_overwrite.yml` file is also present in `base_config.yml`, the value from `config_overwrite.yml` will be used.
 
-This is useful because if there may be changes to the code that you want to download with `git pull`. If you've changed anything in `base_config.yml` directly, there will likely be conflicts and it may be hard to resolve them.
+This is useful because there may be changes to the code that you want to download with `git pull`. If you've changed anything in `base_config.yml` directly, there will likely be conflicts and it may be hard to resolve them.
 
 ## Globals
 
@@ -144,15 +144,19 @@ The key for each aggregation in `config_overwrite.yml` ∪ `base_config.yml` wil
 
 One of the most useful features of this repo is normalizing spending using what I call "projection".
 
-Many people have rent or other bills due on the first of the month, and there are various other reasons why spending might consistently and predictably spike at certain points each month. Projected spending takes all rows where the Category is "Bills" and they're over a small threshold, and smooths out those expenses over the course of the entire month. This effectively lowers the total amount spent that week, and raises that of the other weeks.
+Many people have rent or other bills due on the first of the month, and there are various other reasons why spending might consistently and predictably spike at certain points each month. 
+
+Projected spending takes all rows where the Category is "Bills" and they're over a small threshold (set to `PROJECTED_SPENDING_BILL_THRESHOLD` in the `config` files), and smooths out those expenses over the course of the entire month. 
+
+This effectively lowers the total amount spent that week, and raises that of the other weeks.
 
 It then takes the weekly spending and prorates it over a month, since the "weekly" spending value has bills from the full month.
 
-This concept of smoothing outliers is also applied to all transactions for certain graphs. For these graphs, all transactions over the threshold defined in the `config` files will be removed.
+This concept of smoothing outliers is also applied to all transactions for certain graphs. For these graphs, all transactions over the `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD` threshold defined in the `config` files will be removed.
 
-This happens for all monthly graphs. In this case, the transaction totals are not smoothed and added back in.
+The large expenses threshold is applied to all monthly graphs. In this case, the transaction totals are not smoothed and added back in.
 
-The code also uses projected spending for yearly graphs that are grouped by week instead of month. This is to say that a full year of data would produce a graph with 52 dots instead of 12. With a smaller sample size, the data points would seem much more extreme. In this case, the total price of the outliers is smoothed out evenly over the whole graph and added back in.
+The code also uses the large expenses threshold for yearly graphs that are grouped by week instead of month. This is to say that a full year of data would produce a graph with 52 dots instead of 12. With a smaller sample size per point, the data points would seem much more extreme. In this case, the total price of the outliers is smoothed out evenly over the whole graph and added back in.
 
 ## Can I turn projected spending off?
 
