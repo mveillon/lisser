@@ -36,7 +36,7 @@ def check_overwrite(dest: str) -> bool:
     )
 
 
-def init_config():
+def init_config() -> None:
     """
     Initialize the config_overwrite.yml file.
 
@@ -61,7 +61,7 @@ def init_config():
             )
 
 
-def add_spending_sheet():
+def add_spending_sheet() -> None:
     """
     Creates the base of the spending directory.
 
@@ -78,6 +78,9 @@ def add_spending_sheet():
         shutil.copy("base_sheet.xlsx", spending)
 
 
-if __name__ == "__main__":
+def initialize() -> None:
+    """
+    Performs all necessary initializations.
+    """
     init_config()
     add_spending_sheet()

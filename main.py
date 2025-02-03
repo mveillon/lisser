@@ -1,8 +1,17 @@
+import sys
+
 from src.analyze_spending import AnalyzeSpending
-from src.utilities.parse_args import parse_args
+from src.initialize import initialize
+from src.utilities.parse_args import Subcommand, get_subcommand
 
 if __name__ == "__main__":
-    if parse_args().tkinter:
+    cmd = get_subcommand()
+    if cmd == Subcommand.INIT:
+        initialize()
+    elif cmd == Subcommand.CLI:
+        AnalyzeSpending.analyze_spending()
+    elif cmd == Subcommand.UI:
         AnalyzeSpending().mainloop()
     else:
-        AnalyzeSpending.analyze_spending()
+        # raise ValueError(f"Invalid subcommand {sys.argv[1]}")
+        print("Doing nothing")

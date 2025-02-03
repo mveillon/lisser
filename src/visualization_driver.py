@@ -9,8 +9,9 @@ from datetime import date
 from src.utilities.paths import (
     plots_dir,
     staging_dir,
+    spending_path,
 )
-from src.utilities.read_data import combined_df, get_months
+from src.utilities.read_data import read_data, get_months
 from src.utilities.helpers import find_big_bills
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
@@ -83,7 +84,7 @@ class VisualizationDriver:
         Returns:
             None
         """
-        all_dfs = combined_df()
+        all_dfs = read_data(spending_path())
         for df in get_months(all_dfs):
             self._plot_df(
                 df,

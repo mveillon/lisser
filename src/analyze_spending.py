@@ -12,7 +12,8 @@ from typing import cast
 from src.visualization_driver import VisualizationDriver
 from src.aggregation_driver import AggregationDriver
 from src.utilities.read_data import read_data
-from src.utilities.paths import Year, spending_path, this_years_data, aggregation_path
+from src.utilities.paths import spending_path, this_years_data, aggregation_path
+import src.utilities.paths as util_paths
 from src.utilities.column import Column
 
 
@@ -58,11 +59,17 @@ class AnalyzeSpending(tk.Tk):
             filetypes=(("spreadsheets", "*.txt *.csv *.xlsx *.numbers"),),
         )
 
-        df = read_data(refs)
-        Year.year = cast(datetime, df[Column.DATE].median()).year
-        if abspath(refs) != abspath(spending_path()):
-            copyfile(refs, spending_path())
-        AnalyzeSpending.analyze_spending(verbose=False)
+        try:
+            df = read_data(refs)
+            new_year = cast(datetime, df[Column.DATE].median()).year
+            util_paths.get_year = lambda: new_year
+
+            if abspath(refs) != abspath(spending_path()):
+                copyfile(refs, spending_path())
+            AnalyzeSpending.analyze_spending(verbose=False)
+        except Exception as e:
+            self.output_label.config(text=f"Something went wrong: {str(e)}")
+            return
 
         self.output_label.config(text="Processing complete!")
 

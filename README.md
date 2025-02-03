@@ -10,11 +10,12 @@ First, clone the repository to your machine. `> git clone https://github.com/mve
 
 It is recommended, but not required, to setup a virtual environment using something like Pyenv. 
 
-To install the needed dependencies and setup the folder structure, navigate to the `spending-tracking` directory and run the following command: `> pip3 install -r requirements.txt && python3 initialize.py`.
+To install the needed dependencies and setup the folder structure, navigate to the `spending-tracking` directory and run the following command: `> pip3 install -r requirements.txt && python3 main.py init`.
+
 
 If you have `make` installed, you can also run `make init` instead.
 
-This will install all dependent libraries and create template files for you to populate. If you run this command more than once, it will prompt you before overwriting any files in case you've added any data. This can be disabled by adding the `-f` or `--force` flag to the python3 command.
+This will install all dependent libraries and create template files for you to populate. If you run this command more than once, it will prompt you before overwriting any files in case you've added any data. This can be disabled by adding the `-F` or `--force` flag to the python3 command.
 
 You can also set up the spreadsheets for a previous year using the `-y {year}` or `--year={year}` option.
 
@@ -36,9 +37,13 @@ Additionally, the default spreadsheets also have columns for `Description`, a br
 
 Although not needed by the machine, these columns are highly recommended for the human creating and/or reviewing the data.
 
+By default, the code will determine the year using either the `--year` CLI argument or the local time, and use that year to search for the spending spreadsheet at `data/{year}/Spreadsheet.{xlsx|csv|txt|numbers}`. This can be changed by passing the path to the spreadsheet using the `-f` or `--file` argument.
+
+If `--file` is passed, the `--year` flag will be ignored.
+
 ## Output
 
-After running the `main.py` file once, there will be two sets of outputs. If ran through the GUI, this will all be contained within the saved `.zip` file.
+After running the `cli` or `ui` command once, there will be two sets of outputs. If ran through the GUI, this will all be contained within the saved `.zip` file.
 
 The main output are the graphs in `data/{year}/plots`. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `data/{year}/plots/Combined`.
 
@@ -46,9 +51,9 @@ There are also aggregations done on the full year of data. These are found at `d
 
 # CLI Usage
 
-Once installation is complete, you run the code with the following commands: `> python3 main.py`. 
+Once installation is complete, you run the code with the following commands: `> python3 main.py cli`. 
 
-Or if you have `make` installed, you can also run `> make run`.
+Or if you have `make` installed, you can also run `> make cli`.
 
 This will analyze one year of data. By default, this will be the year of the current local time, but this can be changed with the `-y {year}` or `--year={year}` option.
 
@@ -56,7 +61,7 @@ Using this year, it will search for a spreadsheet at `data/{year}/Spending.{csv|
 
 # Running the GUI
 
-There is also a very barebones GUI just to make the file navigation a little easier. Simply run `python main.py -t` or `make ui` and it will launch a window.
+There is also a very barebones GUI just to make the file navigation a little easier. Simply run `python3 main.py ui`, or `make ui` and it will launch a window.
 
 Click the prompt to upload a spreadsheet, wait a few seconds for it to process the numbers, and tell it where to save the output zip file.
 
@@ -69,17 +74,17 @@ The only files that the user will interact with are `base_config.yml / config_ov
 │   ├── ...
 │   ├── 2024
 │       ├── plots
-│           ├── January                     # plots for the month of January
-│           ├── February                    # plots for the month of February
+│           ├── January                         # plots for the month of January
+│           ├── February                        # plots for the month of February
 │           ├── ...
-│           ├── Combined                    # plots for the whole year
-│       ├── aggregation.yml                 # generated aggregations
-│       ├── Spending.{csv|xlsx|txt}         # spending for the whole year
+│           ├── Combined                        # plots for the whole year
+│       ├── aggregation.yml                     # generated aggregations
+│       ├── Spending.{csv|xlsx|txt|numbers}     # spending for the whole year
 │   ├── 2025
 │       ├── ...
 │   ├── ...
-├── base_config.yml                         # default configurations
-├── config_overwrite.yml                    # user-defined configuration overwrites
+├── base_config.yml                             # default configurations
+├── config_overwrite.yml                        # user-defined configuration overwrites
 ```
 
 ## Input

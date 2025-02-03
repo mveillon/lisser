@@ -2,12 +2,11 @@ from os import listdir
 from os.path import splitext, join
 import re
 from typing import cast
+from datetime import datetime
 
-from src.utilities.parse_args import parse_args
-
-
-class Year:
-    year: int = cast(int, parse_args().year)
+from src.utilities.parse_args import parse_args, get_subcommand, Subcommand
+from src.utilities.read_data import read_data
+from src.utilities.column import Column
 
 
 def get_year() -> int:
@@ -20,7 +19,13 @@ def get_year() -> int:
     Returns:
         year (int): the year passed by the user
     """
-    return Year.year
+    if get_subcommand() == Subcommand.CLI and parse_args().file is not None:
+        return cast(datetime, read_data(parse_args().file)[Column.DATE].median()).year
+
+    if get_subcommand() in (Subcommand.CLI, Subcommand.INIT):
+        return cast(int, parse_args().year)
+
+    return datetime.now().year
 
 
 def this_years_data() -> str:
@@ -62,7 +67,7 @@ def spending_path() -> str:
     Returns:
         dir (str): where the spreadsheet is located
     """
-    return _first_spreadsheet(this_years_data(), "Spending")
+    return parse_args().file or _first_spreadsheet(this_years_data(), "Spending")
 
 
 def plots_dir() -> str:
