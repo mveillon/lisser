@@ -8,7 +8,6 @@ from datetime import date
 
 from src.utilities.paths import Paths
 from src.utilities.read_data import read_data, get_months
-from src.utilities.helpers import find_big_bills
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
     get_modules_from_folder,
@@ -38,8 +37,6 @@ class VisualizationDriver:
         ):
             if not exists(dir):
                 mkdir(dir)
-
-        find_big_bills()
 
         self.monthlys, self.yearlys = plotters_from_config()
 

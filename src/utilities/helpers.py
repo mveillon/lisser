@@ -1,15 +1,11 @@
 import locale
 import pandas as pd
-from os.path import join
-from typing import List, cast, Dict
+from typing import List, cast
 from datetime import timedelta, date
-import json
 
-from src.utilities.read_data import read_data
 from src.utilities.paths import Paths
 from src.utilities.column import Column
 from src.read_config.config_globals import config_globals
-from src.utilities.types import Number
 
 
 def monthly_income() -> float:
@@ -93,35 +89,6 @@ def get_months(min_day: date, max_day: date) -> List[date]:
         )
 
     return all_dates[:-1]
-
-
-def find_big_bills() -> None:
-    """
-    Generates a JSON with all big bills using the spreadsheet in
-    `src.utilities.spending_dir()`, writing the result to
-    `src.utilities.staging_dir()`.
-
-    Parameters:
-        None
-
-    Returns:
-        None
-    """
-    res: Dict[str, Dict[str, Number]] = {}
-    df = read_data(Paths.spending_path())
-    big_bills = df.loc[
-        (df[Column.PRICE] >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"])
-        & (df[Column.CATEGORY] == "Bills")
-    ]
-    for _, bill in big_bills.reset_index().iterrows():
-        month = bill[Column.DATE].strftime("%B")
-        if month in res:
-            res[month][bill[Column.TRANSACTION_ID]] = bill[Column.PRICE]
-        else:
-            res[month] = {bill[Column.TRANSACTION_ID]: bill[Column.PRICE]}
-
-    with open(join(Paths.staging_dir(), "bills.json"), "w") as out:
-        json.dump(res, out)
 
 
 def time_filter(df: pd.DataFrame, min_date: str, max_date: str) -> pd.DataFrame:

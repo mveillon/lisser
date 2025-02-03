@@ -40,7 +40,7 @@ def spent_by_week(
         {
             "actual": (avgs, "b"),
             "": (avgs, "bo"),
-            "goal": (income_arr, "g"),
+            "goal": (income_arr * 0.8, "g"),
             "average": (avg_arr, "r"),
         },
         "Prorated spending per week",
