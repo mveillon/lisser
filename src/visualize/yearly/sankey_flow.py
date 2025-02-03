@@ -7,7 +7,7 @@ from typing import List, NamedTuple, cast
 from itertools import chain
 
 from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
-from src.utilities.paths import get_year
+from src.utilities.paths import Paths
 from src.utilities.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,
@@ -100,7 +100,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
 
     plt.clf()
     plt.figure(figsize=(12, 8))
-    plt.title(f"Spending Flow for {get_year()}")
+    plt.title(f"Spending Flow for {Paths.get_year()}")
 
     s = Sankey(
         flows=_get_flows("Income", flow),

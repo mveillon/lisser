@@ -6,11 +6,8 @@ from typing import List, cast
 from pathlib import Path
 from datetime import date
 
-from src.utilities.paths import (
-    plots_dir,
-    staging_dir,
-)
-from src.utilities.read_data import combined_df, get_months
+from src.utilities.paths import Paths
+from src.utilities.read_data import read_data, get_months
 from src.utilities.helpers import find_big_bills
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
@@ -34,7 +31,11 @@ class VisualizationDriver:
     yearlys: List[Plotter]
 
     def __init__(self) -> None:
-        for dir in (staging_dir(), plots_dir(), join(plots_dir(), "Combined")):
+        for dir in (
+            Paths.staging_dir(),
+            Paths.plots_dir(),
+            join(Paths.plots_dir(), "Combined"),
+        ):
             if not exists(dir):
                 mkdir(dir)
 
@@ -83,14 +84,17 @@ class VisualizationDriver:
         Returns:
             None
         """
-        all_dfs = combined_df()
+        all_dfs = read_data(Paths.spending_path())
         for df in get_months(all_dfs):
             self._plot_df(
                 df,
-                join(plots_dir(), cast(date, df[Column.DATE].median()).strftime("%B")),
+                join(
+                    Paths.plots_dir(),
+                    cast(date, df[Column.DATE].median()).strftime("%B"),
+                ),
             )
 
-        combined_path = join(plots_dir(), "Combined")
+        combined_path = join(Paths.plots_dir(), "Combined")
 
         plot_funcs = [
             self._plot_df,
@@ -99,4 +103,4 @@ class VisualizationDriver:
         for f in plot_funcs:
             f(all_dfs, combined_path)
 
-        rmtree(staging_dir())
+        rmtree(Paths.staging_dir())

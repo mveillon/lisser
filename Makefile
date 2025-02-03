@@ -1,20 +1,21 @@
 fmt:
-	black src tests main.py initialize.py
+	black src tests main.py
 
 lint:
-	flake8 src tests main.py initialize.py
+	flake8 src tests main.py
 
 test:
 	pytest
 
 init:
-	python -m pip install -r requirements.txt; python initialize.py
+	python -m pip install -r requirements.txt
+	python main.py init
 
-run:
-	python main.py
+cli:
+	python main.py cli
 
 types:
 	mypy src --config-file=mypy.ini
 
-make ui:
-	python main.py -t
+ui:
+	python main.py ui

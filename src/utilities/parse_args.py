@@ -1,6 +1,14 @@
 from datetime import date
 import argparse
 from functools import lru_cache
+from enum import StrEnum
+
+
+class Subcommand(StrEnum):
+    CLI = "cli"
+    UI = "ui"
+    INIT = "init"
+    UNSET = "unset"
 
 
 @lru_cache(maxsize=1)
@@ -18,8 +26,31 @@ def parse_args() -> argparse.Namespace:
         prog="spending_tracking",
         description="Initialize repository.",
     )
-    parser.add_argument(
-        "-f",
+
+    subparsers = parser.add_subparsers(
+        title="subcommands",
+        description="valid subcommands",
+        help="which command to run",
+        dest="subparser_name",
+    )
+
+    cli_parser = subparsers.add_parser(Subcommand.CLI, help="run using the CLI")
+    _ = subparsers.add_parser(Subcommand.UI, help="launch the Tkinter UI")
+    init_parser = subparsers.add_parser(
+        Subcommand.INIT, help="initialize the repository"
+    )
+
+    for par in (cli_parser, init_parser):
+        par.add_argument(
+            "-y",
+            "--year",
+            type=int,
+            default=date.today().year,
+            help="which year to process. Defaults to year of system time.",
+        )
+
+    init_parser.add_argument(
+        "-F",
         "--force",
         action="store_true",
         help=(
@@ -27,17 +58,14 @@ def parse_args() -> argparse.Namespace:
             + "Default False. Only applies to initialize.py"
         ),
     )
-    parser.add_argument(
-        "-y",
-        "--year",
-        type=int,
-        default=date.today().year,
-        help="which year to process. Defaults to year of system time",
+
+    cli_parser.add_argument(
+        "-f",
+        "--file",
+        help=(
+            "the path of the file to process. "
+            + "Defaults to /data/{year}/Spending.{xlsx|csv|txt|numbers}"
+        ),
     )
-    parser.add_argument(
-        "-t",
-        "--tkinter",
-        action="store_true",
-        help="launch Tkinter GUI to accept a file input. Only applies to main.py",
-    )
+
     return parser.parse_args()

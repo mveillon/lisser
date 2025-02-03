@@ -2,11 +2,7 @@ import shutil
 from os.path import exists
 from os import makedirs
 
-from src.utilities.paths import (
-    config_path,
-    spending_path,
-    this_years_data,
-)
+from src.utilities.paths import Paths
 from src.utilities.parse_args import parse_args
 
 
@@ -36,7 +32,7 @@ def check_overwrite(dest: str) -> bool:
     )
 
 
-def init_config():
+def init_config() -> None:
     """
     Initialize the config_overwrite.yml file.
 
@@ -46,7 +42,7 @@ def init_config():
     Returns:
         None
     """
-    dest = config_path()
+    dest = Paths.config_path()
 
     if check_overwrite(dest):
         with open(dest, "w") as out:
@@ -61,7 +57,7 @@ def init_config():
             )
 
 
-def add_spending_sheet():
+def add_spending_sheet() -> None:
     """
     Creates the base of the spending directory.
 
@@ -71,13 +67,16 @@ def add_spending_sheet():
     Returns:
         None
     """
-    makedirs(this_years_data(), exist_ok=True)
+    makedirs(Paths.this_years_data(), exist_ok=True)
 
-    spending = spending_path()
+    spending = Paths.spending_path()
     if check_overwrite(spending):
         shutil.copy("base_sheet.xlsx", spending)
 
 
-if __name__ == "__main__":
+def initialize() -> None:
+    """
+    Performs all necessary initializations.
+    """
     init_config()
     add_spending_sheet()

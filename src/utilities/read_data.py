@@ -9,7 +9,6 @@ from numbers_parser import Document
 from typing import List, cast, Dict
 
 from src.utilities.column import Column
-from src.utilities.paths import spending_path
 
 
 SCHEMA = {
@@ -22,7 +21,7 @@ SCHEMA = {
 }
 
 
-@lru_cache(maxsize=16)
+@lru_cache(maxsize=32)
 def read_data(path: str) -> pd.DataFrame:
     """
     Reads the data and converts any columns that need converting. Can read
@@ -95,20 +94,6 @@ def _read_numbers(path: str) -> pd.DataFrame:
     """
     data = Document(path).sheets[0].tables[0].rows(values_only=True)
     return pd.DataFrame(data[1:], columns=data[0])
-
-
-def combined_df() -> pd.DataFrame:
-    """
-    Returns a single DataFrame with all spreadsheets combined.
-
-    Parameters:
-        root (str): the root directory of the input files
-
-    Returns:
-        df (DataFrame): a Pandas DataFrame with the data of
-            all the spreadsheets
-    """
-    return read_data(spending_path())
 
 
 def get_months(year_data: pd.DataFrame) -> List[pd.DataFrame]:

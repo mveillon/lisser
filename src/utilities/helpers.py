@@ -5,8 +5,8 @@ from typing import List, cast, Dict
 from datetime import timedelta, date
 import json
 
-from src.utilities.read_data import combined_df
-from src.utilities.paths import staging_dir, get_year
+from src.utilities.read_data import read_data
+from src.utilities.paths import Paths
 from src.utilities.column import Column
 from src.read_config.config_globals import config_globals
 from src.utilities.types import Number
@@ -22,7 +22,10 @@ def monthly_income() -> float:
     Returns:
         income (float): how much income was made each month
     """
-    return cast(float, config_globals()["YEARLY_TAKE_HOME_PAY"][str(get_year())]) / 12
+    return (
+        cast(float, config_globals()["YEARLY_TAKE_HOME_PAY"][str(Paths.get_year())])
+        / 12
+    )
 
 
 def format_currency(money: float) -> str:
@@ -105,7 +108,7 @@ def find_big_bills() -> None:
         None
     """
     res: Dict[str, Dict[str, Number]] = {}
-    df = combined_df()
+    df = read_data(Paths.spending_path())
     big_bills = df.loc[
         (df[Column.PRICE] >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"])
         & (df[Column.CATEGORY] == "Bills")
@@ -117,7 +120,7 @@ def find_big_bills() -> None:
         else:
             res[month] = {bill[Column.TRANSACTION_ID]: bill[Column.PRICE]}
 
-    with open(join(staging_dir(), "bills.json"), "w") as out:
+    with open(join(Paths.staging_dir(), "bills.json"), "w") as out:
         json.dump(res, out)
 
 

@@ -2,7 +2,7 @@ import yaml
 from functools import lru_cache
 import os.path
 
-from src.utilities.paths import base_config, config_path
+from src.utilities.paths import Paths
 from src.utilities.dictionary_ops import recursive_merge
 
 
@@ -18,11 +18,11 @@ def get_config() -> dict:
         config (dict): a dictionary of all configs defined
             by the user
     """
-    with open(base_config(), "r") as base:
+    with open(Paths.base_config(), "r") as base:
         base_data = yaml.safe_load(base)
 
-    if os.path.exists(config_path()):
-        with open(config_path(), "r") as prim:
+    if os.path.exists(Paths.config_path()):
+        with open(Paths.config_path(), "r") as prim:
             primary_data = yaml.safe_load(prim)
 
     else:
