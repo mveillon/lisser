@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import filedialog as fd
 
+import sys
 from datetime import datetime
 from shutil import copyfile
-from os import walk
+from os import walk, remove
 from os.path import abspath, join, relpath, splitext
 from zipfile import ZipFile
 
@@ -41,7 +42,11 @@ class AnalyzeSpending(tk.Tk):
         self.output_label = tk.Label(self, text="Awaiting data.")
         self.output_label.pack()
 
-        self.quit_button = tk.Button(self, text="Quit", command=self.destroy)
+        def exit() -> None:
+            self.destroy()
+            sys.exit(0)
+
+        self.quit_button = tk.Button(self, text="Quit", command=exit)
         self.quit_button.pack()
 
     def file_handler(self, path: str) -> None:
@@ -77,7 +82,8 @@ class AnalyzeSpending(tk.Tk):
             new_path = splitext(spending_path())[0] + extn
 
             if abspath(refs) != abspath(new_path):
-                copyfile(refs, new_path)
+                remove(new_path)
+            copyfile(refs, new_path)
             AnalyzeSpending.analyze_spending(verbose=False)
         except Exception as e:
             self.output_label.config(text=f"Something went wrong: {str(e)}")
@@ -89,7 +95,7 @@ class AnalyzeSpending(tk.Tk):
             out_name = fd.asksaveasfilename(
                 filetypes=[("Archive Files", "*.zip")], defaultextension=".zip"
             )
-            
+
             with ZipFile(out_name, "w") as archive:
                 archive.write(aggregation_path(), ".")
 
@@ -101,9 +107,11 @@ class AnalyzeSpending(tk.Tk):
                             archive.write(full_path, archive_path)
 
             self.output_label.config(text="Archive created!")
-        
+
         except Exception as e:
-            self.output_label.config(text=f"Something went wrong saving the zip file: {e}")
+            self.output_label.config(
+                text=f"Something went wrong saving the zip file: {e}"
+            )
             return
 
     @staticmethod
