@@ -1,8 +1,6 @@
 from datetime import date
 import argparse
 from functools import lru_cache
-
-from typing import Callable
 from enum import StrEnum
 
 
@@ -11,39 +9,6 @@ class Subcommand(StrEnum):
     UI = "ui"
     INIT = "init"
     UNSET = "unset"
-
-
-_SELECTED_SUB = Subcommand.UNSET
-
-
-def get_subcommand() -> Subcommand:
-    """
-    Returns which subcommand was selected on the command line.
-
-    Parameters:
-        None
-
-    Returns:
-        None
-    """
-    return _SELECTED_SUB
-
-
-def set_command(sub: Subcommand) -> Callable[[], None]:
-    """
-    Returns a function which sets the subcommand returned by `get_subcommand`.
-
-    Parameters:
-        sub (Subparser): which subparser was selected
-
-    Returns:
-        callback (Callable[[], None]): a function to call to set the subparser to `sub`
-    """
-    def res() -> None:
-        global _SELECTED_SUB
-        _SELECTED_SUB = sub
-
-    return res
 
 
 @lru_cache(maxsize=1)
@@ -61,30 +26,28 @@ def parse_args() -> argparse.Namespace:
         prog="spending_tracking",
         description="Initialize repository.",
     )
+
     subparsers = parser.add_subparsers(
         title="subcommands",
         description="valid subcommands",
         help="which command to run",
+        dest="subparser_name",
     )
 
-    cli_parser = subparsers.add_parser(Subcommand.CLI, help="cli help")
-    ui_parser = subparsers.add_parser(Subcommand.UI, help="ui help")
-    init_parser = subparsers.add_parser(Subcommand.INIT, help="init help")
+    cli_parser = subparsers.add_parser(Subcommand.CLI, help="run using the CLI")
+    _ = subparsers.add_parser(Subcommand.UI, help="launch the Tkinter UI")
+    init_parser = subparsers.add_parser(
+        Subcommand.INIT, help="initialize the repository"
+    )
 
-    year_arg = (
-        (
+    for par in (cli_parser, init_parser):
+        par.add_argument(
             "-y",
             "--year",
-        ),
-        {
-            "type": int,
-            "default": date.today().year,
-            "help": "which year to process. Defaults to year of system time",
-        },
-    )
-
-    cli_parser.add_argument(*year_arg[0], **year_arg[1])  # type: ignore
-    init_parser.add_argument(*year_arg[0], **year_arg[1])  # type: ignore
+            type=int,
+            default=date.today().year,
+            help="which year to process. Defaults to year of system time.",
+        )
 
     init_parser.add_argument(
         "-F",
@@ -99,15 +62,10 @@ def parse_args() -> argparse.Namespace:
     cli_parser.add_argument(
         "-f",
         "--file",
-        default="",
         help=(
             "the path of the file to process. "
             + "Defaults to /data/{year}/Spending.{xlsx|csv|txt|numbers}"
         ),
     )
-
-    cli_parser.set_defaults(func=set_command(Subcommand.CLI))
-    ui_parser.set_defaults(func=set_command(Subcommand.UI))
-    init_parser.set_defaults(func=set_command(Subcommand.INIT))
 
     return parser.parse_args()

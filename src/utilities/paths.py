@@ -4,7 +4,7 @@ import re
 from typing import cast
 from datetime import datetime
 
-from src.utilities.parse_args import parse_args, get_subcommand, Subcommand
+from src.utilities.parse_args import parse_args, Subcommand
 from src.utilities.read_data import read_data
 from src.utilities.column import Column
 
@@ -19,10 +19,11 @@ def get_year() -> int:
     Returns:
         year (int): the year passed by the user
     """
-    if get_subcommand() == Subcommand.CLI and parse_args().file is not None:
+    cmd = parse_args().subparser_name
+    if cmd == Subcommand.CLI and parse_args().file is not None:
         return cast(datetime, read_data(parse_args().file)[Column.DATE].median()).year
 
-    if get_subcommand() in (Subcommand.CLI, Subcommand.INIT):
+    if cmd in (Subcommand.CLI, Subcommand.INIT):
         return cast(int, parse_args().year)
 
     return datetime.now().year
@@ -67,7 +68,9 @@ def spending_path() -> str:
     Returns:
         dir (str): where the spreadsheet is located
     """
-    return parse_args().file or _first_spreadsheet(this_years_data(), "Spending")
+    return (
+        parse_args().subparser_name == Subcommand.CLI and parse_args().file
+    ) or _first_spreadsheet(this_years_data(), "Spending")
 
 
 def plots_dir() -> str:

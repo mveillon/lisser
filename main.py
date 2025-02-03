@@ -2,10 +2,10 @@ import sys
 
 from src.analyze_spending import AnalyzeSpending
 from src.initialize import initialize
-from src.utilities.parse_args import Subcommand, get_subcommand
+from src.utilities.parse_args import parse_args, Subcommand
 
 if __name__ == "__main__":
-    cmd = get_subcommand()
+    cmd = parse_args().subparser_name
     if cmd == Subcommand.INIT:
         initialize()
     elif cmd == Subcommand.CLI:
@@ -13,5 +13,4 @@ if __name__ == "__main__":
     elif cmd == Subcommand.UI:
         AnalyzeSpending().mainloop()
     else:
-        # raise ValueError(f"Invalid subcommand {sys.argv[1]}")
-        print("Doing nothing")
+        raise ValueError(f"Invalid subcommand {sys.argv[1]}")
