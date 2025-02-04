@@ -2,12 +2,9 @@ import pandas as pd
 from typing import Tuple
 
 from src.calculations.controllable_proportions import controllable_proportions
-from src.utilities.helpers import monthly_income
 
 
-def expenses_split(
-    df: pd.DataFrame, monthly_income: float = monthly_income()
-) -> Tuple[float, float, float]:
+def expenses_split(df: pd.DataFrame) -> Tuple[float, float, float]:
     """
     Returns what percentage of expenses were not controllable, controllable,
     and how much was put into savings. Should be about 50/30/20 because
@@ -23,9 +20,7 @@ def expenses_split(
         controllable (float): how much was controllable
         saved (float): how much was saved
     """
-    control, not_control, income = controllable_proportions(
-        df, monthly_income=monthly_income
-    )
+    control, not_control, income = controllable_proportions(df)
     to_perc = lambda f: round(100 * f, 2)
     if income == 0:
         return 0, 0, 0

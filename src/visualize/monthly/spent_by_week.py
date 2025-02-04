@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from os.path import join
 
-from src.utilities.types import Number
 from src.utilities.helpers import monthly_income, get_weeks
 from src.utilities.column import Column
 from src.utilities.df_common import filter_large_transactions
@@ -10,9 +9,7 @@ from src.calculations.weekly_projection import weekly_projection
 from src.visualize.common import metrics_over_time
 
 
-def spent_by_week(
-    df: pd.DataFrame, out_dir: str, income: Number = monthly_income()
-) -> None:
+def spent_by_week(df: pd.DataFrame, out_dir: str) -> None:
     """
     Plots spending by week smoothed out as a per month average, compared to the monthly
     income, which by default is helpers.monthly_income() with a line plot.
@@ -32,7 +29,7 @@ def spent_by_week(
     if weeks.shape[0] > 5:
         avgs += filt_total / avgs.shape[0]
 
-    income_arr = np.full(len(avgs), income)
+    income_arr = np.full(len(avgs), monthly_income())
     avg_arr = np.full(len(avgs), np.average(avgs))
 
     metrics_over_time(

@@ -3,14 +3,11 @@ import pandas as pd
 from os.path import join
 import matplotlib.pyplot as plt
 
-from src.utilities.helpers import monthly_income, format_currency
+from src.utilities.helpers import format_currency
 from src.calculations.category_spending import category_spending
-from src.utilities.types import Number
 
 
-def spent_by_category(
-    df: pd.DataFrame, out_dir: str, income: Number = monthly_income()
-) -> None:
+def spent_by_category(df: pd.DataFrame, out_dir: str) -> None:
     """
     Plots spending by category, compared to prorated monthly income,
     the default of which is set to helpers.monthly_income() with a bar plot.
@@ -18,13 +15,11 @@ def spent_by_category(
     Parameters:
         df (DataFrame): a Pandas DataFrame to plot.
         out_dir (str): the directory to put the plot in
-        income (Number): the monthly income to compare spending to. Defaults
-            to `helpers.monthly_income()`
 
     Returns:
         None
     """
-    cats = category_spending(df, income)
+    cats = category_spending(df)
     sorted_keys = sorted(cats.keys(), key=cats.__getitem__, reverse=True)
     sorted_vals = list(map(cats.__getitem__, sorted_keys))
 

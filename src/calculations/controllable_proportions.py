@@ -4,17 +4,13 @@ from src.utilities.helpers import monthly_income
 from src.utilities.column import Column
 
 
-def controllable_proportions(
-    df: pd.DataFrame, monthly_income: float = monthly_income()
-) -> Tuple[float, float, float]:
+def controllable_proportions(df: pd.DataFrame) -> Tuple[float, float, float]:
     """
     Returns how much spent money is controllable and how much isn't, as well
     as the total income over that period.
 
     Parameters:
         df (DataFrame): the Pandas DataFrame to analyze
-        monthly_income (float): the monthly income over df. Defaults to result of
-            monthly income function
 
     Returns:
         controllable (float): how much is controllable
@@ -25,5 +21,5 @@ def controllable_proportions(
     not_control_sum = df.loc[~df[Column.CONTROLLABLE]][Column.PRICE].sum()
 
     total_days = (df[Column.DATE].max() - df[Column.DATE].min()).days
-    total_income = monthly_income * (total_days * 12 / 365)
+    total_income = monthly_income() * (total_days * 12 / 365)
     return control_sum, not_control_sum, total_income
