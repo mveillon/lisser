@@ -107,19 +107,6 @@ class Paths:
         return join(Paths.this_years_data(), "plots")
 
     @staticmethod
-    def staging_dir() -> str:
-        """
-        Returns the directory where the .csv spreadsheets are located.
-
-        Parameters:
-            None
-
-        Returns:
-            dir (str): where the spreadsheets are located
-        """
-        return join(Paths.this_years_data(), "staging")
-
-    @staticmethod
     def get_out_dir(month: str) -> str:
         """
         Generates the output directory for plots for a given month.

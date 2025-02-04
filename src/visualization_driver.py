@@ -1,7 +1,6 @@
 import pandas as pd
 from os import mkdir
 from os.path import join, exists
-from shutil import rmtree
 from typing import List
 from pathlib import Path
 
@@ -30,7 +29,6 @@ class VisualizationDriver:
 
     def __init__(self) -> None:
         for dir in (
-            Paths.staging_dir(),
             Paths.plots_dir(),
             join(Paths.plots_dir(), "Combined"),
         ):
@@ -85,13 +83,7 @@ class VisualizationDriver:
         for df in months:
             dates_in_df = list(df.sort_values(Column.DATE)[Column.DATE])
             month = dates_in_df[len(dates_in_df) // 2].strftime("%B")
-            self._plot_df(
-                df,
-                join(
-                    Paths.plots_dir(),
-                    month,
-                ),
-            )
+            self._plot_df(df, join(Paths.plots_dir(), month))
 
         combined_path = join(Paths.plots_dir(), "Combined")
 
@@ -101,5 +93,3 @@ class VisualizationDriver:
         ]
         for f in plot_funcs:
             f(all_dfs, combined_path)
-
-        rmtree(Paths.staging_dir())

@@ -20,7 +20,7 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
     current: date = df[Column.DATE].min().date()
     end: date = df[Column.DATE].max().date()
     res = {}
-    fmt = "%Y/%m/%d"
+    fmt = "%m/%d/%Y"
 
     while current <= end:
         next_date = date(

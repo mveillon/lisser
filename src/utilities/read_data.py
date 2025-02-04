@@ -107,5 +107,4 @@ def get_month_dfs(year_data: pd.DataFrame) -> List[pd.DataFrame]:
         months (List[DataFrame]): the data partitioned into months
     """
     groups = year_data.groupby(pd.Grouper(key=Column.DATE, freq="ME"))
-    res = [df for _, df in groups if df.shape[0]]
-    return res
+    return [df for _, df in groups if df.shape[0]]

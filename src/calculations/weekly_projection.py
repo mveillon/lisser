@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from typing import List
 from datetime import datetime, timedelta, date
@@ -21,14 +22,12 @@ def weekly_projection(df: pd.DataFrame) -> List[float]:
     """
     fmt = "%m/%d/%Y"
     one_week = timedelta(weeks=1)
-    date_limits = tuple(
-        map(lambda d: d.date(), (df[Column.DATE].min(), df[Column.DATE].max()))
-    )
-    all_dates = get_weeks(*date_limits)
+    all_dates = get_weeks(df[Column.DATE].min().date(), df[Column.DATE].max().date())
     month_starts, month_dfs = group_by_month(df)
 
+    thresh = config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"]
     filt_cond = (df[Column.CATEGORY] == "Bills") & (
-        df[Column.PRICE] >= config_globals()["PROJECTED_SPENDING_BILL_THRESHOLD"]
+        df[Column.PRICE] >= (thresh if thresh > 0 else np.inf)
     )
 
     monthly_bills = {}
@@ -58,20 +57,17 @@ def weekly_projection(df: pd.DataFrame) -> List[float]:
         if week_df.shape[0] == 0:
             avgs.append(0.0)
         else:
+            monthly_bill_smooth = monthly_bills[mo][Column.PRICE].sum() * (
+                (365 / 12)
+                / (
+                    date(dtm.year + int(dtm.month == 12), (dtm.month % 12) + 1, 1)
+                    - timedelta(days=1)
+                ).day
+            )
+
             avgs.append(
                 ((week_df[Column.PRICE].sum() / one_week.days) * (365 / 12))
-                + (
-                    monthly_bills[mo][Column.PRICE].sum()
-                    * (
-                        (365 / 12)
-                        / (
-                            date(
-                                dtm.year + int(dtm.month == 12), (dtm.month % 12) + 1, 1
-                            )
-                            - timedelta(days=1)
-                        ).day
-                    )
-                )
+                + monthly_bill_smooth
             )
 
     return avgs
