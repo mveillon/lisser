@@ -32,7 +32,7 @@ def spent_by_category(
     plt.figure().set_figwidth(10)
     plt.figure().set_figheight(7)
     plt.title("Spending by category")
-    plt.ylabel("Amount spent")
+    plt.ylabel("Total spent")
     plt.gcf().subplots_adjust(bottom=0.2)
 
     inds = np.arange(len(sorted_keys))

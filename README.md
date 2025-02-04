@@ -152,7 +152,7 @@ This effectively lowers the total amount spent that week, and raises that of the
 
 It then takes the weekly spending and prorates it over a month, since the "weekly" spending value has bills from the full month.
 
-This concept of smoothing outliers is also applied to all transactions for certain graphs. For these graphs, all transactions over the `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD` threshold defined in the `config` files will be removed.
+This concept of smoothing outliers is also applied to all transactions _other than_ bills for certain graphs. For these graphs, all non-bill transactions over the `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD` threshold defined in the `config` files will be removed.
 
 The large expenses threshold is applied to all monthly graphs. In this case, the transaction totals are not smoothed and added back in.
 

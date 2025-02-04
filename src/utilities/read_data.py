@@ -96,7 +96,7 @@ def _read_numbers(path: str) -> pd.DataFrame:
     return pd.DataFrame(data[1:], columns=data[0])
 
 
-def get_months(year_data: pd.DataFrame) -> List[pd.DataFrame]:
+def get_month_dfs(year_data: pd.DataFrame) -> List[pd.DataFrame]:
     """
     Returns the transactions partitioned into months.
 
@@ -107,4 +107,4 @@ def get_months(year_data: pd.DataFrame) -> List[pd.DataFrame]:
         months (List[DataFrame]): the data partitioned into months
     """
     groups = year_data.groupby(pd.Grouper(key=Column.DATE, freq="ME"))
-    return [df for _, df in groups]
+    return [df for _, df in groups if df.shape[0]]

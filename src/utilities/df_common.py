@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from typing import Callable, Tuple, List, cast
 from datetime import date
@@ -79,7 +80,9 @@ def filter_large_transactions(df: pd.DataFrame) -> Tuple[pd.DataFrame, float]:
         filtered_out (float): how much money was filtered out
     """
     thresh = config_globals()["PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD"]
+    if thresh == 0:
+        thresh = np.inf
     return (
-        df.loc[df[Column.PRICE] < thresh],
+        df.loc[(df[Column.PRICE] < thresh) | (df[Column.CATEGORY] == "Bills")],
         cast(float, df.loc[df[Column.PRICE] >= thresh][Column.PRICE].sum()),
     )

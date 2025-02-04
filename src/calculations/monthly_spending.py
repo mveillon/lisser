@@ -5,8 +5,6 @@ from datetime import date
 from src.utilities.helpers import time_filter
 from src.utilities.column import Column
 
-from src.calculations.projected_spending import projected_spending
-
 
 def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
     """
@@ -22,20 +20,15 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
     current: date = df[Column.DATE].min().date()
     end: date = df[Column.DATE].max().date()
     res = {}
-    fmt = "%Y/%m/%d"
+    fmt = "%m/%d/%Y"
 
     while current <= end:
-        if current.month == 12:
-            next_date = date(current.year + 1, current.month, current.day)
-        else:
-            next_date = date(current.year, current.month + 1, current.day)
+        next_date = date(
+            current.year + int(current.month == 12), (current.month % 12) + 1, 1
+        )
 
         month_df = time_filter(df, current.strftime(fmt), next_date.strftime(fmt))
-        month_str = current.strftime("%B")
-        if next_date > end:
-            spent = projected_spending(df, month_str, filter_big_bills=False)
-        else:
-            spent = month_df[Column.PRICE].sum()
+        spent = (month_df[Column.PRICE].sum() / (next_date - current).days) * (365 / 12)
 
         res[current.strftime("%b")] = spent
         current = next_date
