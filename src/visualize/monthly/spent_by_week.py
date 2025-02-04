@@ -43,6 +43,6 @@ def spent_by_week(
             "goal": (income_arr * 0.8, "g"),
             "average": (avg_arr, "r"),
         },
-        "Prorated spending per week",
+        "Projected spending per week",
         join(out_dir, "by_week.png"),
     )

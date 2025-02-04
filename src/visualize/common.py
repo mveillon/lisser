@@ -25,7 +25,7 @@ def metrics_over_time(
     """
     plt.clf()
     plt.title(title)
-    plt.ylabel("Dollars Spent")
+    plt.ylabel("Dollars Spent Per Month")
     plt.xlabel("Week start")
 
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%m/%d/%Y"))

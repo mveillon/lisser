@@ -23,15 +23,12 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
     fmt = "%Y/%m/%d"
 
     while current <= end:
-        if current.month == 12:
-            next_date = date(current.year + 1, current.month, 1)
-        else:
-            next_date = date(current.year, current.month + 1, 1)
+        next_date = date(
+            current.year + int(current.month == 12), (current.month % 12) + 1, 1
+        )
 
         month_df = time_filter(df, current.strftime(fmt), next_date.strftime(fmt))
-        spent = month_df[Column.PRICE].sum()
-        if next_date > end:
-            spent *= (next_date - current).days / (end - current).days
+        spent = (month_df[Column.PRICE].sum() / (next_date - current).days) * (365 / 12)
 
         res[current.strftime("%b")] = spent
         current = next_date

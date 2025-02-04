@@ -76,15 +76,14 @@ def get_months(min_day: date, max_day: date) -> List[date]:
             of the first day each month until and possibly including
             `max_day`
     """
-    all_dates = [date(min_day.year, min_day.month, min(min_day.day, 28))]
+    all_dates = [date(min_day.year, min_day.month, 1)]
 
-    while all_dates[-1] < max_day:
-        new_year = int(all_dates[-1].month == 12)
+    while all_dates[-1] <= max_day:
         all_dates.append(
             date(
-                all_dates[-1].year + new_year,
-                all_dates[-1].month + 1 - 12 * new_year,
-                all_dates[-1].day,
+                all_dates[-1].year + int(all_dates[-1].month == 12),
+                (all_dates[-1].month % 12) + 1,
+                1,
             )
         )
 

@@ -83,6 +83,6 @@ def filter_large_transactions(df: pd.DataFrame) -> Tuple[pd.DataFrame, float]:
     if thresh == 0:
         thresh = np.inf
     return (
-        df.loc[df[Column.PRICE] < thresh],
+        df.loc[(df[Column.PRICE] < thresh) | (df[Column.CATEGORY] == "Bills")],
         cast(float, df.loc[df[Column.PRICE] >= thresh][Column.PRICE].sum()),
     )
