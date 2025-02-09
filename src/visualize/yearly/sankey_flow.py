@@ -126,7 +126,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
     )
     for node_list in s.nodes:
         for node in node_list:
-            node.label_opts = {"fontsize": 10}
+            node.label_opts = {"fontsize": 8}
             if len(node.outflows) > 0:
                 node.label_pos = "left"
             else:
