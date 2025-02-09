@@ -21,6 +21,36 @@ You can also set up the spreadsheets for a previous year using the `-y {year}` o
 
 # Running the Code
 
+## Command Cheatsheet
+
+Here are some commanly used commands:
+
+```
+| command         | alias                             | description                                             |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+| make cli        | python main.py cli                | runs the command line for the year of the system time   |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+|                 | python main.py cli -y 2024        | runs the command line for the 2024 data                 |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+|                 | python main.py cli -f '{path}'    | runs the command line for the data at path              |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+| make ui         | python main.py ui                 | launches the TKinter UI                                 |
+```
+
+And for developers:
+
+```
+| command         | alias                             | description                                             |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+| make fmt        | black src tests main.py           | formats the Python code                                 |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+| make lint       | flake8 src tests main.py          | lints the Python code                                   |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+| make test       | pytest                            | runs all the tests                                      |
+| --------------- | --------------------------------- | ------------------------------------------------------- |
+| make types      | mypy src                          | type checks the Python code                             |
+```
+
 ## Input
 
 The input spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
