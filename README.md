@@ -39,7 +39,7 @@ The spreadsheet needs, at minimum, the following columns:
 
 Additionally, the default spreadsheets also have columns for `Description`, a brief description of what was bought, and `Vendor`, to whom the money went. These categories are not used by the code by default, but they can be accessed by any plots or aggregations in `config_overwrite.yml` as string columns.
 
-Although not needed by the machine, these columns are highly recommended for the human creating or reviewing the data.
+Although not needed by the machine, these columns are highly recommended for the human creating or reviewing the data. Certain plots can also use them for additional information if present.
 
 ## Output
 
