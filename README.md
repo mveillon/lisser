@@ -28,11 +28,8 @@ Here are some commanly used commands:
 | command         | alias                             | description                                             |
 | --------------- | --------------------------------- | ------------------------------------------------------- |
 | make cli        | python main.py cli                | runs the command line for the year of the system time   |
-| --------------- | --------------------------------- | ------------------------------------------------------- |
 |                 | python main.py cli -y 2024        | runs the command line for the 2024 data                 |
-| --------------- | --------------------------------- | ------------------------------------------------------- |
 |                 | python main.py cli -f '{path}'    | runs the command line for the data at path              |
-| --------------- | --------------------------------- | ------------------------------------------------------- |
 | make ui         | python main.py ui                 | launches the TKinter UI                                 |
 
 And for developers:
@@ -40,11 +37,8 @@ And for developers:
 | command         | alias                             | description                                             |
 | --------------- | --------------------------------- | ------------------------------------------------------- |
 | make fmt        | black src tests main.py           | formats the Python code                                 |
-| --------------- | --------------------------------- | ------------------------------------------------------- |
 | make lint       | flake8 src tests main.py          | lints the Python code                                   |
-| --------------- | --------------------------------- | ------------------------------------------------------- |
 | make test       | pytest                            | runs all the tests                                      |
-| --------------- | --------------------------------- | ------------------------------------------------------- |
 | make types      | mypy src                          | type checks the Python code                             |
 
 ## Input
