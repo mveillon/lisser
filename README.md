@@ -23,7 +23,7 @@ You can also set up the spreadsheets for a previous year using the `-y {year}` o
 
 ## Command Cheatsheet
 
-Here are some commanly used commands:
+Here are some commonly used commands:
 
 | command         | alias                             | description                                             |
 | --------------- | --------------------------------- | ------------------------------------------------------- |
