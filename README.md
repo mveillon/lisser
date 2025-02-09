@@ -25,7 +25,6 @@ You can also set up the spreadsheets for a previous year using the `-y {year}` o
 
 Here are some commanly used commands:
 
-```
 | command         | alias                             | description                                             |
 | --------------- | --------------------------------- | ------------------------------------------------------- |
 | make cli        | python main.py cli                | runs the command line for the year of the system time   |
@@ -35,11 +34,9 @@ Here are some commanly used commands:
 |                 | python main.py cli -f '{path}'    | runs the command line for the data at path              |
 | --------------- | --------------------------------- | ------------------------------------------------------- |
 | make ui         | python main.py ui                 | launches the TKinter UI                                 |
-```
 
 And for developers:
 
-```
 | command         | alias                             | description                                             |
 | --------------- | --------------------------------- | ------------------------------------------------------- |
 | make fmt        | black src tests main.py           | formats the Python code                                 |
@@ -49,7 +46,6 @@ And for developers:
 | make test       | pytest                            | runs all the tests                                      |
 | --------------- | --------------------------------- | ------------------------------------------------------- |
 | make types      | mypy src                          | type checks the Python code                             |
-```
 
 ## Input
 
