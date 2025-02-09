@@ -98,6 +98,25 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
         else:
             flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
 
+    desc_col = "Description"
+    if desc_col in df.columns:
+        bills_flow = {
+            bill_name: sub_df[Column.PRICE].sum()
+            for bill_name, sub_df in df.loc[df[Column.CATEGORY] == "Bills"].groupby(
+                desc_col
+            )
+        }
+        bills_total = sum(bills_flow.values())
+
+        items = list(bills_flow.items())  # eagerly load indices before iteration
+        for desc, total in items:
+            if total <= bills_total * config_globals()["SANKEY_OTHER_THRESHOLD"]:
+                del bills_flow[desc]
+                bills_flow["Other bills"] = bills_flow.get("Other bills", 0) + total
+
+        if len(bills_flow) > 1:
+            flow["Not Controllable"]["Bills"] = bills_flow
+
     plt.clf()
     plt.figure(figsize=(12, 8))
     plt.title(f"Spending Flow for {Paths.get_year()}")
@@ -105,6 +124,14 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
     s = Sankey(
         flows=_get_flows("Income", flow),
     )
+    for node_list in s.nodes:
+        for node in node_list:
+            node.label_opts = {"fontsize": 10}
+            if len(node.outflows) > 0:
+                node.label_pos = "left"
+            else:
+                node.label_pos = "right"
+
     s.draw()
     plt.savefig(join(out_dir, "sankey.png"))
     plt.close()
