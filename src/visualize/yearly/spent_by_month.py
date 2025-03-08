@@ -22,7 +22,9 @@ def spent_by_month(df: pd.DataFrame, out_dir: str) -> None:
     """
     months = monthly_spending(df)
     total_days = (df[Column.DATE].max() - df[Column.DATE].min()).days
-    average = df[Column.PRICE].sum() / (12 * total_days / 365) if total_days > 0 else 0
+    average = (
+        ((df[Column.PRICE].sum() / total_days) * (365 / 12)) if total_days > 0 else 0
+    )
 
     plt.clf()
     fig = plt.figure()

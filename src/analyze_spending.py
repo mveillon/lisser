@@ -10,10 +10,11 @@ import traceback as tb
 
 from typing import cast
 
+from src.validate_spending import validate_spending
 from src.visualization_driver import VisualizationDriver
 from src.aggregation_driver import AggregationDriver
 from src.utilities.read_data import read_data
-from src.utilities.paths import Paths
+from src.utilities.paths import Paths, ALLOWED_EXTNS
 from src.utilities.column import Column
 
 
@@ -58,18 +59,12 @@ class AnalyzeSpending(tk.Tk):
         Returns:
             None
         """
-        allowed_extns = {
-            ".csv",
-            ".txt",
-            ".xlsx",
-            ".numbers",
-        }
         self.output_label.config(text="...processing data...")
         refs = fd.askopenfilename(
             parent=self,
             title="Spreadsheet to analyze:",
             initialdir=path,
-            filetypes=(("spreadsheets", ["*" + e for e in allowed_extns]),),
+            filetypes=(("spreadsheets", ["*" + e for e in ALLOWED_EXTNS]),),
         )
 
         try:
@@ -84,7 +79,7 @@ class AnalyzeSpending(tk.Tk):
             print(tb.format_exc())
             return
 
-        self.output_label.config(text="Processing complete! Archiving data..")
+        self.output_label.config(text="Processing complete! Archiving data...")
 
         try:
             out_name = fd.asksaveasfilename(
@@ -96,7 +91,7 @@ class AnalyzeSpending(tk.Tk):
 
                 for dir_path, _, file_names in walk(Paths.this_years_data()):
                     for file in file_names:
-                        if splitext(file)[1] not in allowed_extns:
+                        if splitext(file)[1] not in ALLOWED_EXTNS:
                             full_path = join(dir_path, file)
                             archive_path = relpath(full_path, Paths.this_years_data())
                             archive.write(full_path, archive_path)
@@ -122,6 +117,7 @@ class AnalyzeSpending(tk.Tk):
             None
         """
         start = datetime.now()
+        validate_spending()
         VisualizationDriver().visualize()
         AggregationDriver().aggregate()
         if verbose:
