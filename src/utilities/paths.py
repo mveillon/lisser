@@ -1,6 +1,5 @@
 from os import listdir
 from os.path import splitext, join
-import re
 from typing import cast, List
 from datetime import datetime
 
@@ -8,6 +7,13 @@ from src.utilities.parse_args import parse_args, Subcommand
 from src.utilities.read_data import read_data
 from src.utilities.column import Column
 
+
+ALLOWED_EXTNS = {
+    ".xlsx",
+    ".csv",
+    ".numbers",
+    ".txt",
+}
 
 def _default_year() -> int:
     """
@@ -29,12 +35,11 @@ def _first_spreadsheet(parent: str, sheet_name: str) -> str:
     Returns the path to the first spreadsheet with the given name in the given
     directory.
     """
-    sheet_regex = re.escape(sheet_name) + r"\.(xlsx|csv|numbers|txt)$"
     try:
         return next(
             join(parent, f)
             for f in listdir(parent)
-            if re.match(sheet_regex, f, flags=re.IGNORECASE)
+            if splitext(f)[1] in ALLOWED_EXTNS
         )
     except StopIteration:
         return join(parent, sheet_name + ".xlsx")
