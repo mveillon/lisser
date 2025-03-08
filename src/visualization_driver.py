@@ -86,7 +86,6 @@ class VisualizationDriver:
             self._plot_df(df, join(Paths.plots_dir(), month))
 
         combined_path = join(Paths.plots_dir(), "Combined")
-
         plot_funcs = [
             self._plot_df,
             *self.yearlys,
