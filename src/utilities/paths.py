@@ -15,6 +15,7 @@ ALLOWED_EXTNS = {
     ".txt",
 }
 
+
 def _default_year() -> int:
     """
     Returns the year passed to the command on the command line, or the
@@ -37,9 +38,7 @@ def _first_spreadsheet(parent: str, sheet_name: str) -> str:
     """
     try:
         return next(
-            join(parent, f)
-            for f in listdir(parent)
-            if splitext(f)[1] in ALLOWED_EXTNS
+            join(parent, f) for f in listdir(parent) if splitext(f)[1] in ALLOWED_EXTNS
         )
     except StopIteration:
         return join(parent, sheet_name + ".xlsx")

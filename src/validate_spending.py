@@ -2,7 +2,10 @@ from pathlib import Path
 
 from src.utilities.read_data import read_data
 from src.utilities.paths import Paths
-from src.utilities.get_funcs_from_module import get_funcs_from_module, get_modules_from_folder
+from src.utilities.get_funcs_from_module import (
+    get_funcs_from_module,
+    get_modules_from_folder,
+)
 
 
 def validate_spending() -> None:

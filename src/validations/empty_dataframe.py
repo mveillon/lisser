@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def empty_dataframe(df: pd.DataFrame) -> None:
     """
     Checks that df isn't empty.
