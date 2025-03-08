@@ -3,6 +3,7 @@ import pandas as pd
 from typing import Dict
 from datetime import date, timedelta
 
+from src.utilities.day_counts import DayCounts
 from src.utilities.helpers import time_filter
 from src.utilities.column import Column
 from src.read_config.config_globals import config_globals
@@ -26,7 +27,9 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
 
     while current <= end:
         next_date = date(
-            current.year + int(current.month == 12), (current.month % 12) + 1, 1
+            current.year + int(current.month == DayCounts.months_per_year()),
+            (current.month % DayCounts.months_per_year()) + 1,
+            1,
         ) - timedelta(days=1)
 
         month_df = time_filter(df, current.strftime(fmt), next_date.strftime(fmt))
@@ -40,8 +43,8 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
         month_df = month_df.loc[~filt_cond]
 
         num_days = (month_df[Column.DATE].max() - month_df[Column.DATE].min()).days
-        spent = (month_df[Column.PRICE].sum() / num_days) * (365 / 12)
-        spent += (bills / (next_date - current).days) * (365 / 12)
+        spent = (month_df[Column.PRICE].sum() / num_days) * DayCounts.days_per_month()
+        spent += (bills / (next_date - current).days) * DayCounts.days_per_month()
 
         res[current.strftime("%b")] = spent
         current = next_date + timedelta(days=1)

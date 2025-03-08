@@ -7,7 +7,6 @@ from typing import Any, Dict
 from src.read_config.filter import Filter
 from src.read_config.agg_function import AggFunction
 from src.read_config.get_config import get_config
-from src.utilities.column import Column
 
 
 def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
@@ -21,8 +20,6 @@ def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
         aggs (Dict[str, Any]): a mapping of agg name to value
     """
     data = get_config()["aggregations"]
-
-    num_days = max((df[Column.DATE].max() - df[Column.DATE].min()).days, 1)
 
     res = {}
     for agg in data:
@@ -39,6 +36,6 @@ def custom_aggregations(df: pd.DataFrame) -> Dict[str, Any]:
         else:
             filtered = df
 
-        res[agg] = AggFunction(**agg_data["agg"]).aggregate(filtered, num_days)
+        res[agg] = AggFunction(**agg_data["agg"]).aggregate(filtered)
 
     return res

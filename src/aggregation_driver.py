@@ -1,7 +1,8 @@
+import pandas as pd
 from pathlib import Path
-import yaml
-from typing import Any
+from typing import Any, Dict, List
 
+from src.utilities.day_counts import DayCounts
 from src.utilities.paths import Paths
 from src.utilities.helpers import format_currency
 from src.utilities.read_data import read_data
@@ -10,12 +11,42 @@ from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
     get_modules_from_folder,
 )
+from src.utilities.column import Column
 
 
 class AggregationDriver:
     """
     Class to perform all aggregations.
     """
+
+    num_days: int
+
+    def _get_aggs(self) -> Dict[str, Any]:
+        """
+        Performs all the aggregations and formats them into a dictionary.
+        """
+        spending = read_data(Paths.spending_path())
+        self.num_days = (spending[Column.DATE].max() - spending[Column.DATE].min()).days
+        out = {}
+
+        to_title = lambda s: s.replace("_", " ").title()
+
+        for path in get_modules_from_folder(
+            str(Path(__file__).parent / "aggregations")
+        ):
+            for func in get_funcs_from_module(path):
+                agg_val = func(spending)
+                if hasattr(agg_val, "__iter__") and not isinstance(agg_val, str):
+                    for label, amount in agg_val:
+                        out[to_title(label)] = amount
+
+                else:
+                    out[to_title(func.__name__)] = agg_val
+
+        for title, agg_val in custom_aggregations(spending).items():
+            out[to_title(title)] = agg_val
+
+        return out
 
     def aggregate(self) -> None:
         """
@@ -28,28 +59,38 @@ class AggregationDriver:
         Returns:
             None
         """
-        spending = read_data(Paths.spending_path())
-        out = {}
+        aggs = self._get_aggs()
 
-        to_title = lambda s: s.replace("_", " ").title()
+        cols: Dict[str, List[Any]] = {
+            "Description": [],
+            "Total Amount": [],
+            "Yearly": [],
+            "Monthly": [],
+            "Weekly": [],
+        }
 
-        def format_out(val: Any) -> Any:
-            if isinstance(val, dict):
-                return {k: format_out(v) for k, v in val.items()}
+        for label, amount in aggs.items():
+            cols["Description"].append(label)
+            cols["Total Amount"].append(amount)
 
-            if isinstance(val, float):
-                return format_currency(val)
+            if isinstance(amount, int) or isinstance(amount, float):
+                per_day = amount / self.num_days
+                cols["Yearly"].append(per_day * DayCounts.days_per_year())
+                cols["Monthly"].append(per_day * DayCounts.days_per_month())
+                cols["Weekly"].append(per_day * DayCounts.days_per_week())
 
-            return val
+            else:
+                cols["Yearly"].append(None)
+                cols["Monthly"].append(None)
+                cols["Weekly"].append(None)
 
-        for path in get_modules_from_folder(
-            str(Path(__file__).parent / "aggregations")
-        ):
-            for func in get_funcs_from_module(path):
-                out[to_title(func.__name__)] = format_out(func(spending))
+        for col in cols:
+            cols[col] = [
+                format_currency(amount) if isinstance(amount, float) else amount
+                for amount in cols[col]
+            ]
 
-        for title, agg_val in custom_aggregations(spending).items():
-            out[to_title(title)] = format_out(agg_val)
-
-        with open(Paths.aggregation_path(), "w") as f:
-            yaml.dump(out, f, default_flow_style=False, sort_keys=False)
+        pd.DataFrame(cols).to_csv(
+            Paths.aggregation_path(),
+            index=False,
+        )

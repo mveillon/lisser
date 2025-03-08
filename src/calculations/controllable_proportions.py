@@ -1,5 +1,7 @@
 import pandas as pd
 from typing import Tuple
+
+from src.utilities.day_counts import DayCounts
 from src.utilities.helpers import monthly_income
 from src.utilities.column import Column
 
@@ -21,5 +23,5 @@ def controllable_proportions(df: pd.DataFrame) -> Tuple[float, float, float]:
     not_control_sum = df.loc[~df[Column.CONTROLLABLE]][Column.PRICE].sum()
 
     total_days = (df[Column.DATE].max() - df[Column.DATE].min()).days
-    total_income = monthly_income() * (total_days * 12 / 365)
+    total_income = total_days * monthly_income() / DayCounts.days_per_month()
     return control_sum, not_control_sum, total_income

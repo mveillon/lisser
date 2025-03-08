@@ -81,7 +81,6 @@ aggregations:
     agg:
       column: Price  # what column to aggregate. Usually Price
       func: sum   # what function to perform on the column
-      divide: True  # if True, will also calculate weekly, monthly, and yearly spending
   # --------------------------------------------------------------------
 
   # --------------------------------------------------------------------

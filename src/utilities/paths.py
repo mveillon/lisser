@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import splitext, join
+from os.path import splitext, join, basename
 from typing import cast, List
 from datetime import datetime
 
@@ -38,7 +38,10 @@ def _first_spreadsheet(parent: str, sheet_name: str) -> str:
     """
     try:
         return next(
-            join(parent, f) for f in listdir(parent) if splitext(f)[1] in ALLOWED_EXTNS
+            join(parent, f)
+            for f in listdir(parent)
+            if splitext(basename(f))[0] == sheet_name
+            and splitext(f)[1] in ALLOWED_EXTNS
         )
     except StopIteration:
         return join(parent, sheet_name + ".xlsx")
@@ -149,7 +152,7 @@ class Paths:
         Returns:
             path (str): the path to the agg file
         """
-        return join(Paths.this_years_data(), "aggregation.yml")
+        return join(Paths.this_years_data(), "aggregation.csv")
 
     @staticmethod
     def config_path() -> str:
