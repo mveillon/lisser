@@ -87,6 +87,7 @@ class AnalyzeSpending(tk.Tk):
             )
 
             with ZipFile(out_name, "w") as archive:
+
                 def add_file(add_path: str) -> None:
                     archive_path = relpath(add_path, Paths.this_years_data())
                     archive.write(add_path, archive_path)

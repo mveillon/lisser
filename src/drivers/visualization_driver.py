@@ -1,6 +1,6 @@
 import pandas as pd
 from os import makedirs
-from os.path import join, exists
+from os.path import join
 from typing import List
 
 from src.read_data.paths import Paths
