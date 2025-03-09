@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from os.path import join
 
+from src.utilities.day_counts import DayCounts
 from src.calculations.monthly_spending import monthly_spending
 from src.utilities.helpers import monthly_income, format_currency
 from src.utilities.column import Column
@@ -23,7 +24,9 @@ def spent_by_month(df: pd.DataFrame, out_dir: str) -> None:
     months = monthly_spending(df)
     total_days = (df[Column.DATE].max() - df[Column.DATE].min()).days
     average = (
-        ((df[Column.PRICE].sum() / total_days) * (365 / 12)) if total_days > 0 else 0
+        ((df[Column.PRICE].sum() / total_days) * DayCounts.days_per_month())
+        if total_days > 0
+        else 0
     )
 
     plt.clf()

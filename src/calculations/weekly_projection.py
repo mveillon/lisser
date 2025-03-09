@@ -3,6 +3,7 @@ import pandas as pd
 from typing import List
 from datetime import datetime, timedelta, date
 
+from src.utilities.day_counts import DayCounts
 from src.utilities.helpers import get_weeks, time_filter
 from src.utilities.column import Column
 from src.read_config.config_globals import config_globals
@@ -58,15 +59,22 @@ def weekly_projection(df: pd.DataFrame) -> List[float]:
             avgs.append(0.0)
         else:
             monthly_bill_smooth = monthly_bills[mo][Column.PRICE].sum() * (
-                (365 / 12)
+                DayCounts.days_per_month()
                 / (
-                    date(dtm.year + int(dtm.month == 12), (dtm.month % 12) + 1, 1)
+                    date(
+                        dtm.year + int(dtm.month == DayCounts.months_per_year()),
+                        (dtm.month % DayCounts.months_per_year()) + 1,
+                        1,
+                    )
                     - timedelta(days=1)
                 ).day
             )
 
             avgs.append(
-                ((week_df[Column.PRICE].sum() / one_week.days) * (365 / 12))
+                (
+                    (week_df[Column.PRICE].sum() / one_week.days)
+                    * DayCounts.days_per_month()
+                )
                 + monthly_bill_smooth
             )
 

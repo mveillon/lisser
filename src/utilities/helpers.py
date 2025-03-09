@@ -3,6 +3,7 @@ import pandas as pd
 from typing import List, cast
 from datetime import timedelta, date
 
+from src.utilities.day_counts import DayCounts
 from src.utilities.paths import Paths
 from src.utilities.column import Column
 from src.read_config.config_globals import config_globals
@@ -20,7 +21,7 @@ def monthly_income() -> float:
     """
     return (
         cast(float, config_globals()["YEARLY_TAKE_HOME_PAY"][str(Paths.get_year())])
-        / 12
+        / DayCounts.months_per_year()
     )
 
 
@@ -81,8 +82,9 @@ def get_months(min_day: date, max_day: date) -> List[date]:
     while all_dates[-1] <= max_day:
         all_dates.append(
             date(
-                all_dates[-1].year + int(all_dates[-1].month == 12),
-                (all_dates[-1].month % 12) + 1,
+                all_dates[-1].year
+                + int(all_dates[-1].month == DayCounts.months_per_year()),
+                (all_dates[-1].month % DayCounts.months_per_year()) + 1,
                 1,
             )
         )

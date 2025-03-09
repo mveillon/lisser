@@ -5,6 +5,7 @@ import matplotlib.dates as mdates
 from os.path import join
 from typing import cast, List
 
+from src.utilities.day_counts import DayCounts
 from src.utilities.helpers import monthly_income, get_weeks
 from src.utilities.column import Column
 
@@ -28,7 +29,7 @@ def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:
     expected_saved = [0.0]
     for dtm in payments:
         dates.append(dtm)
-        made = 12 * monthly_income() / 52
+        made = monthly_income() / DayCounts.weeks_per_month()
         balance_changes.append(made)
         expected_saved.append(expected_saved[-1] + (made * 0.2))
 

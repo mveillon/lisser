@@ -3,6 +3,7 @@ from typing import Dict
 
 from src.utilities.helpers import monthly_income
 from src.utilities.column import Column
+from src.utilities.day_counts import DayCounts
 
 
 def category_spending(df: pd.DataFrame) -> Dict[str, float]:
@@ -21,7 +22,7 @@ def category_spending(df: pd.DataFrame) -> Dict[str, float]:
 
     # we add one so the range is inclusive of both ends
     num_days = (df[Column.DATE].max() - df[Column.DATE].min()).days + 1
-    prorated_income = num_days * monthly_income() * 12 / 365
+    prorated_income = num_days * monthly_income() / DayCounts.days_per_month()
 
     x = list(totals.index) + ["Total spent", "Income"]
     y = list(totals.values) + [df[Column.PRICE].sum(), prorated_income]
