@@ -5,9 +5,9 @@ import matplotlib.dates as mdates
 from os.path import join
 from typing import cast, List
 
-from src.utilities.day_counts import DayCounts
+from src.models.day_counts import DayCounts
 from src.utilities.helpers import monthly_income, get_weeks
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:

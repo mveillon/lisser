@@ -4,8 +4,8 @@ from typing import cast, List
 from datetime import datetime
 
 from src.utilities.parse_args import parse_args, Subcommand
-from src.utilities.read_data import read_data
-from src.utilities.column import Column
+from src.read_data.read_data import read_data
+from src.read_data.column import Column
 
 
 ALLOWED_EXTNS = {

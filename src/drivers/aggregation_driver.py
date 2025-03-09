@@ -1,17 +1,17 @@
 import pandas as pd
-from pathlib import Path
+from os.path import join
 from typing import Any, Dict, List
 
-from src.utilities.day_counts import DayCounts
-from src.utilities.paths import Paths
+from src.models.day_counts import DayCounts
+from src.models.paths import Paths
 from src.utilities.helpers import format_currency
-from src.utilities.read_data import read_data
+from src.read_data.read_data import read_data
 from src.read_config.custom_aggregations import custom_aggregations
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
     get_modules_from_folder,
 )
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 class AggregationDriver:
@@ -32,7 +32,7 @@ class AggregationDriver:
         to_title = lambda s: s.replace("_", " ").title()
 
         for path in get_modules_from_folder(
-            str(Path(__file__).parent / "aggregations")
+            join("src", "calculations", "aggregations")
         ):
             for func in get_funcs_from_module(path):
                 agg_val = func(spending)

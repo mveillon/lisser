@@ -4,8 +4,8 @@ from operator import __and__, __or__
 
 from typing import Any, Dict
 
-from src.read_config.filter import Filter
-from src.read_config.agg_function import AggFunction
+from src.models.config_objs.filter import Filter
+from src.models.config_objs.agg_function import AggFunction
 from src.read_config.get_config import get_config
 
 

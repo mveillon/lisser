@@ -2,7 +2,7 @@ import shutil
 from os.path import exists
 from os import makedirs
 
-from src.utilities.paths import Paths
+from src.models.paths import Paths
 from src.utilities.parse_args import parse_args
 
 

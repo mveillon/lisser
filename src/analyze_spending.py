@@ -10,12 +10,12 @@ import traceback as tb
 
 from typing import cast
 
-from src.validate_spending import validate_spending
-from src.visualization_driver import VisualizationDriver
-from src.aggregation_driver import AggregationDriver
-from src.utilities.read_data import read_data
-from src.utilities.paths import Paths, ALLOWED_EXTNS
-from src.utilities.column import Column
+from src.drivers.validation_driver import ValidationDriver
+from src.drivers.visualization_driver import VisualizationDriver
+from src.drivers.aggregation_driver import AggregationDriver
+from src.read_data.read_data import read_data
+from src.models.paths import Paths, ALLOWED_EXTNS
+from src.read_data.column import Column
 
 
 class AnalyzeSpending(tk.Tk):
@@ -87,14 +87,17 @@ class AnalyzeSpending(tk.Tk):
             )
 
             with ZipFile(out_name, "w") as archive:
-                archive.write(Paths.aggregation_path(), ".")
+
+                def add_file(add_path: str) -> None:
+                    archive_path = relpath(add_path, Paths.this_years_data())
+                    archive.write(add_path, archive_path)
+
+                add_file(Paths.aggregation_path())
 
                 for dir_path, _, file_names in walk(Paths.this_years_data()):
                     for file in file_names:
                         if splitext(file)[1] not in ALLOWED_EXTNS:
-                            full_path = join(dir_path, file)
-                            archive_path = relpath(full_path, Paths.this_years_data())
-                            archive.write(full_path, archive_path)
+                            add_file(join(dir_path, file))
 
             self.output_label.config(text="Archive created!")
 
@@ -117,7 +120,7 @@ class AnalyzeSpending(tk.Tk):
             None
         """
         start = datetime.now()
-        validate_spending()
+        ValidationDriver().validate_spending()
         VisualizationDriver().visualize()
         AggregationDriver().aggregate()
         if verbose:

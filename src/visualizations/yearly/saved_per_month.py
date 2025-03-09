@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from os.path import join
 from datetime import datetime
 
-from src.utilities.paths import Paths
+from src.models.paths import Paths
 from src.calculations.monthly_spending import monthly_spending
 from src.utilities.helpers import monthly_income, format_currency
 

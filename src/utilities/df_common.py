@@ -4,8 +4,8 @@ from typing import Callable, Tuple, List, cast
 from datetime import date
 
 from src.utilities.helpers import get_months, get_weeks
-from src.utilities.column import Column
-from src.read_config.config_globals import config_globals
+from src.read_data.column import Column
+from src.read_config.get_config import config_globals
 
 
 def _group_df(

@@ -1,7 +1,9 @@
 import pandas as pd
 
-from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
-from src.aggregations.total_spent import total_spent
+from src.calculations.aggregations.estimated_income_after_tax import (
+    estimated_income_after_tax,
+)
+from src.calculations.aggregations.total_spent import total_spent
 
 
 def total_saved(df: pd.DataFrame) -> float:

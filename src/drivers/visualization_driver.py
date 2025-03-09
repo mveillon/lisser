@@ -1,16 +1,15 @@
 import pandas as pd
-from os import mkdir
-from os.path import join, exists
+from os import makedirs
+from os.path import join
 from typing import List
-from pathlib import Path
 
-from src.utilities.paths import Paths
-from src.utilities.read_data import read_data, get_month_dfs
+from src.models.paths import Paths
+from src.read_data.read_data import read_data, get_month_dfs
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,
     get_modules_from_folder,
 )
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 from src.read_config.plotters_from_config import plotters_from_config, Plotter
 
@@ -28,22 +27,16 @@ class VisualizationDriver:
     yearlys: List[Plotter]
 
     def __init__(self) -> None:
-        for dir in (
-            Paths.plots_dir(),
-            join(Paths.plots_dir(), "Combined"),
-        ):
-            if not exists(dir):
-                mkdir(dir)
-
+        makedirs(join(Paths.plots_dir(), "Combined"), exist_ok=True)
         self.monthlys, self.yearlys = plotters_from_config()
 
-        visualizers = Path(__file__).parent / "visualize"
+        visualizers = join("src", "visualizations")
 
-        for mod in get_modules_from_folder(str(visualizers / "monthly")):
+        for mod in get_modules_from_folder(join(visualizers, "monthly")):
             for func in get_funcs_from_module(mod):
                 self.monthlys.append(func)
 
-        for mod in get_modules_from_folder(str(visualizers / "yearly")):
+        for mod in get_modules_from_folder(join(visualizers, "yearly")):
             for func in get_funcs_from_module(mod):
                 self.yearlys.append(func)
 
@@ -59,11 +52,6 @@ class VisualizationDriver:
         Returns:
             None
         """
-        if out_dir[-1] != "/":
-            out_dir += "/"
-        if not exists(out_dir):
-            mkdir(out_dir)
-
         for m in self.monthlys:
             m(df, out_dir)
 
@@ -83,7 +71,9 @@ class VisualizationDriver:
         for df in months:
             dates_in_df = list(df.sort_values(Column.DATE)[Column.DATE])
             month = dates_in_df[len(dates_in_df) // 2].strftime("%B")
-            self._plot_df(df, join(Paths.plots_dir(), month))
+            out_dir = join(Paths.plots_dir(), month)
+            makedirs(out_dir, exist_ok=True)
+            self._plot_df(df, out_dir)
 
         combined_path = join(Paths.plots_dir(), "Combined")
         plot_funcs = [

@@ -6,15 +6,17 @@ import matplotlib.pyplot as plt
 from typing import List, NamedTuple, cast
 from itertools import chain
 
-from src.aggregations.estimated_income_after_tax import estimated_income_after_tax
-from src.utilities.paths import Paths
-from src.utilities.column import Column
+from src.calculations.aggregations.estimated_income_after_tax import (
+    estimated_income_after_tax,
+)
+from src.models.paths import Paths
+from src.read_data.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,
     dictionary_sum,
 )
-from src.utilities.types import Number
-from src.read_config.config_globals import config_globals
+from src.models.types import Number
+from src.read_config.get_config import config_globals
 
 
 class Flow(NamedTuple):

@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import cast
 
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 def total_spent(df: pd.DataFrame) -> float:

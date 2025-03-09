@@ -1,7 +1,7 @@
 from typing import Dict, Tuple, no_type_check, Callable, cast
 import re
 
-from src.utilities.types import Number, NestedDict
+from src.models.types import Number, NestedDict
 
 
 def dictionary_sum(d: NestedDict) -> Number:

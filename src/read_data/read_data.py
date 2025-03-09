@@ -8,7 +8,7 @@ from uuid import uuid4
 from numbers_parser import Document
 from typing import List, cast, Dict
 
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 SCHEMA = {

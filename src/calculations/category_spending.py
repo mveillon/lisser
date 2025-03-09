@@ -2,8 +2,8 @@ import pandas as pd
 from typing import Dict
 
 from src.utilities.helpers import monthly_income
-from src.utilities.column import Column
-from src.utilities.day_counts import DayCounts
+from src.read_data.column import Column
+from src.models.day_counts import DayCounts
 
 
 def category_spending(df: pd.DataFrame) -> Dict[str, float]:

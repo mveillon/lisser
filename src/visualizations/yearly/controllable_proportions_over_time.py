@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from os.path import join
 
-from src.visualize.common import metrics_over_time
+from src.visualizations.common import metrics_over_time
 from src.calculations.controllable_proportions import controllable_proportions
 from src.utilities.df_common import group_by_month
 

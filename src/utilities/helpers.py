@@ -3,10 +3,10 @@ import pandas as pd
 from typing import List, cast
 from datetime import timedelta, date
 
-from src.utilities.day_counts import DayCounts
-from src.utilities.paths import Paths
-from src.utilities.column import Column
-from src.read_config.config_globals import config_globals
+from src.models.day_counts import DayCounts
+from src.models.paths import Paths
+from src.read_data.column import Column
+from src.read_config.get_config import config_globals
 
 
 def monthly_income() -> float:
