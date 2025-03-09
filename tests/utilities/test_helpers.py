@@ -2,7 +2,7 @@ from datetime import date
 import math
 
 from src.utilities.helpers import get_months, get_weeks, time_filter
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 from tests.test_utils import sample_data
 

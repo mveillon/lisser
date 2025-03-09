@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from src.read_config.filter import Filter
-from src.read_config.agg_function import AggFunction
 from src.utilities.decorators import dataclass_from_converted_json
+from src.models.config_objs.agg_function import AggFunction
+from src.models.config_objs.filter import Filter
 
 
 @dataclass_from_converted_json(

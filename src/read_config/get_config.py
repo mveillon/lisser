@@ -2,7 +2,7 @@ import yaml
 from functools import lru_cache
 import os.path
 
-from src.utilities.paths import Paths
+from src.read_data.paths import Paths
 from src.utilities.dictionary_ops import recursive_merge
 
 
@@ -30,3 +30,17 @@ def get_config() -> dict:
 
     recursive_merge(base_data, primary_data)
     return base_data
+
+
+def config_globals() -> dict:
+    """
+    Returns the global variables set in the config file.
+
+    Parameters:
+        None
+
+    Returns:
+        globals (Dict[str, Any]): a dictionary mapping the names of the
+            variables to their values
+    """
+    return get_config()["globals"]

@@ -3,9 +3,9 @@ from datetime import datetime
 from typing import cast
 
 from src.utilities.helpers import monthly_income
-from src.utilities.paths import Paths
-from src.utilities.column import Column
-from src.utilities.day_counts import DayCounts
+from src.read_data.paths import Paths
+from src.read_data.column import Column
+from src.models.day_counts import DayCounts
 
 
 def estimated_income_after_tax(df: pd.DataFrame) -> float:

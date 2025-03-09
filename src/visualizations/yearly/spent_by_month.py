@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from os.path import join
 
-from src.utilities.day_counts import DayCounts
+from src.models.day_counts import DayCounts
 from src.calculations.monthly_spending import monthly_spending
 from src.utilities.helpers import monthly_income, format_currency
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 def spent_by_month(df: pd.DataFrame, out_dir: str) -> None:

@@ -1,8 +1,14 @@
-from typing import Literal, Any
 import pandas as pd
-from operator import __eq__, __gt__, __lt__, __ge__, __le__
+from typing import Literal, Any
+from operator import (
+    __eq__,
+    __gt__,
+    __lt__,
+    __le__,
+    __ge__,
+)
 
-from src.utilities.types import OperatorFunction
+from src.models.types import OperatorFunction
 from src.utilities.decorators import dataclass_from_json
 
 

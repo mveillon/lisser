@@ -3,10 +3,10 @@ import pandas as pd
 from os.path import join
 
 from src.utilities.helpers import monthly_income, get_weeks
-from src.utilities.column import Column
+from src.read_data.column import Column
 from src.utilities.df_common import filter_large_transactions
 from src.calculations.weekly_projection import weekly_projection
-from src.visualize.common import metrics_over_time
+from src.visualizations.common import metrics_over_time
 
 
 def spent_by_week(df: pd.DataFrame, out_dir: str) -> None:

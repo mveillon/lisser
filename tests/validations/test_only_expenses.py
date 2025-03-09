@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from src.validations.only_expenses import only_expenses
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 def test_only_expenses():

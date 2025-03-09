@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 def only_expenses(df: pd.DataFrame) -> None:

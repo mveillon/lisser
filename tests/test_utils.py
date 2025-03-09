@@ -2,7 +2,7 @@ from os.path import join
 import pandas as pd
 from functools import lru_cache
 
-from src.utilities.read_data import read_data
+from src.read_data.read_data import read_data
 
 
 @lru_cache(maxsize=1)

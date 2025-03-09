@@ -3,10 +3,10 @@ import pandas as pd
 from typing import List
 from datetime import datetime, timedelta, date
 
-from src.utilities.day_counts import DayCounts
+from src.models.day_counts import DayCounts
 from src.utilities.helpers import get_weeks, time_filter
-from src.utilities.column import Column
-from src.read_config.config_globals import config_globals
+from src.read_data.column import Column
+from src.read_config.get_config import config_globals
 from src.utilities.df_common import group_by_month
 
 

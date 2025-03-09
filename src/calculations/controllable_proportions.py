@@ -1,9 +1,9 @@
 import pandas as pd
 from typing import Tuple
 
-from src.utilities.day_counts import DayCounts
+from src.models.day_counts import DayCounts
 from src.utilities.helpers import monthly_income
-from src.utilities.column import Column
+from src.read_data.column import Column
 
 
 def controllable_proportions(df: pd.DataFrame) -> Tuple[float, float, float]:

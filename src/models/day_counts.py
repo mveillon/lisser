@@ -1,4 +1,4 @@
-from src.utilities.paths import Paths
+from src.read_data.paths import Paths
 import calendar
 
 
