@@ -48,6 +48,18 @@ class AggregationDriver:
 
         return out
 
+    def _format_cell(self, val: Any, as_money: bool) -> str:
+        """
+        Formats the cell value into something that can go in a spreadsheet.
+        """
+        if isinstance(val, float):
+            if as_money:
+                return format_currency(val)
+
+            return str(round(val, 2))
+
+        return str(val)
+
     def aggregate(self) -> None:
         """
         Performs a series of aggregations writes the output to the
@@ -61,7 +73,7 @@ class AggregationDriver:
         """
         aggs = self._get_aggs()
 
-        cols: Dict[str, List[Any]] = {
+        cols: Dict[str, List[str]] = {
             "Description": [],
             "Total Amount": [],
             "Yearly": [],
@@ -70,25 +82,35 @@ class AggregationDriver:
         }
 
         for label, amount in aggs.items():
-            cols["Description"].append(label)
-            cols["Total Amount"].append(amount)
-
+            to_add = {
+                "Description": label,
+            }
             if isinstance(amount, int) or isinstance(amount, float):
                 per_day = amount / self.num_days
-                cols["Yearly"].append(per_day * DayCounts.days_per_year())
-                cols["Monthly"].append(per_day * DayCounts.days_per_month())
-                cols["Weekly"].append(per_day * DayCounts.days_per_week())
+                is_money = isinstance(amount, float)
+                to_add |= {
+                    "Total Amount": self._format_cell(amount, is_money),
+                    "Yearly": self._format_cell(
+                        per_day * DayCounts.days_per_year(), is_money
+                    ),
+                    "Monthly": self._format_cell(
+                        per_day * DayCounts.days_per_month(), is_money
+                    ),
+                    "Weekly": self._format_cell(
+                        per_day * DayCounts.days_per_week(), is_money
+                    ),
+                }
 
             else:
-                cols["Yearly"].append(None)
-                cols["Monthly"].append(None)
-                cols["Weekly"].append(None)
+                to_add |= {
+                    "Total Amount": str(amount),
+                    "Yearly": "",
+                    "Monthly": "",
+                    "Weekly": "",
+                }
 
-        for col in cols:
-            cols[col] = [
-                format_currency(amount) if isinstance(amount, float) else amount
-                for amount in cols[col]
-            ]
+            for col, val in to_add.items():
+                cols[col].append(val)
 
         pd.DataFrame(cols).to_csv(
             Paths.aggregation_path(),

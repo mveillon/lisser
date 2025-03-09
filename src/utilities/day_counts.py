@@ -14,8 +14,7 @@ class DayCounts:
         Returns:
             days (int): how many days were in this year
         """
-        yr = Paths.get_year()
-        if calendar.isleap(yr):
+        if calendar.isleap(Paths.get_year()):
             return 366
 
         return 365
