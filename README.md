@@ -12,7 +12,6 @@ It is recommended, but not required, to setup a virtual environment using someth
 
 To install the needed dependencies and setup the folder structure, navigate to the `spending-tracking` directory and run the following command: `> pip3 install -r requirements.txt && python3 main.py init`.
 
-
 If you have `make` installed, you can also run `make init` instead.
 
 This will install all dependent libraries and create template files for you to populate. If you run this command more than once, it will prompt you before overwriting any files in case you've added any data. This can be disabled by adding the `-F` or `--force` flag to the python3 command.
@@ -67,7 +66,7 @@ After running the code at least once, there will be two sets of outputs saved to
 
 The main output are the graphs in the `plots/` directory. These are divided into graphs aggregated weekly and separated into monthly chunks, as well as graphs that analyze the whole year of data. Each monthly graph organizes its plots into folders with the name of the month e.g. `January`, `February`. The yearly graphs are all found in `plots/Combined`.
 
-There are also aggregations done on the full year of data. These are found at `aggregation.yml`.
+There are also aggregations done on the full year of data. These are found at `aggregation.csv`.
 
 ## CLI Usage
 
@@ -100,7 +99,7 @@ The only files that the user will interact with are `base_config.yml / config_ov
 │           ├── February                        # plots for the month of February
 │           ├── ...
 │           ├── Combined                        # plots for the whole year
-│       ├── aggregation.yml                     # generated aggregations
+│       ├── aggregation.csv                     # generated aggregations
 │       ├── Spending.{csv|xlsx|txt|numbers}     # spending for the whole year
 │   ├── 2025
 │       ├── ...
@@ -121,7 +120,7 @@ This is useful because there may be changes to the code that you want to downloa
 
 There are a few global variables that can be configured under the `globals` key.
 
-- `YEARLY_TAKE_HOME_PAY`: how much take-home pay you had for each year you have spending data. **Must Be Overwritten**. The default is zero, which will cause the graphs to look very strange.
+- `YEARLY_TAKE_HOME_PAY`: how much take-home pay you had for each year you have spending data. **Must Be Overwritten** or the code will not run.
 - `SANKEY_OTHER_THRESHOLD`: the proportion of the yearly income that the spending in a category has to exceed to not be put in the "Other" category in `sankeyflow.png`.
 - `PROJECTED_SPENDING_BILL_THRESHOLD`: at what price threshold bills are filtered out from weekly samples and averaged out over the whole month. See **Projected Spending**.
 - `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD`: at what price threshold all transactions are filtered out from certain yearly graphs and smoothed out. See **Projected Spending**.
@@ -152,11 +151,11 @@ The structure is similar to the `plots` dictionary. Each aggregation will summar
 
 The allowed values for `func` are any of the methods of a [Pandas Series](https://pandas.pydata.org/docs/reference/api/pandas.Series.html), but only those that don't take an argument will work. Common values are `sum`, `any`, `all`, and `mean`.
 
-The value of the `column` parameter will be the column selected from the data for aggregation. It will almost always be `Price`. If the `divide` key is provided and set to True, the resulting total will be grouped weekly, monthly, and yearly.
+The value of the `column` parameter will be the column selected from the data for aggregation. It will almost always be `Price`.
 
 In addition `func` can equal `count`, at which point the `column` key is not needed and will not be used.
 
-The key for each aggregation in `config_overwrite.yml` ∪ `base_config.yml` will be converted to a title and be a key in `data/{year}/aggregation.yml`.
+The key for each aggregation in `config_overwrite.yml` ∪ `base_config.yml` will be converted to a row in `data/{year}/aggregation.csv`.
 
 # Other Notes
 
