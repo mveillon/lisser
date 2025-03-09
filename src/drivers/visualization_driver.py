@@ -3,7 +3,7 @@ from os import makedirs
 from os.path import join
 from typing import List
 
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 from src.read_data.read_data import read_data, get_month_dfs
 from src.utilities.get_funcs_from_module import (
     get_funcs_from_module,

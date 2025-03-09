@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from datetime import datetime
 
-from src.validations.same_year import same_year
+from src.read_data.validations.same_year import same_year
 from src.read_data.column import Column
 
 

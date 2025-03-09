@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import cast
 
 from src.utilities.helpers import monthly_income
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 from src.read_data.column import Column
 from src.models.day_counts import DayCounts
 

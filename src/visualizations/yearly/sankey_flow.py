@@ -9,7 +9,7 @@ from itertools import chain
 from src.calculations.aggregations.estimated_income_after_tax import (
     estimated_income_after_tax,
 )
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 from src.read_data.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,

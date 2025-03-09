@@ -14,7 +14,7 @@ from src.drivers.validation_driver import ValidationDriver
 from src.drivers.visualization_driver import VisualizationDriver
 from src.drivers.aggregation_driver import AggregationDriver
 from src.read_data.read_data import read_data
-from src.read_data.paths import Paths, ALLOWED_EXTNS
+from src.models.paths import Paths, ALLOWED_EXTNS
 from src.read_data.column import Column
 
 

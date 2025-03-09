@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from src.validations.empty_dataframe import empty_dataframe
+from src.read_data.validations.empty_dataframe import empty_dataframe
 
 
 def test_empty_dataframe():

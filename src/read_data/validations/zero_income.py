@@ -1,7 +1,7 @@
 import pandas as pd
 
 from src.read_config.get_config import config_globals
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 
 
 def zero_income(df: pd.DataFrame) -> None:

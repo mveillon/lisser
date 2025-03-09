@@ -3,7 +3,7 @@ from os.path import join
 from typing import Any, Dict, List
 
 from src.models.day_counts import DayCounts
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 from src.utilities.helpers import format_currency
 from src.read_data.read_data import read_data
 from src.read_config.custom_aggregations import custom_aggregations

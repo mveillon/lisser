@@ -2,7 +2,7 @@ import yaml
 from functools import lru_cache
 import os.path
 
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 from src.utilities.dictionary_ops import recursive_merge
 
 

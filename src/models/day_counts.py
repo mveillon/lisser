@@ -1,4 +1,4 @@
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 import calendar
 
 

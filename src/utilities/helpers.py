@@ -4,7 +4,7 @@ from typing import List, cast
 from datetime import timedelta, date
 
 from src.models.day_counts import DayCounts
-from src.read_data.paths import Paths
+from src.models.paths import Paths
 from src.read_data.column import Column
 from src.read_config.get_config import config_globals
 
