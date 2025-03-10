@@ -12,6 +12,7 @@ from src.utilities.get_funcs_from_module import (
     get_modules_from_folder,
 )
 from src.read_data.column import Column
+from src.read_data.write_data import write_data
 
 
 class AggregationDriver:
@@ -112,7 +113,4 @@ class AggregationDriver:
             for col, val in to_add.items():
                 cols[col].append(val)
 
-        pd.DataFrame(cols).to_csv(
-            Paths.aggregation_path(),
-            index=False,
-        )
+        write_data(pd.DataFrame(cols), Paths.aggregation_path())
