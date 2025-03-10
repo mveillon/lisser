@@ -102,7 +102,9 @@ class UIDriver(tk.Tk):
             fg=ColorScheme.TEXT,
             bg=ColorScheme.BACKGROUND,
         )
-        self.analyze_prompt.pack(padx=self.padding, pady=(self.padding, self.padding / 2))
+        self.analyze_prompt.pack(
+            padx=self.padding, pady=(self.padding, self.padding / 2)
+        )
 
         self.spending_sheet = tk.Button(
             self.input_frame,
@@ -113,7 +115,9 @@ class UIDriver(tk.Tk):
         self.spending_sheet.config(
             command=lambda path=".": self.file_handler(path)  # type: ignore
         )
-        self.spending_sheet.pack(padx=self.padding, pady=(self.padding / 2, self.padding))
+        self.spending_sheet.pack(
+            padx=self.padding, pady=(self.padding / 2, self.padding)
+        )
 
     def _add_output_frame(self) -> None:
         """
@@ -131,11 +135,13 @@ class UIDriver(tk.Tk):
 
         self.transaction_prompt = tk.Label(
             self.output_frame,
-            text=f"Add a transaction to an existing spreadsheet.",
+            text="Add a transaction to an existing spreadsheet.",
             fg=ColorScheme.TEXT,
             bg=ColorScheme.BACKGROUND,
         )
-        self.transaction_prompt.pack(padx=self.padding, pady=(self.padding, self.padding / 2))
+        self.transaction_prompt.pack(
+            padx=self.padding, pady=(self.padding, self.padding / 2)
+        )
 
         self.transaction_vars: Dict[str, tk.StringVar] = {}
         self.transaction_labels: Dict[str, tk.Label] = {}
