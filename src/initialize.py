@@ -18,8 +18,8 @@ def check_overwrite(dest: str) -> bool:
         allowed (bool): whether the overwrite is approved
     """
     return (
-        parse_args().force
-        or not exists(dest)
+        not exists(dest)
+        or parse_args().force
         or (
             input(
                 f"This will overwrite existing the data at {dest}. "

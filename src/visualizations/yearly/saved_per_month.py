@@ -36,7 +36,7 @@ def saved_per_month(df: pd.DataFrame, out_dir: str) -> None:
         saved, key=lambda d: datetime.strptime(f"1 {d} {Paths.get_year()}", "%d %b %Y")
     )
     y = list(map(saved.__getitem__, x))
-    inds = np.arange(len(x))
+    inds = np.arange(len(x), dtype=float)
     plt.xticks(inds, x)
 
     plt.plot(inds, y, label="Total saved")

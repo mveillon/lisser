@@ -4,8 +4,11 @@ from tkinter import filedialog as fd
 
 import sys
 from datetime import datetime, date
-from os import walk
-from os.path import join, relpath, splitext, exists
+from os import walk, makedirs
+from os.path import join, relpath, splitext, exists, abspath
+from pathlib import Path
+import platform
+
 from zipfile import ZipFile
 import traceback as tb
 import re
@@ -13,11 +16,21 @@ import re
 from typing import cast, Dict, Any, Callable
 
 from src.analyze_spending import analyze_spending
-from src.read_data.read_data import read_data
 from src.models.paths import Paths, ALLOWED_EXTNS
+from src.initialize import add_spending_sheet
+
+from src.read_data.read_data import read_data
 from src.read_data.column import Column
 from src.read_data.write_data import write_data
-from src.drivers.ui.color_scheme import ColorScheme
+
+from src.drivers.ui.styling import ColorScheme, PADDING, TITLE
+from src.drivers.ui.widgets import (
+    frame,
+    label,
+    button,
+    entry,
+    option_menu,
+)
 
 
 class UIDriver(tk.Tk):
@@ -27,120 +40,89 @@ class UIDriver(tk.Tk):
 
     def __init__(self) -> None:
         super().__init__()
+        if platform.system() == "Windows":
+            self.state("zoomed")
 
-        width = 600
-        height = 700
+        makedirs(Paths.this_years_data(), exist_ok=True)
+        if not exists(Paths.spending_path()):
+            add_spending_sheet()
 
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        x = int((screen_width / 2) - (width / 2))
-        y = int((screen_height / 2) - (height / 2))
-
-        self.geometry(f"{width}x{height}+{x}+{y}")
-
-        self.padding = 10
         self.config(bg=ColorScheme.BACKGROUND)
+        self.title("Spending Tracking")
 
         self._add_title_frame()
-        self._add_input_frame()
 
-        if exists(Paths.spending_path()):
-            self._add_output_frame()
+        self.lower_frame = frame(self, with_hightlight=False)
+        self.lower_frame.grid(padx=PADDING, pady=PADDING, row=1, column=0)
+
+        self._add_input_frame()
+        self._add_output_frame()
 
     def _add_title_frame(self) -> None:
         """
         Adds the title frame part of the UI.
         """
-        self.title_frame = tk.Frame(
-            self,
-            highlightbackground=ColorScheme.ACCENT,
-            highlightthickness=2,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.title_frame.pack(padx=self.padding, pady=self.padding, side=tk.TOP)
+        self.title_frame = frame(self)
+        self.title_frame.grid(padx=PADDING, pady=PADDING, row=0, column=0)
 
-        self.title_label = tk.Label(
-            self.title_frame,
-            text="Spending Tracking",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
+        self.title_label = label(self.title_frame, "Spending Tracking")
+        self.title_label.config(font=TITLE)
+        self.title_label.grid(
+            padx=PADDING, pady=(PADDING, PADDING / 2), row=0, column=0
         )
-        self.title_label.pack(padx=self.padding, pady=(self.padding, self.padding / 2))
 
-        self.info_label = tk.Label(
-            self.title_frame,
-            text="Awaiting data.",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
+        self.filename_label = label(
+            self.title_frame, self.filename_text(Paths.spending_path())
         )
-        self.info_label.pack(padx=self.padding, pady=self.padding / 2)
+        self.filename_label.grid(padx=PADDING, pady=PADDING / 2, row=1, column=0)
 
-        self.quit_button = tk.Button(
-            self.title_frame,
-            text="Quit",
-            command=self.quit,
-            fg=ColorScheme.BUTTON_TEXT,
-            bg=ColorScheme.ACCENT,
+        self.info_label = label(self.title_frame, "")
+        self.info_label.grid(padx=PADDING, pady=PADDING / 2, row=2, column=0)
+
+        self.quit_button = button(self.title_frame, "Quit", self.quit)
+        self.quit_button.grid(
+            padx=PADDING, pady=(PADDING / 2, PADDING), row=3, column=0
         )
-        self.quit_button.pack(padx=self.padding, pady=(self.padding / 2, self.padding))
 
     def _add_input_frame(self) -> None:
         """
         Adds the input frame part of the UI.
         """
-        self.input_frame = tk.Frame(
-            self,
-            highlightbackground=ColorScheme.ACCENT,
-            highlightthickness=2,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.input_frame.pack(padx=self.padding, pady=self.padding, side=tk.LEFT)
+        self.input_frame = frame(self.lower_frame)
+        self.input_frame.grid(padx=PADDING, pady=PADDING, row=0, column=0)
 
-        self.analyze_prompt = tk.Label(
-            self.input_frame,
-            text="Select a spreadsheet to analyze:",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.analyze_prompt.pack(
-            padx=self.padding, pady=(self.padding, self.padding / 2)
+        self.analyze_prompt = label(self.input_frame, "Analyze Data")
+        self.analyze_prompt.config(font=TITLE)
+        self.analyze_prompt.grid(
+            padx=PADDING, pady=(PADDING, PADDING / 2), row=0, column=0
         )
 
-        self.spending_sheet = tk.Button(
-            self.input_frame,
-            text="Select file",
-            fg=ColorScheme.BUTTON_TEXT,
-            bg=ColorScheme.ACCENT,
+        self.new_path_button = button(self.input_frame, "Change path", self.change_path)
+        self.new_path_button.grid(padx=PADDING, pady=PADDING / 2, row=1, column=0)
+
+        self.analyze_button = button(
+            self.input_frame, "Start analysis", self.file_handler
         )
-        self.spending_sheet.config(
-            command=lambda path=".": self.file_handler(path)  # type: ignore
-        )
-        self.spending_sheet.pack(
-            padx=self.padding, pady=(self.padding / 2, self.padding)
+        self.analyze_button.grid(
+            padx=PADDING, pady=(PADDING / 2, PADDING), row=2, column=0
         )
 
     def _add_output_frame(self) -> None:
         """
         Adds the output frame part of the UI.
         """
-        self.output_frame = tk.Frame(
-            self,
-            highlightbackground=ColorScheme.ACCENT,
-            highlightthickness=2,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.output_frame.pack(padx=self.padding, pady=self.padding, side=tk.RIGHT)
+        self.output_frame = frame(self.lower_frame)
+        self.output_frame.grid(padx=PADDING, pady=PADDING, row=0, column=1)
 
         self.fmt = "%m/%d/%Y"
 
-        self.transaction_prompt = tk.Label(
-            self.output_frame,
-            text="Add a transaction to an existing spreadsheet.",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.transaction_prompt.pack(
-            padx=self.padding, pady=(self.padding, self.padding / 2)
+        self.transaction_prompt = label(self.output_frame, "Add Transaction")
+        self.transaction_prompt.config(font=TITLE)
+        self.transaction_prompt.grid(
+            padx=PADDING,
+            pady=(PADDING, PADDING / 2),
+            row=0,
+            column=0,
         )
 
         self.transaction_vars: Dict[str, tk.StringVar] = {}
@@ -155,47 +137,57 @@ class UIDriver(tk.Tk):
             Column.CONTROLLABLE: "False",
         }
         col_names = [col for col in df.columns.tolist() if col != Column.TRANSACTION_ID]
-        for col in col_names:
+
+        self.transaction_frames = [
+            frame(self.output_frame, with_hightlight=False),
+            frame(self.output_frame, with_hightlight=False),
+        ]
+        self.transaction_frames[0].grid(
+            padx=(PADDING, PADDING / 2),
+            pady=(PADDING / 2, PADDING),
+            row=1,
+            column=0,
+        )
+        self.transaction_frames[1].grid(
+            padx=(PADDING, PADDING / 2),
+            pady=(PADDING / 2, PADDING),
+            row=1,
+            column=1,
+        )
+
+        for i, col in enumerate(col_names):
+            frame_ind = i & 1
             self.transaction_vars[col] = tk.StringVar(
-                self.output_frame, value=self.defaults.get(cast(Column, col), "")
+                self.transaction_frames[frame_ind],
+                value=self.defaults.get(cast(Column, col), ""),
             )
 
-            self.transaction_labels[col] = tk.Label(
-                self.output_frame,
-                text=col,
-                fg=ColorScheme.TEXT,
-                bg=ColorScheme.BACKGROUND,
+            self.transaction_labels[col] = label(
+                self.transaction_frames[frame_ind], col
             )
-            self.transaction_labels[col].pack(padx=self.padding, pady=self.padding / 2)
+            self.transaction_labels[col].grid(
+                padx=PADDING, pady=PADDING / 2, row=i, column=0
+            )
 
             if col in dropdowns:
-                self.transaction_entries[col] = tk.OptionMenu(
-                    self.output_frame,
+                self.transaction_entries[col] = option_menu(
+                    self.transaction_frames[frame_ind],
                     self.transaction_vars[col],
-                    "True",
-                    "False",
-                )
-                self.transaction_entries[col].config(
-                    fg=ColorScheme.BUTTON_TEXT,
-                    bg=ColorScheme.ACCENT,
+                    ["True", "False"],
                 )
             else:
-                self.transaction_entries[col] = tk.Entry(
-                    self.output_frame,
-                    textvariable=self.transaction_vars[col],
-                    fg=ColorScheme.TEXT,
-                    bg=ColorScheme.BACKGROUND,
+                self.transaction_entries[col] = entry(
+                    self.transaction_frames[frame_ind],
+                    self.transaction_vars[col],
                 )
-            self.transaction_entries[col].pack(padx=self.padding, pady=self.padding / 2)
+            self.transaction_entries[col].grid(
+                padx=PADDING, pady=PADDING / 2, row=i + 1, column=0
+            )
 
-        self.transaction_submit = tk.Button(
-            self.output_frame,
-            text="Add transaction",
-            command=self.transaction_handler,
-            fg=ColorScheme.BUTTON_TEXT,
-            bg=ColorScheme.ACCENT,
+        self.transaction_submit = button(
+            self.output_frame, "Submit", self.transaction_handler
         )
-        self.transaction_submit.pack(padx=self.padding, pady=self.padding)
+        self.transaction_submit.grid(padx=PADDING, pady=PADDING, row=2, column=2)
 
     def quit(self) -> None:
         """
@@ -210,21 +202,20 @@ class UIDriver(tk.Tk):
         self.destroy()
         sys.exit(0)
 
-    def file_handler(self, path: str) -> None:
+    def change_path(self) -> None:
         """
-        Processes the files and creates the plots and aggregations.
+        Changes the path to point the UI at.
 
         Parameters:
-            path (str): the path to the spreadsheet
+            None
 
         Returns:
             None
         """
-        self.info_label.config(text="...processing data...")
         refs = fd.askopenfilename(
             parent=self,
             title="Spreadsheet to analyze:",
-            initialdir=path,
+            initialdir=Paths.this_years_data(),
             filetypes=(("spreadsheets", ["*" + e for e in ALLOWED_EXTNS]),),
         )
 
@@ -233,18 +224,31 @@ class UIDriver(tk.Tk):
             new_year = cast(datetime, df[Column.DATE].median()).year
             Paths._year_mut[0] = new_year
             Paths._sheet_override[0] = refs
+            self.filename_label.config(text=self.filename_text(Paths.spending_path()))
 
-            analyze_spending(verbose=False)
         except Exception as e:
-            self.info_label.config(text=f"Something went wrong: {str(e)}")
-            print(tb.format_exc())
-            return
+            self.error(str(e))
+
+    def file_handler(self) -> None:
+        """
+        Processes the files and creates the plots and aggregations.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        self.info_label.config(text="...processing data...")
+        analyze_spending(verbose=False)
 
         self.info_label.config(text="Processing complete! Archiving data...")
 
         try:
             out_name = fd.asksaveasfilename(
-                filetypes=[("Archive Files", "*.zip")], defaultextension=".zip"
+                filetypes=[("Archive Files", "*.zip")],
+                defaultextension=".zip",
+                initialdir=str(Path(Paths.spending_path()).parent),
             )
 
             with ZipFile(out_name, "w") as archive:
@@ -263,11 +267,7 @@ class UIDriver(tk.Tk):
             self.info_label.config(text="Archive created!")
 
         except Exception as e:
-            self.info_label.config(
-                text=f"Something went wrong saving the zip file: {e}"
-            )
-            print(tb.format_exc())
-            return
+            self.error(str(e))
 
     def transaction_handler(self) -> None:
         """
@@ -298,7 +298,32 @@ class UIDriver(tk.Tk):
 
         Paths._year_mut[0] = cols[Column.DATE][0].year
         write_data(pd.DataFrame(cols), Paths.spending_path(), mode="a")
-        self.info_label.config(text=f"Transaction added to {Paths.spending_path()}")
+        self.info_label.config(text="Transaction added!")
 
         for col, var in self.transaction_vars.items():
             var.set(self.defaults.get(cast(Column, col), ""))
+
+    def error(self, message: str) -> None:
+        """
+        Raises an error gracefully without closing the application.
+
+        Parameters:
+            message (str): the message to display
+
+        Returns:
+            None
+        """
+        self.info_label.config(text=f"Something went wrong: {message}")
+        print(tb.format_exc())
+
+    def filename_text(self, path: str) -> str:
+        """
+        Creates what the filename label should say.
+
+        Parameters:
+            path (str): the new path
+
+        Returns:
+            None
+        """
+        return f"Currently pointing at {abspath(path)}"

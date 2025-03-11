@@ -38,7 +38,7 @@ def spent_by_month(df: pd.DataFrame, out_dir: str) -> None:
 
     x = sorted(months, key=lambda d: datetime.strptime(f"1 {d} 2024", "%d %b %Y"))
     y = list(map(months.__getitem__, x))
-    inds = np.arange(len(x))
+    inds = np.arange(len(x), dtype=float)
     plt.xticks(inds, x)
 
     plt.plot(inds, y, label="Total spent")

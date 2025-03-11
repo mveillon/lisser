@@ -5,7 +5,7 @@ from src.utilities.dictionary_ops import convert_dict
 
 
 def dataclass_from_converted_json(
-    converters: Dict[str, Callable]
+    converters: Dict[str, Callable],
 ) -> Callable[[type], type]:
     """
     Returns a decorator that can be used on a class to overwrite its __init__
