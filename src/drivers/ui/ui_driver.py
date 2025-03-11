@@ -17,7 +17,15 @@ from src.read_data.read_data import read_data
 from src.models.paths import Paths, ALLOWED_EXTNS
 from src.read_data.column import Column
 from src.read_data.write_data import write_data
-from src.drivers.ui.color_scheme import ColorScheme
+
+from src.drivers.ui.styling import ColorScheme, FONT, PADDING
+from src.drivers.ui.widgets import (
+    frame,
+    label,
+    button,
+    entry,
+    option_menu,
+)
 
 
 class UIDriver(tk.Tk):
@@ -28,22 +36,15 @@ class UIDriver(tk.Tk):
     def __init__(self) -> None:
         super().__init__()
 
-        width = 600
-        height = 700
-
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        x = int((screen_width / 2) - (width / 2))
-        y = int((screen_height / 2) - (height / 2))
-
-        self.geometry(f"{width}x{height}+{x}+{y}")
-
-        self.padding = 10
         self.config(bg=ColorScheme.BACKGROUND)
+        self.title("Spending Tracking")
 
         self._add_title_frame()
-        self._add_input_frame()
 
+        self.lower_frame = frame(self, with_hightlight=False)
+        self.lower_frame.grid(padx=PADDING, pady=PADDING, row=1, column=0)
+
+        self._add_input_frame()
         if exists(Paths.spending_path()):
             self._add_output_frame()
 
@@ -51,96 +52,59 @@ class UIDriver(tk.Tk):
         """
         Adds the title frame part of the UI.
         """
-        self.title_frame = tk.Frame(
-            self,
-            highlightbackground=ColorScheme.ACCENT,
-            highlightthickness=2,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.title_frame.pack(padx=self.padding, pady=self.padding, side=tk.TOP)
+        self.title_frame = frame(self)
+        self.title_frame.grid(padx=PADDING, pady=PADDING, row=0, column=0)
 
-        self.title_label = tk.Label(
-            self.title_frame,
-            text="Spending Tracking",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
+        self.title_label = label(self.title_frame, "Spending Tracking")
+        self.title_label.config(font=(FONT[0], FONT[1] + 4))
+        self.title_label.grid(
+            padx=PADDING, pady=(PADDING, PADDING / 2), row=0, column=0
         )
-        self.title_label.pack(padx=self.padding, pady=(self.padding, self.padding / 2))
 
-        self.info_label = tk.Label(
-            self.title_frame,
-            text="Awaiting data.",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.info_label.pack(padx=self.padding, pady=self.padding / 2)
+        self.info_label = label(self.title_frame, "Awaiting data...")
+        self.info_label.grid(padx=PADDING, pady=PADDING / 2, row=1, column=0)
 
-        self.quit_button = tk.Button(
-            self.title_frame,
-            text="Quit",
-            command=self.quit,
-            fg=ColorScheme.BUTTON_TEXT,
-            bg=ColorScheme.ACCENT,
+        self.quit_button = button(self.title_frame, "Quit", self.quit)
+        self.quit_button.grid(
+            padx=PADDING, pady=(PADDING / 2, PADDING), row=2, column=0
         )
-        self.quit_button.pack(padx=self.padding, pady=(self.padding / 2, self.padding))
 
     def _add_input_frame(self) -> None:
         """
         Adds the input frame part of the UI.
         """
-        self.input_frame = tk.Frame(
-            self,
-            highlightbackground=ColorScheme.ACCENT,
-            highlightthickness=2,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.input_frame.pack(padx=self.padding, pady=self.padding, side=tk.LEFT)
+        self.input_frame = frame(self.lower_frame)
+        self.input_frame.grid(padx=PADDING, pady=PADDING, row=0, column=0)
 
-        self.analyze_prompt = tk.Label(
-            self.input_frame,
-            text="Select a spreadsheet to analyze:",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
+        self.analyze_prompt = label(
+            self.input_frame, "Select a spreadsheet to analyze:"
         )
-        self.analyze_prompt.pack(
-            padx=self.padding, pady=(self.padding, self.padding / 2)
+        self.analyze_prompt.grid(
+            padx=PADDING, pady=(PADDING, PADDING / 2), row=0, column=0
         )
 
-        self.spending_sheet = tk.Button(
-            self.input_frame,
-            text="Select file",
-            fg=ColorScheme.BUTTON_TEXT,
-            bg=ColorScheme.ACCENT,
-        )
-        self.spending_sheet.config(
-            command=lambda path=".": self.file_handler(path)  # type: ignore
-        )
-        self.spending_sheet.pack(
-            padx=self.padding, pady=(self.padding / 2, self.padding)
+        self.spending_sheet = button(self.input_frame, "Select file", self.file_handler)
+        self.spending_sheet.grid(
+            padx=PADDING, pady=(PADDING / 2, PADDING), row=1, column=0
         )
 
     def _add_output_frame(self) -> None:
         """
         Adds the output frame part of the UI.
         """
-        self.output_frame = tk.Frame(
-            self,
-            highlightbackground=ColorScheme.ACCENT,
-            highlightthickness=2,
-            bg=ColorScheme.BACKGROUND,
-        )
-        self.output_frame.pack(padx=self.padding, pady=self.padding, side=tk.RIGHT)
+        self.output_frame = frame(self.lower_frame)
+        self.output_frame.grid(padx=PADDING, pady=PADDING, row=0, column=1)
 
         self.fmt = "%m/%d/%Y"
 
-        self.transaction_prompt = tk.Label(
-            self.output_frame,
-            text="Add a transaction to an existing spreadsheet.",
-            fg=ColorScheme.TEXT,
-            bg=ColorScheme.BACKGROUND,
+        self.transaction_prompt = label(
+            self.output_frame, "Add a transaction to an existing spreadsheet:"
         )
-        self.transaction_prompt.pack(
-            padx=self.padding, pady=(self.padding, self.padding / 2)
+        self.transaction_prompt.grid(
+            padx=PADDING,
+            pady=(PADDING, PADDING / 2),
+            row=0,
+            column=0,
         )
 
         self.transaction_vars: Dict[str, tk.StringVar] = {}
@@ -155,47 +119,57 @@ class UIDriver(tk.Tk):
             Column.CONTROLLABLE: "False",
         }
         col_names = [col for col in df.columns.tolist() if col != Column.TRANSACTION_ID]
-        for col in col_names:
+
+        self.transaction_frames = [
+            frame(self.output_frame, with_hightlight=False),
+            frame(self.output_frame, with_hightlight=False),
+        ]
+        self.transaction_frames[0].grid(
+            padx=(PADDING, PADDING / 2),
+            pady=(PADDING / 2, PADDING),
+            row=1,
+            column=0,
+        )
+        self.transaction_frames[1].grid(
+            padx=(PADDING, PADDING / 2),
+            pady=(PADDING / 2, PADDING),
+            row=1,
+            column=1,
+        )
+
+        for i, col in enumerate(col_names):
+            frame_ind = i & 1
             self.transaction_vars[col] = tk.StringVar(
-                self.output_frame, value=self.defaults.get(cast(Column, col), "")
+                self.transaction_frames[frame_ind],
+                value=self.defaults.get(cast(Column, col), ""),
             )
 
-            self.transaction_labels[col] = tk.Label(
-                self.output_frame,
-                text=col,
-                fg=ColorScheme.TEXT,
-                bg=ColorScheme.BACKGROUND,
+            self.transaction_labels[col] = label(
+                self.transaction_frames[frame_ind], col
             )
-            self.transaction_labels[col].pack(padx=self.padding, pady=self.padding / 2)
+            self.transaction_labels[col].grid(
+                padx=PADDING, pady=PADDING / 2, row=i, column=0
+            )
 
             if col in dropdowns:
-                self.transaction_entries[col] = tk.OptionMenu(
-                    self.output_frame,
+                self.transaction_entries[col] = option_menu(
+                    self.transaction_frames[frame_ind],
                     self.transaction_vars[col],
-                    "True",
-                    "False",
-                )
-                self.transaction_entries[col].config(
-                    fg=ColorScheme.BUTTON_TEXT,
-                    bg=ColorScheme.ACCENT,
+                    ["True", "False"],
                 )
             else:
-                self.transaction_entries[col] = tk.Entry(
-                    self.output_frame,
-                    textvariable=self.transaction_vars[col],
-                    fg=ColorScheme.TEXT,
-                    bg=ColorScheme.BACKGROUND,
+                self.transaction_entries[col] = entry(
+                    self.transaction_frames[frame_ind],
+                    self.transaction_vars[col],
                 )
-            self.transaction_entries[col].pack(padx=self.padding, pady=self.padding / 2)
+            self.transaction_entries[col].grid(
+                padx=PADDING, pady=PADDING / 2, row=i + 1, column=0
+            )
 
-        self.transaction_submit = tk.Button(
-            self.output_frame,
-            text="Add transaction",
-            command=self.transaction_handler,
-            fg=ColorScheme.BUTTON_TEXT,
-            bg=ColorScheme.ACCENT,
+        self.transaction_submit = button(
+            self.output_frame, "Add transaction", self.transaction_handler
         )
-        self.transaction_submit.pack(padx=self.padding, pady=self.padding)
+        self.transaction_submit.grid(padx=PADDING, pady=PADDING, row=2, column=2)
 
     def quit(self) -> None:
         """
@@ -210,7 +184,7 @@ class UIDriver(tk.Tk):
         self.destroy()
         sys.exit(0)
 
-    def file_handler(self, path: str) -> None:
+    def file_handler(self, path: str = ".") -> None:
         """
         Processes the files and creates the plots and aggregations.
 
