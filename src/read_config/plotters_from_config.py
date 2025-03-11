@@ -115,7 +115,7 @@ def create_plot(plot: Plot, df: pd.DataFrame, out_dir: str) -> None:
         if line.agg is not None:
             y_vals_arr = np.full(
                 len(partitions), getattr(np, line.agg.func)(y_vals_arr)
-            ).tolist()
+            )
 
         metrics[line.label] = (y_vals_arr, line.style)
 
