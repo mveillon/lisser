@@ -1,7 +1,7 @@
 import tkinter as tk
 from typing import Dict, Any, Callable, List
 
-from src.drivers.ui.styling import ColorScheme, FONT, BORDER
+from src.drivers.ui.styling import ColorScheme, FONT
 from src.models.types import Root
 
 
@@ -18,7 +18,10 @@ def frame(root: Root, with_hightlight: bool = True) -> tk.Frame:
     """
     kwargs: Dict[str, Any] = {"bg": ColorScheme.BACKGROUND}
     if with_hightlight:
-        kwargs |= BORDER
+        kwargs |= {
+            "highlightbackground": ColorScheme.ACCENT,
+            "highlightthickness": 2,
+        }
     return tk.Frame(root, **kwargs)
 
 

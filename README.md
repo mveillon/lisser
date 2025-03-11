@@ -82,9 +82,11 @@ If `--file` is passed, the `--year` flag will be ignored, as the year will be in
 
 ## Running the GUI
 
-There is also a very barebones GUI just to make the file navigation a little easier. Simply run `python3 main.py ui`, or `make ui` and it will launch a window.
+There is also a neat little GUI just to make the file navigation a little easier. Simply run `python3 main.py ui`, or `make ui` and it will launch a window.
 
-Click the prompt to upload a spreadsheet, wait a few seconds for it to process the numbers, and tell it where to save the output zip file.
+By default, the UI will read and write from `data/{year}/Spending.{csv|txt|numbers|xlsx}`, but this can be changed with the `Change path` button. Once the desired spreadsheet is selected, click `Start analysis` to generate the output report.
+
+You can also add transactions one at a time by filling out the fields and clicking `Submit`. Editing and deleting existing expenses are not currently supported.
 
 # Files
 

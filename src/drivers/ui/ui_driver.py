@@ -4,8 +4,11 @@ from tkinter import filedialog as fd
 
 import sys
 from datetime import datetime, date
-from os import walk
+from os import walk, makedirs
 from os.path import join, relpath, splitext, exists, abspath
+from pathlib import Path
+import platform
+
 from zipfile import ZipFile
 import traceback as tb
 import re
@@ -13,8 +16,10 @@ import re
 from typing import cast, Dict, Any, Callable
 
 from src.analyze_spending import analyze_spending
-from src.read_data.read_data import read_data
 from src.models.paths import Paths, ALLOWED_EXTNS
+from src.initialize import add_spending_sheet
+
+from src.read_data.read_data import read_data
 from src.read_data.column import Column
 from src.read_data.write_data import write_data
 
@@ -35,6 +40,12 @@ class UIDriver(tk.Tk):
 
     def __init__(self) -> None:
         super().__init__()
+        if platform.system() == "Windows":
+            self.state("zoomed")
+
+        makedirs(Paths.this_years_data(), exist_ok=True)
+        if not exists(Paths.spending_path()):
+            add_spending_sheet()
 
         self.config(bg=ColorScheme.BACKGROUND)
         self.title("Spending Tracking")
@@ -45,8 +56,7 @@ class UIDriver(tk.Tk):
         self.lower_frame.grid(padx=PADDING, pady=PADDING, row=1, column=0)
 
         self._add_input_frame()
-        if exists(Paths.spending_path()):
-            self._add_output_frame()
+        self._add_output_frame()
 
     def _add_title_frame(self) -> None:
         """
@@ -61,13 +71,13 @@ class UIDriver(tk.Tk):
             padx=PADDING, pady=(PADDING, PADDING / 2), row=0, column=0
         )
 
-        self.info_label = label(self.title_frame, "Awaiting data...")
-        self.info_label.grid(padx=PADDING, pady=PADDING / 2, row=1, column=0)
-
         self.filename_label = label(
-            self.title_frame, f"Currently pointing to {abspath(Paths.spending_path())}"
+            self.title_frame, self.filename_text(Paths.spending_path())
         )
-        self.filename_label.grid(padx=PADDING, pady=PADDING / 2, row=2, column=0)
+        self.filename_label.grid(padx=PADDING, pady=PADDING / 2, row=1, column=0)
+
+        self.info_label = label(self.title_frame, "")
+        self.info_label.grid(padx=PADDING, pady=PADDING / 2, row=2, column=0)
 
         self.quit_button = button(self.title_frame, "Quit", self.quit)
         self.quit_button.grid(
@@ -192,12 +202,12 @@ class UIDriver(tk.Tk):
         self.destroy()
         sys.exit(0)
 
-    def change_path(self, path: str = ".") -> None:
+    def change_path(self) -> None:
         """
         Changes the path to point the UI at.
 
         Parameters:
-            path (str): the path to the spreadsheet
+            None
 
         Returns:
             None
@@ -205,7 +215,7 @@ class UIDriver(tk.Tk):
         refs = fd.askopenfilename(
             parent=self,
             title="Spreadsheet to analyze:",
-            initialdir=path,
+            initialdir=Paths.this_years_data(),
             filetypes=(("spreadsheets", ["*" + e for e in ALLOWED_EXTNS]),),
         )
 
@@ -214,9 +224,7 @@ class UIDriver(tk.Tk):
             new_year = cast(datetime, df[Column.DATE].median()).year
             Paths._year_mut[0] = new_year
             Paths._sheet_override[0] = refs
-            self.filename_label.config(
-                text=f"Currently pointing to {abspath(Paths.spending_path())}"
-            )
+            self.filename_label.config(text=self.filename_text(Paths.spending_path()))
 
         except Exception as e:
             self.error(str(e))
@@ -238,7 +246,9 @@ class UIDriver(tk.Tk):
 
         try:
             out_name = fd.asksaveasfilename(
-                filetypes=[("Archive Files", "*.zip")], defaultextension=".zip"
+                filetypes=[("Archive Files", "*.zip")],
+                defaultextension=".zip",
+                initialdir=str(Path(Paths.spending_path()).parent),
             )
 
             with ZipFile(out_name, "w") as archive:
@@ -305,3 +315,15 @@ class UIDriver(tk.Tk):
         """
         self.info_label.config(text=f"Something went wrong: {message}")
         print(tb.format_exc())
+
+    def filename_text(self, path: str) -> str:
+        """
+        Creates what the filename label should say.
+
+        Parameters:
+            path (str): the new path
+
+        Returns:
+            None
+        """
+        return f"Currently pointing at {abspath(path)}"
