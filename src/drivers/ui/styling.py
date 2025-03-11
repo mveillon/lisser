@@ -2,7 +2,9 @@ from enum import StrEnum
 
 
 FONT = ("Corbel Light", 20)
+TITLE = ("Corbel Light", 24)
 PADDING = 10
+
 
 class ColorScheme(StrEnum):
     BACKGROUND = "#2a2f38"

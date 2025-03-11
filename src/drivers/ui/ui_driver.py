@@ -5,7 +5,7 @@ from tkinter import filedialog as fd
 import sys
 from datetime import datetime, date
 from os import walk
-from os.path import join, relpath, splitext, exists
+from os.path import join, relpath, splitext, exists, abspath
 from zipfile import ZipFile
 import traceback as tb
 import re
@@ -18,7 +18,7 @@ from src.models.paths import Paths, ALLOWED_EXTNS
 from src.read_data.column import Column
 from src.read_data.write_data import write_data
 
-from src.drivers.ui.styling import ColorScheme, FONT, PADDING
+from src.drivers.ui.styling import ColorScheme, PADDING, TITLE
 from src.drivers.ui.widgets import (
     frame,
     label,
@@ -56,7 +56,7 @@ class UIDriver(tk.Tk):
         self.title_frame.grid(padx=PADDING, pady=PADDING, row=0, column=0)
 
         self.title_label = label(self.title_frame, "Spending Tracking")
-        self.title_label.config(font=(FONT[0], FONT[1] + 4))
+        self.title_label.config(font=TITLE)
         self.title_label.grid(
             padx=PADDING, pady=(PADDING, PADDING / 2), row=0, column=0
         )
@@ -64,9 +64,14 @@ class UIDriver(tk.Tk):
         self.info_label = label(self.title_frame, "Awaiting data...")
         self.info_label.grid(padx=PADDING, pady=PADDING / 2, row=1, column=0)
 
+        self.filename_label = label(
+            self.title_frame, f"Currently pointing to {abspath(Paths.spending_path())}"
+        )
+        self.filename_label.grid(padx=PADDING, pady=PADDING / 2, row=2, column=0)
+
         self.quit_button = button(self.title_frame, "Quit", self.quit)
         self.quit_button.grid(
-            padx=PADDING, pady=(PADDING / 2, PADDING), row=2, column=0
+            padx=PADDING, pady=(PADDING / 2, PADDING), row=3, column=0
         )
 
     def _add_input_frame(self) -> None:
@@ -76,16 +81,20 @@ class UIDriver(tk.Tk):
         self.input_frame = frame(self.lower_frame)
         self.input_frame.grid(padx=PADDING, pady=PADDING, row=0, column=0)
 
-        self.analyze_prompt = label(
-            self.input_frame, "Select a spreadsheet to analyze:"
-        )
+        self.analyze_prompt = label(self.input_frame, "Analyze Data")
+        self.analyze_prompt.config(font=TITLE)
         self.analyze_prompt.grid(
             padx=PADDING, pady=(PADDING, PADDING / 2), row=0, column=0
         )
 
-        self.spending_sheet = button(self.input_frame, "Select file", self.file_handler)
-        self.spending_sheet.grid(
-            padx=PADDING, pady=(PADDING / 2, PADDING), row=1, column=0
+        self.new_path_button = button(self.input_frame, "Change path", self.change_path)
+        self.new_path_button.grid(padx=PADDING, pady=PADDING / 2, row=1, column=0)
+
+        self.analyze_button = button(
+            self.input_frame, "Start analysis", self.file_handler
+        )
+        self.analyze_button.grid(
+            padx=PADDING, pady=(PADDING / 2, PADDING), row=2, column=0
         )
 
     def _add_output_frame(self) -> None:
@@ -97,9 +106,8 @@ class UIDriver(tk.Tk):
 
         self.fmt = "%m/%d/%Y"
 
-        self.transaction_prompt = label(
-            self.output_frame, "Add a transaction to an existing spreadsheet:"
-        )
+        self.transaction_prompt = label(self.output_frame, "Add Transaction")
+        self.transaction_prompt.config(font=TITLE)
         self.transaction_prompt.grid(
             padx=PADDING,
             pady=(PADDING, PADDING / 2),
@@ -167,7 +175,7 @@ class UIDriver(tk.Tk):
             )
 
         self.transaction_submit = button(
-            self.output_frame, "Add transaction", self.transaction_handler
+            self.output_frame, "Submit", self.transaction_handler
         )
         self.transaction_submit.grid(padx=PADDING, pady=PADDING, row=2, column=2)
 
@@ -184,9 +192,9 @@ class UIDriver(tk.Tk):
         self.destroy()
         sys.exit(0)
 
-    def file_handler(self, path: str = ".") -> None:
+    def change_path(self, path: str = ".") -> None:
         """
-        Processes the files and creates the plots and aggregations.
+        Changes the path to point the UI at.
 
         Parameters:
             path (str): the path to the spreadsheet
@@ -194,7 +202,6 @@ class UIDriver(tk.Tk):
         Returns:
             None
         """
-        self.info_label.config(text="...processing data...")
         refs = fd.askopenfilename(
             parent=self,
             title="Spreadsheet to analyze:",
@@ -207,12 +214,25 @@ class UIDriver(tk.Tk):
             new_year = cast(datetime, df[Column.DATE].median()).year
             Paths._year_mut[0] = new_year
             Paths._sheet_override[0] = refs
+            self.filename_label.config(
+                text=f"Currently pointing to {abspath(Paths.spending_path())}"
+            )
 
-            analyze_spending(verbose=False)
         except Exception as e:
-            self.info_label.config(text=f"Something went wrong: {str(e)}")
-            print(tb.format_exc())
-            return
+            self.error(str(e))
+
+    def file_handler(self) -> None:
+        """
+        Processes the files and creates the plots and aggregations.
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
+        self.info_label.config(text="...processing data...")
+        analyze_spending(verbose=False)
 
         self.info_label.config(text="Processing complete! Archiving data...")
 
@@ -237,11 +257,7 @@ class UIDriver(tk.Tk):
             self.info_label.config(text="Archive created!")
 
         except Exception as e:
-            self.info_label.config(
-                text=f"Something went wrong saving the zip file: {e}"
-            )
-            print(tb.format_exc())
-            return
+            self.error(str(e))
 
     def transaction_handler(self) -> None:
         """
@@ -272,7 +288,20 @@ class UIDriver(tk.Tk):
 
         Paths._year_mut[0] = cols[Column.DATE][0].year
         write_data(pd.DataFrame(cols), Paths.spending_path(), mode="a")
-        self.info_label.config(text=f"Transaction added to {Paths.spending_path()}")
+        self.info_label.config(text="Transaction added!")
 
         for col, var in self.transaction_vars.items():
             var.set(self.defaults.get(cast(Column, col), ""))
+
+    def error(self, message: str) -> None:
+        """
+        Raises an error gracefully without closing the application.
+
+        Parameters:
+            message (str): the message to display
+
+        Returns:
+            None
+        """
+        self.info_label.config(text=f"Something went wrong: {message}")
+        print(tb.format_exc())
