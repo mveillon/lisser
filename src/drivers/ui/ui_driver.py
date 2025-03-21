@@ -189,19 +189,6 @@ class UIDriver(tk.Tk):
         )
         self.transaction_submit.grid(padx=PADDING, pady=PADDING, row=2, column=2)
 
-    def quit(self) -> None:
-        """
-        Quits the application.
-
-        Parameters:
-            None
-
-        Returns:
-            None
-        """
-        self.destroy()
-        sys.exit(0)
-
     def change_path(self) -> None:
         """
         Changes the path to point the UI at.
