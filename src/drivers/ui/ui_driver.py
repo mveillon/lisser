@@ -2,7 +2,6 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog as fd
 
-import sys
 from datetime import datetime, date
 from os import walk, makedirs
 from os.path import join, relpath, splitext, exists, abspath
