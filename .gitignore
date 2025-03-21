@@ -164,7 +164,7 @@ cython_debug/
 data/
 
 .DS_Store
-spending-tracking/
+lisser/
 config_overwrite.yml
 
 .vscode

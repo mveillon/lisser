@@ -2,7 +2,6 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog as fd
 
-import sys
 from datetime import datetime, date
 from os import walk, makedirs
 from os.path import join, relpath, splitext, exists, abspath
@@ -188,19 +187,6 @@ class UIDriver(tk.Tk):
             self.output_frame, "Submit", self.transaction_handler
         )
         self.transaction_submit.grid(padx=PADDING, pady=PADDING, row=2, column=2)
-
-    def quit(self) -> None:
-        """
-        Quits the application.
-
-        Parameters:
-            None
-
-        Returns:
-            None
-        """
-        self.destroy()
-        sys.exit(0)
 
     def change_path(self) -> None:
         """

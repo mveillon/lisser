@@ -1,16 +1,16 @@
-# Spending Tracking
+# Lisser
 
-This is a Python CLI app that takes the transaction data you provide and analyzes it. There are a number of built-in graphs and aggregations that it performs, and there is also support for configuring those calculations and adding more, specific to the user. 
+Lisser is a Python CLI app that takes the transaction data you provide and analyzes it. There are a number of built-in graphs and aggregations that it performs, and there is also support for configuring those calculations and adding more, specific to the user. 
 
 # Installation
 
 This repository has only been tested with Python 3.12.7. Support for other versions is limited but on the roadmap. It is assumed you have [Python 3](https://www.python.org/downloads/) installed.
 
-First, clone the repository to your machine. `> git clone https://github.com/mveillon/spending-tracking.git`
+First, clone the repository to your machine. `> git clone https://github.com/mveillon/lisser.git`
 
 It is recommended, but not required, to setup a virtual environment using something like Pyenv. 
 
-To install the needed dependencies and setup the folder structure, navigate to the `spending-tracking` directory and run the following command: `> pip3 install -r requirements.txt && python3 main.py init`.
+To install the needed dependencies and setup the folder structure, navigate to the `lisser` directory and run the following command: `> pip3 install -r requirements.txt && python3 main.py init`.
 
 If you have `make` installed, you can also run `make init` instead.
 
