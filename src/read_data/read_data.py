@@ -40,10 +40,11 @@ def read_data(path: str) -> pd.DataFrame:
         ".xlsx": _read_excel,
     }
     df = readers[splitext(path)[1]](path)
+    df = df.loc[~df[Column.DATE].isna()]
 
     new_cols: Dict[str, np.ndarray] = {
         Column.TRANSACTION_ID: np.fromiter(
-            map(lambda _: str(uuid4()), np.empty(df.shape[0])),
+            [str(uuid4()) for _ in range(df.shape[0])],
             count=df.shape[0],
             dtype=np.dtypes.StringDType(),
         )
