@@ -24,12 +24,13 @@ You can also set up the spreadsheets for a previous year using the `-y {year}` o
 
 Here are some commonly used commands:
 
-| command         | alias                             | description                                             |
-| --------------- | --------------------------------- | ------------------------------------------------------- |
-| make cli        | python main.py cli                | runs the command line for the year of the system time   |
-|                 | python main.py cli -y 2024        | runs the command line for the 2024 data                 |
-|                 | python main.py cli -f '{path}'    | runs the command line for the data at path              |
-| make ui         | python main.py ui                 | launches the TKinter UI                                 |
+| command         | alias                                       | description                                             |
+| --------------- | ------------------------------------------- | ------------------------------------------------------- |
+| make cli        | python main.py cli                          | runs the command line for the year of the system time   |
+|                 | python main.py cli -y {year}                | runs the command line for the given year                |
+|                 | python main.py cli -f '{path}'              | runs the command line for the data at path              |
+|                 | python main.py cli -f 'sample_data.xlsx'    | runs the command line for the sample data               |
+| make ui         | python main.py ui                           | launches the TKinter UI                                 |
 
 And for developers:
 
@@ -43,6 +44,8 @@ And for developers:
 ## Input
 
 The input spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), a .csv file, or a .txt file formatted like a .csv. It should have a row for every transaction in which the user spent money that year.
+
+There is a spreadsheet called `sample_data.xlsx` at the root level which you can use as an example and for playing around with the code.
 
 The year does not have to complete, but the year of every transaction should be the same (i.e. it should start no sooner than January 1st and end no later than December 31st the same year).
 
