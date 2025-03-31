@@ -42,9 +42,9 @@ def monthly_spending(df: pd.DataFrame) -> Dict[str, float]:
         bills = month_df.loc[filt_cond][Column.PRICE].sum()
         month_df = month_df.loc[~filt_cond]
 
-        num_days = (month_df[Column.DATE].max() - month_df[Column.DATE].min()).days
+        num_days = (month_df[Column.DATE].max() - month_df[Column.DATE].min()).days + 1
         spent = (month_df[Column.PRICE].sum() / num_days) * DayCounts.days_per_month()
-        spent += (bills / (next_date - current).days) * DayCounts.days_per_month()
+        spent += (bills / ((next_date - current).days + 1)) * DayCounts.days_per_month()
 
         res[current.strftime("%b")] = spent
         current = next_date + timedelta(days=1)

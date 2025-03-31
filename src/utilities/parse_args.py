@@ -53,10 +53,7 @@ def parse_args() -> argparse.Namespace:
         "-F",
         "--force",
         action="store_true",
-        help=(
-            "force overwrite files that already exist. "
-            + "Default False. Only applies to initialize.py"
-        ),
+        help=("force overwrite files that already exist. Default False."),
     )
 
     cli_parser.add_argument(

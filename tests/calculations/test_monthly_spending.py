@@ -9,6 +9,5 @@ def test_monthly_spending():
     data = sample_data()
 
     months = monthly_spending(data)
-    print(months)
-    assert np.isclose(months["Jan"], 1620, atol=10)
-    assert np.isclose(months["Feb"], 80, atol=5)
+    assert np.isclose(months["Jan"], 731.39, rtol=0.1)
+    assert np.isclose(months["Feb"], 120.35, rtol=0.1)

@@ -44,7 +44,7 @@ def weekly_projection(df: pd.DataFrame) -> List[float]:
         week_df = time_filter(
             df,
             datetime.strftime(dtm, fmt),
-            datetime.strftime(dtm + one_week, fmt),
+            datetime.strftime(dtm + one_week - timedelta(days=1), fmt),
         )
 
         mo = dtm.strftime("%B")

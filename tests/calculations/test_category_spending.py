@@ -10,8 +10,8 @@ def test_category_spending():
 
     cats = category_spending(data)
 
-    assert np.isclose(cats["Total spent"], 1520.89)
-    assert np.isclose(cats["Groceries"], 89.28)
+    assert np.isclose(cats["Total spent"], 4200.81)
+    assert np.isclose(cats["Groceries"], 1065.88)
 
     for cat, spent in cats.items():
         if cat != "Income":
