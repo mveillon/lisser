@@ -1,4 +1,3 @@
-from os.path import join
 import pandas as pd
 from functools import lru_cache
 
@@ -16,4 +15,4 @@ def sample_data() -> pd.DataFrame:
     Returns:
         sample (DataFrame): a small DataFrame for testing
     """
-    return read_data(join("tests", "sample_data.xlsx"))
+    return read_data("sample_data.xlsx")

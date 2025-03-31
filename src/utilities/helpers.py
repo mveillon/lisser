@@ -106,4 +106,4 @@ def time_filter(df: pd.DataFrame, min_date: str, max_date: str) -> pd.DataFrame:
     Returns:
         df (DataFrame): `df` filtered to be between `min_date` and `max_date`
     """
-    return df.loc[(df[Column.DATE] >= min_date) & (df[Column.DATE] < max_date)]
+    return df.loc[(df[Column.DATE] >= min_date) & (df[Column.DATE] <= max_date)]
