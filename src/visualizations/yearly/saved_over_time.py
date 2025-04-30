@@ -3,11 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from os.path import join
-from typing import Dict, Tuple
-from datetime import timedelta, datetime
+from typing import Dict
+from datetime import timedelta
 
 from src.models.day_counts import DayCounts
-from src.utilities.helpers import monthly_income, get_weeks
+from src.utilities.helpers import monthly_income
 from src.read_data.column import Column
 
 
