@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from os.path import join
 from typing import Dict
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from src.models.day_counts import DayCounts
 from src.utilities.helpers import monthly_income
@@ -37,10 +37,10 @@ def saved_over_time(df: pd.DataFrame, out_dir: str) -> None:
     for dtm, spent in spending.to_dict().items():
         spent_by_date[dtm.strftime(fmt)] -= spent
 
-    all_dates = np.array(list(spent_by_date.keys()))
-    inds = sorted(range(all_dates.shape[0]), key=all_dates.__getitem__)
+    all_dates = np.array([datetime.strptime(d, fmt) for d in spent_by_date], dtype="M")
+    inds = np.argsort(all_dates)
     x = all_dates[inds]
-    y = np.cumsum(np.array(list(spent_by_date.values()))[inds])
+    y = np.cumsum([spent_by_date[dtm.astype(datetime).strftime(fmt)] for dtm in x])
 
     days_of_year = np.arange(y.shape[0], dtype=int)
     poly_model = np.polynomial.Polynomial.fit(days_of_year, y, 3)
