@@ -92,13 +92,7 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
             "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
         )
 
-        if round(this_cat[Column.IS_FOOD].mean()) == 1:
-            flow["Not Controllable"]["Food"][cat_t] = (
-                flow["Not Controllable"]["Food"].get(cat_t, 0) + cat_spent
-            )
-
-        else:
-            flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
+        flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
 
     desc_col = "Description"
     if desc_col in df.columns:
