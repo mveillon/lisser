@@ -148,7 +148,7 @@ If there are multiple lines in a plot, it is recommended to provide the optional
 
 For information on the `style` parameter, see the **Notes** section of [this page](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html).
 
-There is also an optional `agg` paramater, which has the same format as the ones in the **Aggregations** section.
+There is also an optional `agg` paramater, which has the same format as the ones in the **Aggregations** section, but doesn't use the `Column` parameter.
 
 ## Aggregations
 
