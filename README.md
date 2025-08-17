@@ -148,7 +148,7 @@ If there are multiple lines in a plot, it is recommended to provide the optional
 
 For information on the `style` parameter, see the **Notes** section of [this page](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html).
 
-There is also an optional `agg` paramater, which is a list of aggregations, each having the same format as the ones in the **Aggregations** section. Each aggregation will be its own line. For the aggregations to have different styles, labels, etc., the aggregations can be split across multiple lines.
+There is also an optional `agg` paramater, which has the same format as the ones in the **Aggregations** section.
 
 ## Aggregations
 
