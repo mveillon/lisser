@@ -3,6 +3,7 @@ from src.utilities.dictionary_ops import (
     recursive_merge,
     recursive_index,
     convert_dict,
+    recursive_divide,
 )
 
 
@@ -125,3 +126,37 @@ def test_convert_dict():
 
     convert_dict(base, converters)
     assert base == expected
+
+
+def test_recursive_divide():
+    d = {
+        "a": 12,
+        "b": "hello world",
+        "c": {
+            "d": 24,
+            "e": 9,
+            "f": {
+                "g": 18,
+                "h": "skip me",
+                "i": 21,
+            },
+        },
+        "j": 9,
+    }
+
+    expected = {
+        "a": 4,
+        "b": "hello world",
+        "c": {
+            "d": 8,
+            "e": 3,
+            "f": {
+                "g": 6,
+                "h": "skip me",
+                "i": 7,
+            },
+        },
+        "j": 3,
+    }
+
+    assert recursive_divide(d, 3) == expected

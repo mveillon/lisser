@@ -113,3 +113,25 @@ def convert_dict(d: dict, converters: Dict[str, Callable]) -> None:
 
     for sub_d in filter(lambda b: isinstance(d[b], dict), d.keys()):
         convert_dict(d[sub_d], converters)
+
+
+def recursive_divide(d: NestedDict, divisor: Number) -> NestedDict:
+    """
+    Recursively divides every value in d that supports division by the given divisor,
+    returning a new dictionary.
+
+    Parameters:
+        d (NestedDict): the tree of numbers
+        divisor (Number): what to divide the values by
+
+    Returns:
+        divided (NestedDict): the same tree of numbers, but with everything divided by
+            divisor
+    """
+    if isinstance(d, dict):
+        return {k: recursive_divide(branch, divisor) for k, branch in d.items()}
+
+    try:
+        return d / divisor
+    except TypeError:
+        return d

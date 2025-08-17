@@ -14,6 +14,7 @@ from src.read_data.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,
     dictionary_sum,
+    recursive_divide,
 )
 from src.models.types import Number
 from src.read_config.get_config import config_globals
@@ -36,14 +37,14 @@ class Flow(NamedTuple):
     options: dict = {}
 
 
-def _get_flows(source: str, d: NestedDict) -> List[Flow]:
+def _get_flows(source: str, d: NestedDict, label_format: str) -> List[Flow]:
     """
     Returns all the flows in this subdictionary.
     """
     if not isinstance(d, dict):
         return []
 
-    options = {}
+    options = {"label_format": label_format}
     if source == "Income":
         options["flow_color_mode"] = "source"
 
@@ -54,9 +55,33 @@ def _get_flows(source: str, d: NestedDict) -> List[Flow]:
             this_layer.append(Flow(source, label, subtotal, options))
 
     this_layer.extend(
-        chain(*[_get_flows(label, branch) for label, branch in d.items()])
+        chain(*[_get_flows(label, branch, label_format) for label, branch in d.items()])
     )
     return this_layer
+
+
+def _graph_flows(flow: NestedDict, out_path: str, label_format: str = "{label} \\$${value:d}") -> None:
+    """
+    Creates a graph of the given spending flow and saves it to out_path.
+    """
+    plt.clf()
+    plt.figure(figsize=(12, 8))
+    plt.title(f"Spending Flow for {Paths.get_year()}")
+
+    s = Sankey(
+        flows=_get_flows("Income", flow, label_format),
+    )
+    for node_list in s.nodes:
+        for node in node_list:
+            node.label_opts = {"fontsize": 8}
+            if len(node.outflows) > 0:
+                node.label_pos = "left"
+            else:
+                node.label_pos = "right"
+
+    s.draw()
+    plt.savefig(out_path)
+    plt.close()
 
 
 def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
@@ -71,9 +96,10 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
         None
     """
     total_spent = df[Column.PRICE].sum()
+    total_income = estimated_income_after_tax(df)
 
     flow = {
-        "Saved": estimated_income_after_tax(df) - total_spent,
+        "Saved": total_income - total_spent,
         "Controllable": {"Other": 0},
         "Not Controllable": {"Food": {}, "Other": 0},
     }
@@ -113,21 +139,8 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
         if len(bills_flow) > 1:
             flow["Not Controllable"]["Bills"] = bills_flow
 
-    plt.clf()
-    plt.figure(figsize=(12, 8))
-    plt.title(f"Spending Flow for {Paths.get_year()}")
-
-    s = Sankey(
-        flows=_get_flows("Income", flow),
+    _graph_flows(flow, join(out_dir, "sankey.png"))
+    _graph_flows(
+        recursive_divide(flow, total_income / 100),
+        join(out_dir, "sankey_percentage.png"),
     )
-    for node_list in s.nodes:
-        for node in node_list:
-            node.label_opts = {"fontsize": 8}
-            if len(node.outflows) > 0:
-                node.label_pos = "left"
-            else:
-                node.label_pos = "right"
-
-    s.draw()
-    plt.savefig(join(out_dir, "sankey.png"))
-    plt.close()
