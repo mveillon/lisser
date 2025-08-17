@@ -14,6 +14,7 @@ from src.read_data.column import Column
 from src.utilities.dictionary_ops import (
     NestedDict,
     dictionary_sum,
+    recursive_divide,
 )
 from src.models.types import Number
 from src.read_config.get_config import config_globals
@@ -59,6 +60,30 @@ def _get_flows(source: str, d: NestedDict) -> List[Flow]:
     return this_layer
 
 
+def _graph_flows(flow: NestedDict, out_path: str, label_format: str) -> None:
+    """
+    Creates a graph of the given spending flow and saves it to out_path.
+    """
+    plt.clf()
+    plt.figure(figsize=(12, 8))
+    plt.title(f"Spending Flow for {Paths.get_year()}")
+
+    s = Sankey(
+        flows=_get_flows("Income", flow),
+        node_opts={"label_format": label_format, "label_opts": {"fontsize": 8}},
+    )
+    for node_list in s.nodes:
+        for node in node_list:
+            if len(node.outflows) > 0:
+                node.label_pos = "left"
+            else:
+                node.label_pos = "right"
+
+    s.draw()
+    plt.savefig(out_path)
+    plt.close()
+
+
 def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
     """
     Plots where spending went in a Sankey chart.
@@ -71,25 +96,27 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
         None
     """
     total_spent = df[Column.PRICE].sum()
+    total_income = estimated_income_after_tax(df)
 
     flow = {
-        "Saved": estimated_income_after_tax(df) - total_spent,
-        "Controllable": {"Other": 0},
-        "Not Controllable": {"Food": {}, "Other": 0},
+        "Saved": total_income - total_spent,
+        "Controllable": {"Other Controllable": 0},
+        "Not Controllable": {"Food": {}, "Other Not Controllable": 0},
     }
 
     cats = df.groupby([Column.CATEGORY])[Column.CONTROLLABLE].mean()
 
     for cat, controllable_prop in cats.items():
+        control_key = (
+            "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
+        )
+
         this_cat = df.loc[df[Column.CATEGORY] == cat]
         cat_spent = this_cat[Column.PRICE].sum()
         cat_t = (
             cast(str, cat).title()
             if cat_spent > total_spent * config_globals()["SANKEY_OTHER_THRESHOLD"]
-            else "Other"
-        )
-        control_key = (
-            "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
+            else f"Other {control_key}"
         )
 
         flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
@@ -113,21 +140,13 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
         if len(bills_flow) > 1:
             flow["Not Controllable"]["Bills"] = bills_flow
 
-    plt.clf()
-    plt.figure(figsize=(12, 8))
-    plt.title(f"Spending Flow for {Paths.get_year()}")
-
-    s = Sankey(
-        flows=_get_flows("Income", flow),
+    _graph_flows(
+        flow,
+        join(out_dir, "sankey.png"),
+        "{label}\n${value:,.0f}",
     )
-    for node_list in s.nodes:
-        for node in node_list:
-            node.label_opts = {"fontsize": 8}
-            if len(node.outflows) > 0:
-                node.label_pos = "left"
-            else:
-                node.label_pos = "right"
-
-    s.draw()
-    plt.savefig(join(out_dir, "sankey.png"))
-    plt.close()
+    _graph_flows(
+        recursive_divide(flow, total_income / 100),
+        join(out_dir, "sankey_percentage.png"),
+        "{label}\n{value:.2f}%",
+    )
