@@ -12,7 +12,7 @@ globals:
   # --------------------------------------------------------------------
   # WEIRD CONFIGS
   # only change if you know what you're doing
-  SANKEY_OTHER_THRESHOLD: 0.03 
+  SANKEY_OTHER_THRESHOLD: 0.02
   PROJECTED_SPENDING_BILL_THRESHOLD: 100
   PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD: 1000
   # --------------------------------------------------------------------
@@ -23,19 +23,23 @@ plots:
 
   # --------------------------------------------------------------------
   food_over_time:   # name of the output image
-    timeframe: yearly   # how frequently the transaction totals are sampled. Can be either monthly or yearly
+    timeframe: yearly   # the time period of each plot
+        # ^ Can be either monthly (4 samples per graph, 12 graphs per year) or yearly (12 samples per graph, one graph per year)
     title: "Money spent on food over time"  # title of plot
     
     # each of these will be its own line in the plot
     lines:
+      # the first line
       - filters:
         - column: "Is Food"   # name of column to filter
           operator: "="   # how to filter
           value: 1  # what to compare against
+              # above filter evaluate to "Is Food = 1" i.e. only purchases on food
         style: b
         label: total  # label of first line
-        disjunction: False  # for multiple filters, set to True if you want them to be combined with OR instead of AND
+        disjunction: False  # how to combine the filters, if there are multiple. True -> OR, False -> AND
 
+      # the second line
       - filters:
         - column: "Is Food"
           operator: "="
@@ -43,10 +47,10 @@ plots:
         style: "g--"
         label: average  # label of second line
 
-        # optional aggregations to perform. Each func will have its own line
+        # optional aggregation to perform on the Price, resulting in a flat control line.
         # note that the `column` key is not used here
         agg:
-          - func: mean
+          func: mean
   # --------------------------------------------------------------------
 
   # --------------------------------------------------------------------
@@ -66,7 +70,7 @@ plots:
   # --------------------------------------------------------------------
 
 aggregations:
-  # each of these will be a key in the aggregations.yml file
+  # each of these will be a row in the aggregations.csv file
 
   # --------------------------------------------------------------------
   spent_on_groceries:  # what the key will be
@@ -88,7 +92,7 @@ aggregations:
     filters:
       - column: Category
         operator: "="
-        value: Groceries
+        value: Eating Out
 
     agg:
       func: count # column key is not needed for the `count` function only

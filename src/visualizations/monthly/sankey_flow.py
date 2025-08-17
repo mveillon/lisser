@@ -37,14 +37,14 @@ class Flow(NamedTuple):
     options: dict = {}
 
 
-def _get_flows(source: str, d: NestedDict, label_format: str) -> List[Flow]:
+def _get_flows(source: str, d: NestedDict) -> List[Flow]:
     """
     Returns all the flows in this subdictionary.
     """
     if not isinstance(d, dict):
         return []
 
-    options = {"label_format": label_format}
+    options = {}
     if source == "Income":
         options["flow_color_mode"] = "source"
 
@@ -55,12 +55,12 @@ def _get_flows(source: str, d: NestedDict, label_format: str) -> List[Flow]:
             this_layer.append(Flow(source, label, subtotal, options))
 
     this_layer.extend(
-        chain(*[_get_flows(label, branch, label_format) for label, branch in d.items()])
+        chain(*[_get_flows(label, branch) for label, branch in d.items()])
     )
     return this_layer
 
 
-def _graph_flows(flow: NestedDict, out_path: str, label_format: str = "{label} \\$${value:d}") -> None:
+def _graph_flows(flow: NestedDict, out_path: str, label_format: str) -> None:
     """
     Creates a graph of the given spending flow and saves it to out_path.
     """
@@ -69,11 +69,11 @@ def _graph_flows(flow: NestedDict, out_path: str, label_format: str = "{label} \
     plt.title(f"Spending Flow for {Paths.get_year()}")
 
     s = Sankey(
-        flows=_get_flows("Income", flow, label_format),
+        flows=_get_flows("Income", flow),
+        node_opts={"label_format": label_format, "label_opts": {"fontsize": 8}},
     )
     for node_list in s.nodes:
         for node in node_list:
-            node.label_opts = {"fontsize": 8}
             if len(node.outflows) > 0:
                 node.label_pos = "left"
             else:
@@ -100,22 +100,23 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
 
     flow = {
         "Saved": total_income - total_spent,
-        "Controllable": {"Other": 0},
-        "Not Controllable": {"Food": {}, "Other": 0},
+        "Controllable": {"Other Controllable": 0},
+        "Not Controllable": {"Food": {}, "Other Not Controllable": 0},
     }
 
     cats = df.groupby([Column.CATEGORY])[Column.CONTROLLABLE].mean()
 
     for cat, controllable_prop in cats.items():
+        control_key = (
+            "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
+        )
+
         this_cat = df.loc[df[Column.CATEGORY] == cat]
         cat_spent = this_cat[Column.PRICE].sum()
         cat_t = (
             cast(str, cat).title()
             if cat_spent > total_spent * config_globals()["SANKEY_OTHER_THRESHOLD"]
-            else "Other"
-        )
-        control_key = (
-            "Controllable" if round(controllable_prop) == 1 else "Not Controllable"
+            else f"Other {control_key}"
         )
 
         flow[control_key][cat_t] = flow[control_key].get(cat_t, 0) + cat_spent
@@ -139,8 +140,13 @@ def sankey_flow(df: pd.DataFrame, out_dir: str) -> None:
         if len(bills_flow) > 1:
             flow["Not Controllable"]["Bills"] = bills_flow
 
-    _graph_flows(flow, join(out_dir, "sankey.png"))
+    _graph_flows(
+        flow,
+        join(out_dir, "sankey.png"),
+        "{label}\n${value:,.0f}",
+    )
     _graph_flows(
         recursive_divide(flow, total_income / 100),
         join(out_dir, "sankey_percentage.png"),
+        "{label}\n{value:.2f}%",
     )
