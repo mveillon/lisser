@@ -24,13 +24,14 @@ You can also set up the spreadsheets for a previous year using the `-y {year}` o
 
 Here are some commonly used commands:
 
-| command         | alias                                       | description                                             |
-| --------------- | ------------------------------------------- | ------------------------------------------------------- |
-| make cli        | python main.py cli                          | runs the command line for the year of the system time   |
-|                 | python main.py cli -y {year}                | runs the command line for the given year                |
-|                 | python main.py cli -f '{path}'              | runs the command line for the data at path              |
-|                 | python main.py cli -f 'sample_data.xlsx'    | runs the command line for the sample data               |
-| make ui         | python main.py ui                           | launches the TKinter UI                                 |
+| command         | alias                                                    | description                                             |
+| --------------- | -------------------------------------------------------- | ------------------------------------------------------- |
+| make init       | pip3 install -r requirements.txt && python3 main.py init | initializes the repository for use                      |
+| make cli        | python main.py cli                                       | runs the command line for the year of the system time   |
+|                 | python main.py cli -y {year}                             | runs the command line for the given year                |
+|                 | python main.py cli -f '{path}'                           | runs the command line for the data at path              |
+|                 | python main.py cli -f 'sample_data.xlsx'                 | runs the command line for the sample data               |
+| make ui         | python main.py ui                                        | launches the TKinter UI                                 |
 
 And for developers:
 
@@ -47,7 +48,7 @@ The input spreadsheet can be an Excel sheet (.xlsx), a Numbers file (.numbers), 
 
 There is a spreadsheet called `sample_data.xlsx` at the root level which you can use as an example and for playing around with the code.
 
-The year does not have to complete, but the year of every transaction should be the same (i.e. it should start no sooner than January 1st and end no later than December 31st the same year).
+The year does not have to be complete, but the year of every transaction should be the same (i.e. it should start no sooner than January 1st and end no later than December 31st the same year).
 
 Note that income does not belong in this spreadsheet.
 
@@ -148,7 +149,7 @@ If there are multiple lines in a plot, it is recommended to provide the optional
 
 For information on the `style` parameter, see the **Notes** section of [this page](https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html).
 
-There is also an optional `agg` paramater, which has the same format as the ones in the **Aggregations** section, but doesn't use the `Column` parameter.
+There is also an optional `agg` paramater, which has the same format as the ones in the **Aggregations** section, but doesn't use the `Column` parameter. If present, the given numpy function will be called on the `Price` column for the whole period, and used to create a flat control line of that aggregation. Common functions are `mean` and `count`.
 
 ## Aggregations
 
@@ -172,9 +173,9 @@ Many people have rent or other bills due on the first of the month, and there ar
 
 Projected spending takes all rows where the Category is "Bills" and they're over a small threshold (set to `PROJECTED_SPENDING_BILL_THRESHOLD` in the `config` files), and smooths out those expenses over the course of the entire month. 
 
-This effectively lowers the total amount spent that week, and raises that of the other weeks.
-
 It then takes the weekly spending and prorates it over a month, since the "weekly" spending value has bills from the full month.
+
+This effectively lowers the total amount spent that week, and raises that of the other weeks.
 
 This concept of smoothing outliers is also applied to all transactions _other than_ bills for certain graphs. For these graphs, all non-bill transactions over the `PROJECTED_SPENDING_LARGE_EXPENSE_THRESHOLD` threshold defined in the `config` files will be removed.
 
